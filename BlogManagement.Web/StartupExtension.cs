@@ -1,8 +1,6 @@
-﻿using BlogManagement.Data;
-using BlogManagement.Data.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using BlogManagement.Application;
+using BlogManagement.Application.Contracts;
+using BlogManagement.Data.Configuration.MapperConfigs;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogManagement.Web
@@ -19,7 +17,9 @@ namespace BlogManagement.Web
         /// <param name="services"></param>
         public static void RegisterServices(this IServiceCollection services)
         {
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
+            services.AddAutoMapper(typeof(MapperConfig));
         }
     }
 }

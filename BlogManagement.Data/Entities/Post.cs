@@ -45,8 +45,6 @@ namespace BlogManagement.Data.Entities
         public byte Published { get; set; }
 
 #nullable enable
-        public DateTime? UpdatedAt { get; set; }
-
         public DateTime? PublishedAt { get; set; }
 #nullable disable
 

@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlogManagement.Common.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using BlogManagement.Common.Models;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -20,6 +16,7 @@ namespace BlogManagement.Web.Controllers
 
         public IActionResult Index()
         {
+            _logger.LogInformation("Some info testing");
             return View();
         }
 

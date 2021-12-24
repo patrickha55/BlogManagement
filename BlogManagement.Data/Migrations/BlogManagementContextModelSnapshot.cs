@@ -310,7 +310,6 @@ namespace BlogManagement.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -354,7 +353,6 @@ namespace BlogManagement.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("varchar(15)");
 
@@ -379,12 +377,6 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Email")
-                        .HasName("UC_Email");
-
-                    b.HasAlternateKey("PhoneNumber")
-                        .HasName("UC_Mobile");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -400,7 +392,7 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d4a71b0e-6ab9-4eaf-a0f5-0dbbc70ce09b",
+                            ConcurrencyStamp = "b57d4980-3f8a-4dbd-90ee-35551d457304",
                             Email = "phatHa@mail.com",
                             EmailConfirmed = true,
                             FirstName = "Phat",
@@ -410,7 +402,7 @@ namespace BlogManagement.Data.Migrations
                             MiddleName = "Tan",
                             NormalizedEmail = "PHATHA@MAIL.COM",
                             NormalizedUserName = "PHATHA",
-                            PasswordHash = "E06B1AFD38DDB78B3F87842ADC69BD243286F24C7B4BA9C94AAEDF366FA064E6",
+                            PasswordHash = "AQAAAAEAACcQAAAAEF3oTUvV5q8mZ+Hg4sqmZIR3NO/dQp6sa3mmEIC+hfVmeysfo37jeQeZfI+uP+wfGw==",
                             PhoneNumber = "09812374657384",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an author's profile information",
@@ -422,7 +414,7 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 2L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "835a4f67-8cd7-4da9-b57c-edf00eb7776d",
+                            ConcurrencyStamp = "fb724075-3806-44fa-a955-5fadc4ae513d",
                             Email = "mrWick@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -431,7 +423,7 @@ namespace BlogManagement.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MRWICK@MAIL.COM",
                             NormalizedUserName = "MRWICK",
-                            PasswordHash = "E06B1AFD38DDB78B3F87842ADC69BD243286F24C7B4BA9C94AAEDF366FA064E6",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJpPmybnof67flVPfArZb1DRne83W3yj+2awkm9/e7EHGZMpPbjbxymWUj6M25BUjQ==",
                             PhoneNumber = "91283874571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an website admin",
@@ -443,7 +435,7 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 3L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7c380d5d-60fe-4920-8cad-1004c8941ab2",
+                            ConcurrencyStamp = "fb86eb15-85ae-4213-91ba-6981442f13b2",
                             Email = "AnonymousUser@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -452,7 +444,7 @@ namespace BlogManagement.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ANONYMOUSUSER@MAIL.COM",
                             NormalizedUserName = "ANONYMOUSUSER",
-                            PasswordHash = "E06B1AFD38DDB78B3F87842ADC69BD243286F24C7B4BA9C94AAEDF366FA064E6",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOX4goggOtRrEKf5fSDvZmDmLSnrLXDtrIWLQbv2ZluXZnYhj0Db33KEYr5n6bbLGg==",
                             PhoneNumber = "12654274571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is a normal user",
@@ -496,21 +488,21 @@ namespace BlogManagement.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            ConcurrencyStamp = "12e76aae-9107-4e42-96da-e3a2e17a1e72",
+                            ConcurrencyStamp = "3a2a31dc-bdc0-4d99-ac90-4b47de58808f",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
                             Id = 2L,
-                            ConcurrencyStamp = "9c8ea246-a0a4-4703-9241-b882a1620587",
+                            ConcurrencyStamp = "7669462e-c04d-4d29-9977-26421ec15227",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
                             Id = 3L,
-                            ConcurrencyStamp = "b419538c-bd46-4132-b934-e2b3c5a09330",
+                            ConcurrencyStamp = "b26343d0-753f-4207-bbfc-2113735de996",
                             Name = "User",
                             NormalizedName = "USER"
                         });

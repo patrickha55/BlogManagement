@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BlogManagement.Data.Configuration.EntityConfiguration;
 using BlogManagement.Data.Entities;
-using BlogManagement.Data.EntityConfiguration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
