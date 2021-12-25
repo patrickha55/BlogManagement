@@ -50,6 +50,6 @@ namespace BlogManagement.Application.Contracts
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<bool> IsExists(long id);
+        Task<bool> IsExistsAsync(long id);
     }
 }

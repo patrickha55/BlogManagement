@@ -32,107 +32,88 @@
     <link rel="stylesheet" href="~/css/style.css">
 </head>
 <body>
-    <header>
-       @* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 w-75 float-right">
-            <div class="container">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    
-                </div>
-            </div>
-        </nav>*@
-        <a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
-        <aside id="colorlib-aside" role="complementary" class="js-fullheight">
-            <nav id="colorlib-main-menu" role="navigation">
-                @*<a class="navbar-brand w-100 text-center mb-4" asp-area="" asp-controller="Home" asp-action="Index"><h1>Blog Management</h1></a>*@
-                
-                <partial name="_LoginPartial" />
+    <div id="colorlib-page">
+        <header>
+            <a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
+            <aside id="colorlib-aside" role="complementary" class="js-fullheight">
+                <nav id="colorlib-main-menu" role="navigation">
+                    @*<a class="navbar-brand w-100 text-center mb-4" asp-area="" asp-controller="Home" asp-action="Index"><h1>Blog Management</h1></a>*@
 
-                <ul>
-                    <li class="colorlib-active"><a asp-controller="Home" asp-action="Index"><span class="icon-home mr-lg-2"></span>Home</a></li>
-                    @if (User.IsInRole(Roles.Administrator))
-                    {
-                        <li><a asp-controller="Admins" asp-action="Index">Admin Dashboard</a></li>
-                    }
-                    @if (User.IsInRole(Roles.Author))
-                    {
-                        <li>
-                            <div class="dropright">
-                                <a class="" asp-controller="Posts" asp-action="AuthorIndex">
-                                    <span class="icon-library_books mr-lg-2"></span>My Posts
-                                </a>
-                                <span class="dropdown-toggle dropdown-toggle-split" 
-                                      data-toggle="dropdown" 
-                                      aria-haspopup="true" 
+                    <partial name="_LoginPartial" />
+
+                    <ul>
+                        <li class="colorlib-active"><a asp-controller="Home" asp-action="Index"><span class="icon-home mr-lg-2"></span>Home</a></li>
+                        @if (User.IsInRole(Roles.Administrator))
+                        {
+                            <li><a asp-controller="Admins" asp-action="Index">Admin Dashboard</a></li>
+                        }
+                        @if (User.IsInRole(Roles.Author))
+                        {
+                            <li>
+                                <div class="dropright">
+                                    <a class="" asp-controller="Posts" asp-action="Index">
+                                        <span class="icon-library_books mr-lg-2"></span>My Posts
+                                    </a>
+                                    <span class="dropdown-toggle dropdown-toggle-split"
+                                      data-toggle="dropdown"
+                                      aria-haspopup="true"
                                       aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropright</span>
-                                </span>
-                                <div class="dropdown-menu border-0 py-0">
-                                    <ul>
-                                        <li>
-                                            <a asp-controller="Posts" asp-action="Create" class="mt-0 pt-0"><span class="icon-plus mr-lg-2"></span>Create</a>
-                                        </li>
-                                        <li>
-                                            <a asp-controller="Posts" asp-action="Edit" class="mt-0 pt-0">Edit</a>
-                                        </li>
-                                    </ul>
+                                        <span class="sr-only">Toggle Dropright</span>
+                                    </span>
+                                    <div class="dropdown-menu border-0 py-0">
+                                        <ul>
+                                            <li>
+                                                <a asp-controller="Posts" asp-action="Create" class="mt-0 pt-0"><span class="icon-plus mr-lg-2"></span>Create</a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="Posts" asp-action="Edit" class="mt-0 pt-0">Edit</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
+                            </li>
+                        }
+                        <li><a href="fashion.html">Fashion</a></li>
+                        <li><a href="travel.html">Travel</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <div class="colorlib-footer">
+                    <h1 id="colorlib-logo" class="mb-4"><a href="index.html" style="background-image: url(images/bg_1.jpg);">Andrea <span>Moore</span></a></h1>
+                    <div class="mb-4">
+                        <h3>Subscribe for newsletter</h3>
+                        <form action="#" class="colorlib-subscribe-form">
+                            <div class="form-group d-flex">
+                                <div class="icon"><span class="icon-paper-plane"></span></div>
+                                <input type="text" class="form-control" placeholder="Enter Email Address">
                             </div>
-                        </li>
-                    }
-                    <li><a href="fashion.html">Fashion</a></li>
-                    <li><a href="travel.html">Travel</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
+                        </form>
+                    </div>
+                    <p class="pfooter">
 
-            <div class="colorlib-footer">
-                <h1 id="colorlib-logo" class="mb-4"><a href="index.html" style="background-image: url(images/bg_1.jpg);">Andrea <span>Moore</span></a></h1>
-                <div class="mb-4">
-                    <h3>Subscribe for newsletter</h3>
-                    <form action="#" class="colorlib-subscribe-form">
-                        <div class="form-group d-flex">
-                            <div class="icon"><span class="icon-paper-plane"></span></div>
-                            <input type="text" class="form-control" placeholder="Enter Email Address">
-                        </div>
-                    </form>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;@DateTime.Now.Year All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
+                    </p>
                 </div>
-                <p class="pfooter">
-                
-                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                    Copyright &copy;@DateTime.Now.Year All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            
-                </p>
-            </div>
-        </aside>
-    </header>
-    <div>
-        <main role="main" class="pb-3">
+            </aside>
+
+        </header>
+        <div id="colorlib-main">
             @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - Blog Management - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
 
-    <!-- loader -->
-    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2021 - Blog Management - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
+    </div>
+    
+    <partial name="User/_LoaderPartial"/>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

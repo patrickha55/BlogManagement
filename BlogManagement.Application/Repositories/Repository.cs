@@ -132,7 +132,7 @@ namespace BlogManagement.Application.Repositories
             }
         }
 
-        public async Task<bool> IsExists(long id)
+        public async Task<bool> IsExistsAsync(long id)
         {
             try
             {
@@ -141,7 +141,7 @@ namespace BlogManagement.Application.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(IsExists));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(IsExistsAsync));
                 throw;
             }
         }

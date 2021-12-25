@@ -21,20 +21,9 @@ namespace BlogManagement.Common.Models.PostVMs
 
         public string Title { get; set; }
 
-        [Display(Name = "Meta Title")]
-        public string MetaTitle { get; set; }
-
-        public string Slug { get; set; }
-
-        public string Summary { get; set; }
-
-        public byte Published { get; set; }
-
         [Display(Name = "Date Created")]
         public DateTime CreatedAt { get; set; }
-#nullable enable
-        [Display(Name = "Date Published")]
-        public DateTime? PublishedAt { get; set; }
-#nullable disable
+
+        public string ImageUrl { get; set; }
     }
 }

@@ -77,5 +77,26 @@ namespace BlogManagement.Application.Repositories
                 throw;
             }
         }
+
+        public async Task<Post> GetPostDetailsAsync(long postId)
+        {
+            IQueryable<Post> query = _context.Posts;
+
+            try
+            {
+                query = query.Include(p => p.User)
+                    .Include(p => p.PostComments)
+                    .Include(p => p.PostUserRatings)
+                    .Include(p => p.CategoryPosts)
+                    .ThenInclude(cp => cp.Category);
+
+                return await query.AsNoTracking().SingleOrDefaultAsync(p => p.Id == postId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
+                throw;
+            }
+        }
     }
 }

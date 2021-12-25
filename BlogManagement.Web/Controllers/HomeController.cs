@@ -53,7 +53,7 @@ namespace BlogManagement.Web.Controllers
                     foreach (var post in posts)
                     {
                         if (postVM.AuthorId == post.AuthorId)
-                            postVM.Author = _mapper.Map<AuthorForIndexVM>(post.User);
+                            postVM.Author = _mapper.Map<AuthorVM>(post.User);
 
                         if (postVM.Id == post.PostComments
                                 .Select(p => p.PostId)
@@ -66,7 +66,7 @@ namespace BlogManagement.Web.Controllers
                                 .Select(p => p.PostId)
                                 .FirstOrDefault())
                         {
-                            postVM.Categories = _mapper.Map<List<CategoryForIndexVM>>(post.CategoryPosts.Select(c => c.Category));
+                            postVM.Categories = _mapper.Map<List<CategoryVM>>(post.CategoryPosts.Select(c => c.Category));
                         }
                     }
                 }

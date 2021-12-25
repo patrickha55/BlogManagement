@@ -79,7 +79,7 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                     Slug = "what-shape-is-the-best",
                     Summary = "Find out which shape is the best shape.",
                     CreatedAt = new DateTime(2021, 12, 18),
-                    ImageUrl = "images\\which-shape-is-the-best.jpg"
+                    ImageUrl = "images/which-shape-is-the-best.jpg"
                 },
                 new Post
                 {
@@ -90,7 +90,7 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                     Slug = "best-way-to-board-a-plane",
                     Summary = "Find out which way is the best way to board a plane.",
                     CreatedAt = new DateTime(2021, 12, 18),
-                    ImageUrl = "images\\best-way-to-board-a-plane.jpg"
+                    ImageUrl = "images/best-way-to-board-a-plane.jpg"
                 },
                 new Post
                 {
@@ -102,7 +102,7 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                     Slug = "hexagon",
                     Summary = "Let's talk about hexagon",
                     CreatedAt = new DateTime(2021, 12, 18),
-                    ImageUrl = "images\\hexagon-bee-hive.jpg"
+                    ImageUrl = "images/hexagon-bee-hive.jpg"
                 }
             );
 

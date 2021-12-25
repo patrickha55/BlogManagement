@@ -26,5 +26,11 @@ namespace BlogManagement.Application.Contracts
         /// <param name="request"></param>
         /// <returns></returns>
         Task<IPagedList<Post>> GetPostsForIndexAsync(Expression<Func<Post, bool>> expression, PagingRequest request);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        Task<Post> GetPostDetailsAsync(long postId);
     }
 }
