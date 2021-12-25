@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
 using BlogManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using X.PagedList;
 
 namespace BlogManagement.Application.Repositories
 {
@@ -23,26 +26,49 @@ namespace BlogManagement.Application.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<IPagedList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression, PagingRequest request, List<string> includes = null)
         {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
             try
             {
-                var entities = await _context.Set<TEntity>().ToListAsync();
+                if (expression is not null)
+                {
+                    query = query.Where(expression);
+                }
 
-                return entities;
+                if (includes is not null)
+                {
+                    foreach (var include in includes)
+                    {
+                        query = query.Include(include);
+                    }
+                }
+
+                return await query.AsNoTracking().ToPagedListAsync(request.PageNumber, request.PageSize);
             }
             catch (Exception e)
             {
-                _logger.LogError(e,  "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
                 throw;
             }
         }
 
-        public async Task<TEntity> GetByIdAsync(long id)
+        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression, List<string> includes = null)
         {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
             try
             {
-                var model = await _context.Set<TEntity>().FindAsync(id);
+                if (includes is not null)
+                {
+                    foreach (var include in includes)
+                    {
+                        query = query.Include(include);
+                    }
+                }
+
+                var model = await query.AsNoTracking().FirstOrDefaultAsync(expression);
 
                 if (model is null)
                     throw new ArgumentException(Constants.InvalidArgument);
@@ -51,12 +77,12 @@ namespace BlogManagement.Application.Repositories
             }
             catch (ArgumentException e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetByIdAsync));
+                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetAsync));
                 throw;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetByIdAsync));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAsync));
                 throw;
             }
         }

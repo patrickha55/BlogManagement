@@ -48,6 +48,11 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                 .HasForeignKey(pc => pc.ParentId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.HasOne(pc => pc.User)
+                .WithMany(u => u.PostComments)
+                .HasForeignKey(pc => pc.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             #endregion
         }
     }

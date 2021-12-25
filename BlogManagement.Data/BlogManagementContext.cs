@@ -37,16 +37,17 @@ namespace BlogManagement.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new PostConfiguration());
-            modelBuilder.ApplyConfiguration(new PostMetaConfiguration());
-            modelBuilder.ApplyConfiguration(new PostCommentConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryPostConfiguration());
-            modelBuilder.ApplyConfiguration(new TagConfiguration());
-            modelBuilder.ApplyConfiguration(new PostTagConfiguration());
             modelBuilder.ApplyConfiguration(new IdentityRoleConfiguration());
             modelBuilder.ApplyConfiguration(new IdentityUserRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new PostCommentConfiguration());
+            modelBuilder.ApplyConfiguration(new PostConfiguration());
+            modelBuilder.ApplyConfiguration(new PostMetaConfiguration());
+            modelBuilder.ApplyConfiguration(new PostRatingConfiguration());
+            modelBuilder.ApplyConfiguration(new PostTagConfiguration());
+            modelBuilder.ApplyConfiguration(new TagConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
         }
 
         /*
