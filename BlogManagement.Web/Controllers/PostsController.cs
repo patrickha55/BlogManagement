@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -28,22 +29,25 @@ namespace BlogManagement.Web.Controllers
             _logger = logger;
         }
 
-        // GET: PostsController
-        public ActionResult Index()
+        /*// GET: PostsController
+        public Task<ActionResult> Index()
         {
-
             return View();
-        }
+        }*/
 
         [Authorize(Roles = Roles.Administrator)]
         // GET: PostsController
-        public async Task<IActionResult> AdminIndex()
+        public async Task<IActionResult> AdminIndex(int pageNumber = 1, int pageSize = 10)
         {
             var postVMs = new List<PostVM>();
 
             try
             {
-                var posts = await _unitOfWork.PostRepository.GetAllAsync();
+                var posts = await _unitOfWork.PostRepository.GetAllAsync(new PagingRequest
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                });
 
                 postVMs = _mapper.Map<List<PostVM>>(posts);
             }
@@ -122,6 +126,11 @@ namespace BlogManagement.Web.Controllers
             {
                 return View();
             }
+        }
+
+        public IActionResult AuthorIndex()
+        {
+            throw new NotImplementedException();
         }
     }
 }

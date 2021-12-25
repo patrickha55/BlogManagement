@@ -3,16 +3,20 @@ using BlogManagement.Data;
 using System;
 using System.Threading.Tasks;
 using BlogManagement.Application.Repositories;
+using BlogManagement.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BlogManagement.Application
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private BlogManagementContext _context;
+        private readonly BlogManagementContext _context;
         private IPostRepository _postsRepository;
         private readonly ILogger<PostRepository> _logger;
-        public UnitOfWork(BlogManagementContext context, ILogger<PostRepository> logger)
+        public UnitOfWork(
+            BlogManagementContext context, 
+            ILogger<PostRepository> logger)
         {
             _context = context;
             _logger = logger;

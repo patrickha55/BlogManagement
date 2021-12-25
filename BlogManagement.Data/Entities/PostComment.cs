@@ -18,6 +18,10 @@ namespace BlogManagement.Data.Entities
         /// Id of a post which this comment belongs to.
         /// </summary>
         public long PostId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public long UserId { get; set; }
 #nullable enable
         /// <summary>
         /// Id of a parent comment which this comment belongs to.
@@ -46,6 +50,8 @@ namespace BlogManagement.Data.Entities
         /// A parent comment of a comment.
         /// </summary>
         public PostComment ParentPostComment { get; set; }
+
+        public User User { get; set; }
 
         /// <summary>
         /// A comment can have many child comments.

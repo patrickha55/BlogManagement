@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Blog Management</title>
+    <title>@ViewData["Title"] - Blog Space</title>
 
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
@@ -55,15 +55,41 @@
         <a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
         <aside id="colorlib-aside" role="complementary" class="js-fullheight">
             <nav id="colorlib-main-menu" role="navigation">
-                <a class="navbar-brand w-100 text-center mb-4" asp-area="" asp-controller="Home" asp-action="Index"><h1>Blog Management</h1></a>
+                @*<a class="navbar-brand w-100 text-center mb-4" asp-area="" asp-controller="Home" asp-action="Index"><h1>Blog Management</h1></a>*@
                 
                 <partial name="_LoginPartial" />
 
                 <ul>
-                    <li class="colorlib-active"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="colorlib-active"><a asp-controller="Home" asp-action="Index"><span class="icon-home mr-lg-2"></span>Home</a></li>
                     @if (User.IsInRole(Roles.Administrator))
                     {
                         <li><a asp-controller="Admins" asp-action="Index">Admin Dashboard</a></li>
+                    }
+                    @if (User.IsInRole(Roles.Author))
+                    {
+                        <li>
+                            <div class="dropright">
+                                <a class="" asp-controller="Posts" asp-action="AuthorIndex">
+                                    <span class="icon-library_books mr-lg-2"></span>My Posts
+                                </a>
+                                <span class="dropdown-toggle dropdown-toggle-split" 
+                                      data-toggle="dropdown" 
+                                      aria-haspopup="true" 
+                                      aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropright</span>
+                                </span>
+                                <div class="dropdown-menu border-0 py-0">
+                                    <ul>
+                                        <li>
+                                            <a asp-controller="Posts" asp-action="Create" class="mt-0 pt-0"><span class="icon-plus mr-lg-2"></span>Create</a>
+                                        </li>
+                                        <li>
+                                            <a asp-controller="Posts" asp-action="Edit" class="mt-0 pt-0">Edit</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
                     }
                     <li><a href="fashion.html">Fashion</a></li>
                     <li><a href="travel.html">Travel</a></li>

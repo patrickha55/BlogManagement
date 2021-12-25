@@ -45,6 +45,11 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
             builder.Property(p => p.CreatedAt)
                 .ValueGeneratedOnAdd();
 
+            builder.Property(p => p.ImageUrl)
+                .HasColumnType("nvarchar")
+                .HasMaxLength(1000)
+                .HasDefaultValue(null)
+                .IsRequired();
 
             #endregion
 
@@ -73,7 +78,8 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                     MetaTitle = "Best Shape",
                     Slug = "what-shape-is-the-best",
                     Summary = "Find out which shape is the best shape.",
-                    CreatedAt = new DateTime(2021, 12, 18)
+                    CreatedAt = new DateTime(2021, 12, 18),
+                    ImageUrl = "images\\which-shape-is-the-best.jpg"
                 },
                 new Post
                 {
@@ -83,7 +89,8 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                     MetaTitle = "Best Way To Board A Plane",
                     Slug = "best-way-to-board-a-plane",
                     Summary = "Find out which way is the best way to board a plane.",
-                    CreatedAt = new DateTime(2021, 12, 18)
+                    CreatedAt = new DateTime(2021, 12, 18),
+                    ImageUrl = "images\\best-way-to-board-a-plane.jpg"
                 },
                 new Post
                 {
@@ -94,7 +101,8 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
                     MetaTitle = "Hexagon",
                     Slug = "hexagon",
                     Summary = "Let's talk about hexagon",
-                    CreatedAt = new DateTime(2021, 12, 18)
+                    CreatedAt = new DateTime(2021, 12, 18),
+                    ImageUrl = "images\\hexagon-bee-hive.jpg"
                 }
             );
 

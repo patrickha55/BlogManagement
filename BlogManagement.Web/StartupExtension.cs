@@ -1,6 +1,8 @@
 ﻿using BlogManagement.Application;
 using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Services;
 using BlogManagement.Data.Configuration.MapperConfigs;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlogManagement.Web
@@ -20,6 +22,14 @@ namespace BlogManagement.Web
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddAutoMapper(typeof(MapperConfig));
+
+            // Register email sender service
+            services.AddTransient<IEmailSender>(o =>
+                new EmailSender(
+                    "localhost",
+                    25, 
+                    "no-reply@andreamooreblogspace.com")
+            );
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
 namespace BlogManagement.Data.Entities
 {
@@ -11,6 +10,8 @@ namespace BlogManagement.Data.Entities
     public class User : IdentityUser<long>
     {
         public User() => Posts = new List<Post>();
+
+        #region Properties
 
         public override long Id { get; set; }
 
@@ -30,10 +31,25 @@ namespace BlogManagement.Data.Entities
 
         public string Profile { get; set; }
 
+        #endregion
+
+        #region Navigational properties
 
         /// <summary>
         /// Navigational property to Post entity.
         /// </summary>
         public ICollection<Post> Posts { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<PostRating> PostUserRatings { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<PostComment> PostComments { get; set; }
+
+        #endregion
     }
 }

@@ -50,6 +50,8 @@ namespace BlogManagement.Data.Entities
 
         public string Content { get; set; }
 
+        public string ImageUrl { get; set; }
+
         #endregion
 
         #region Navigational Properties
@@ -88,6 +90,8 @@ namespace BlogManagement.Data.Entities
         /// A post can have many Tags.
         /// </summary>
         public ICollection<PostTag> PostTags { get; set; }
+
+        public IEnumerable<PostRating> PostUserRatings { get; set; }
 
         #endregion
     }
