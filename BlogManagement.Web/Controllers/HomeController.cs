@@ -38,15 +38,13 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                var posts = await _unitOfWork.PostRepository.GetAllAsync(new PagingRequest
+                var pagingRequest = new PagingRequest
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize
-                }, new List<string>
-                {
-                    "PostComments",
-                    "User"
-                });
+                };
+
+                var posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(p => p.Published != 0, pagingRequest);
 
                 postForIndexVMs = _mapper.Map<List<PostForIndexVM>>(posts);
 
@@ -56,13 +54,17 @@ namespace BlogManagement.Web.Controllers
                     {
                         if (postVM.AuthorId == post.AuthorId)
                             postVM.Author = _mapper.Map<AuthorForIndexVM>(post.User);
-                            
+
                         if (postVM.Id == post.PostComments
                                 .Select(p => p.PostId)
                                 .FirstOrDefault())
+                        {
                             postVM.PostComments = _mapper.Map<List<PostCommentForIndexVM>>(post.PostComments);
+                        }
 
-                        if (postVM.Id == post.CategoryPosts.Select(p => p.PostId).FirstOrDefault())
+                        if (postVM.Id == post.CategoryPosts
+                                .Select(p => p.PostId)
+                                .FirstOrDefault())
                         {
                             postVM.Categories = _mapper.Map<List<CategoryForIndexVM>>(post.CategoryPosts.Select(c => c.Category));
                         }

@@ -26,12 +26,17 @@ namespace BlogManagement.Application.Repositories
             _logger = logger;
         }
 
-        public async Task<IPagedList<TEntity>> GetAllAsync(PagingRequest request, List<string> includes = null)
+        public async Task<IPagedList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression, PagingRequest request, List<string> includes = null)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
             try
             {
+                if (expression is not null)
+                {
+                    query = query.Where(expression);
+                }
+
                 if (includes is not null)
                 {
                     foreach (var include in includes)

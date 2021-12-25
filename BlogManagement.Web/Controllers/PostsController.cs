@@ -43,7 +43,7 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                var posts = await _unitOfWork.PostRepository.GetAllAsync(new PagingRequest
+                var posts = await _unitOfWork.PostRepository.GetAllAsync(null ,new PagingRequest
                 {
                     PageNumber = pageNumber,
                     PageSize = pageSize

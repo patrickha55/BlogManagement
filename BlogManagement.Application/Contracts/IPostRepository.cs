@@ -1,6 +1,10 @@
-﻿using BlogManagement.Data.Entities;
+﻿using System;
+using BlogManagement.Data.Entities;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using BlogManagement.Common.Models;
+using X.PagedList;
 
 namespace BlogManagement.Application.Contracts
 {
@@ -15,5 +19,12 @@ namespace BlogManagement.Application.Contracts
         /// <param name="authorId"></param>
         /// <returns></returns>
         Task<IEnumerable<Post>> GetByAuthorId(long authorId);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<IPagedList<Post>> GetPostsForIndexAsync(Expression<Func<Post, bool>> expression, PagingRequest request);
     }
 }

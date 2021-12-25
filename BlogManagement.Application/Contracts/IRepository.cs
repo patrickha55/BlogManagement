@@ -13,10 +13,11 @@ namespace BlogManagement.Application.Contracts
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="expression"></param>
         /// <param name="request"></param>
         /// <param name="includes"></param>
         /// <returns></returns>
-        Task<IPagedList<TEntity>> GetAllAsync(PagingRequest request, List<string> includes = null);
+        Task<IPagedList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression, PagingRequest request, List<string> includes = null);
         /// <summary>
         /// 
         /// </summary>
