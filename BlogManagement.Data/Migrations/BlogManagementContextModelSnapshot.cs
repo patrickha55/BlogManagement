@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace BlogManagement.Data.Migrations
 {
     [DbContext(typeof(BlogManagementContext))]
@@ -15,18 +17,18 @@ namespace BlogManagement.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.13")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("BlogManagement.Data.Entities.Category", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -35,7 +37,7 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<long>("ParentId")
+                    b.Property<long?>("ParentId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Slug")
@@ -71,17 +73,16 @@ namespace BlogManagement.Data.Migrations
                     b.HasIndex("PostId")
                         .HasDatabaseName("IX_Post_Category_PostId");
 
-                    b.ToTable("Post_Category");
+                    b.ToTable("Post_Category", (string)null);
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.Post", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<long>("AuthorId")
                         .HasColumnType("bigint");
@@ -92,6 +93,11 @@ namespace BlogManagement.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("MetaTitle")
                         .HasMaxLength(100)
@@ -142,6 +148,7 @@ namespace BlogManagement.Data.Migrations
                             Id = 1L,
                             AuthorId = 1L,
                             CreatedAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ImageUrl = "images\\which-shape-is-the-best.jpg",
                             MetaTitle = "Best Shape",
                             Published = (byte)0,
                             Slug = "what-shape-is-the-best",
@@ -153,6 +160,7 @@ namespace BlogManagement.Data.Migrations
                             Id = 2L,
                             AuthorId = 2L,
                             CreatedAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ImageUrl = "images\\best-way-to-board-a-plane.jpg",
                             MetaTitle = "Best Way To Board A Plane",
                             Published = (byte)0,
                             Slug = "best-way-to-board-a-plane",
@@ -164,6 +172,7 @@ namespace BlogManagement.Data.Migrations
                             Id = 3L,
                             AuthorId = 3L,
                             CreatedAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ImageUrl = "images\\hexagon-bee-hive.jpg",
                             MetaTitle = "Hexagon",
                             ParentId = 1L,
                             Published = (byte)0,
@@ -177,10 +186,9 @@ namespace BlogManagement.Data.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -207,11 +215,16 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("PostComments");
                 });
@@ -220,10 +233,9 @@ namespace BlogManagement.Data.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -243,6 +255,24 @@ namespace BlogManagement.Data.Migrations
                     b.ToTable("PostMetas");
                 });
 
+            modelBuilder.Entity("BlogManagement.Data.Entities.PostRating", b =>
+                {
+                    b.Property<long>("PostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
+                    b.HasKey("PostId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostRatings", (string)null);
+                });
+
             modelBuilder.Entity("BlogManagement.Data.Entities.PostTag", b =>
                 {
                     b.Property<long>("PostId")
@@ -259,17 +289,16 @@ namespace BlogManagement.Data.Migrations
                     b.HasIndex("TagId")
                         .HasDatabaseName("IX_Post_Category_TagId");
 
-                    b.ToTable("Post_Tag");
+                    b.ToTable("Post_Tag", (string)null);
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.Tag", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("Context")
                         .HasColumnType("nvarchar(max)");
@@ -297,10 +326,9 @@ namespace BlogManagement.Data.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -310,7 +338,6 @@ namespace BlogManagement.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -354,7 +381,6 @@ namespace BlogManagement.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("varchar(15)");
 
@@ -379,12 +405,6 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Email")
-                        .HasName("UC_Email");
-
-                    b.HasAlternateKey("PhoneNumber")
-                        .HasName("UC_Mobile");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -393,14 +413,14 @@ namespace BlogManagement.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d4a71b0e-6ab9-4eaf-a0f5-0dbbc70ce09b",
+                            ConcurrencyStamp = "b013c30e-4d87-4061-8b3f-009be07e44c6",
                             Email = "phatHa@mail.com",
                             EmailConfirmed = true,
                             FirstName = "Phat",
@@ -410,11 +430,12 @@ namespace BlogManagement.Data.Migrations
                             MiddleName = "Tan",
                             NormalizedEmail = "PHATHA@MAIL.COM",
                             NormalizedUserName = "PHATHA",
-                            PasswordHash = "E06B1AFD38DDB78B3F87842ADC69BD243286F24C7B4BA9C94AAEDF366FA064E6",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEE0taJnUbOfePvbCzGApXWEj20Ms1cezQbmFMuugIOPwCX+E8ZACXdQAWLmGuP0zQ==",
                             PhoneNumber = "09812374657384",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an author's profile information",
                             RegisteredAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SecurityStamp = "32661E8D-66BD-42FB-9308-4E38D22E3051",
                             TwoFactorEnabled = false,
                             UserName = "PhatHa"
                         },
@@ -422,7 +443,7 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 2L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "835a4f67-8cd7-4da9-b57c-edf00eb7776d",
+                            ConcurrencyStamp = "b2a02f2b-77e8-40bc-a921-9a2fb50f5574",
                             Email = "mrWick@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -431,11 +452,12 @@ namespace BlogManagement.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MRWICK@MAIL.COM",
                             NormalizedUserName = "MRWICK",
-                            PasswordHash = "E06B1AFD38DDB78B3F87842ADC69BD243286F24C7B4BA9C94AAEDF366FA064E6",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDDYl0KqWJdEwJ+48NPAm1b1vsWZSHDXlqRH8kOCpFIP6Hc1J21pJrX6XhRt25WEDw==",
                             PhoneNumber = "91283874571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an website admin",
                             RegisteredAt = new DateTime(2021, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SecurityStamp = "1253A78A-FDBB-404F-B1D6-FD5BA90B72E7",
                             TwoFactorEnabled = false,
                             UserName = "MrWick"
                         },
@@ -443,7 +465,7 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 3L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7c380d5d-60fe-4920-8cad-1004c8941ab2",
+                            ConcurrencyStamp = "42194467-edc4-4870-a176-1b0f41e6441c",
                             Email = "AnonymousUser@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -452,11 +474,12 @@ namespace BlogManagement.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ANONYMOUSUSER@MAIL.COM",
                             NormalizedUserName = "ANONYMOUSUSER",
-                            PasswordHash = "E06B1AFD38DDB78B3F87842ADC69BD243286F24C7B4BA9C94AAEDF366FA064E6",
+                            PasswordHash = "AQAAAAEAACcQAAAAEF7iucmOKpAzmpCWsk7MrI5r3TazTG54Iq6qeH8w/7twyl0mRFoXpa5t4IQNdMw6Og==",
                             PhoneNumber = "12654274571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is a normal user",
                             RegisteredAt = new DateTime(2021, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SecurityStamp = "CC0F6F9B-03ED-48F1-B618-B2E078009296",
                             TwoFactorEnabled = false,
                             UserName = "AnonymousUser"
                         });
@@ -466,10 +489,9 @@ namespace BlogManagement.Data.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -490,27 +512,27 @@ namespace BlogManagement.Data.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1L,
-                            ConcurrencyStamp = "12e76aae-9107-4e42-96da-e3a2e17a1e72",
+                            ConcurrencyStamp = "ece65d0a-549e-4636-ae2d-2e60656f685f",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
                             Id = 2L,
-                            ConcurrencyStamp = "9c8ea246-a0a4-4703-9241-b882a1620587",
+                            ConcurrencyStamp = "ea3fb1d6-c59c-4f06-a1aa-ef3b0666a8ed",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
                             Id = 3L,
-                            ConcurrencyStamp = "b419538c-bd46-4132-b934-e2b3c5a09330",
+                            ConcurrencyStamp = "a876258d-d58d-4618-a7ef-670352b18ae5",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -520,8 +542,9 @@ namespace BlogManagement.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -536,15 +559,16 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<long>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -559,7 +583,7 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
@@ -582,7 +606,7 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<long>", b =>
@@ -597,7 +621,7 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
 
                     b.HasData(
                         new
@@ -635,7 +659,7 @@ namespace BlogManagement.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.Category", b =>
@@ -643,8 +667,7 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Category", "ParentCategory")
                         .WithMany("ChildCategories")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ParentCategory");
                 });
@@ -699,9 +722,17 @@ namespace BlogManagement.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("BlogManagement.Data.Entities.User", "User")
+                        .WithMany("PostComments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("ParentPostComment");
 
                     b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.PostMeta", b =>
@@ -713,6 +744,25 @@ namespace BlogManagement.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("BlogManagement.Data.Entities.PostRating", b =>
+                {
+                    b.HasOne("BlogManagement.Data.Entities.Post", "Post")
+                        .WithMany("PostUserRatings")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BlogManagement.Data.Entities.User", "User")
+                        .WithMany("PostUserRatings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.PostTag", b =>
@@ -803,6 +853,8 @@ namespace BlogManagement.Data.Migrations
                     b.Navigation("PostMetas");
 
                     b.Navigation("PostTags");
+
+                    b.Navigation("PostUserRatings");
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.PostComment", b =>
@@ -817,6 +869,10 @@ namespace BlogManagement.Data.Migrations
 
             modelBuilder.Entity("BlogManagement.Data.Entities.User", b =>
                 {
+                    b.Navigation("PostComments");
+
+                    b.Navigation("PostUserRatings");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

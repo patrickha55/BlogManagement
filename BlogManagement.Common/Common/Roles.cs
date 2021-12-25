@@ -1,9 +1,9 @@
 ﻿namespace BlogManagement.Common.Common
 {
-    public enum Roles
+    public static class Roles
     {
-        Administrator = 1,
-        Author = 2,
-        User = 3
+        public const string Administrator = "Administrator";
+        public const string Author = "Author";
+        public const string User = "User";
     }
 }

@@ -45,12 +45,12 @@ namespace BlogManagement.Data.Entities
         public byte Published { get; set; }
 
 #nullable enable
-        public DateTime? UpdatedAt { get; set; }
-
         public DateTime? PublishedAt { get; set; }
 #nullable disable
 
         public string Content { get; set; }
+
+        public string ImageUrl { get; set; }
 
         #endregion
 
@@ -90,6 +90,8 @@ namespace BlogManagement.Data.Entities
         /// A post can have many Tags.
         /// </summary>
         public ICollection<PostTag> PostTags { get; set; }
+
+        public IEnumerable<PostRating> PostUserRatings { get; set; }
 
         #endregion
     }

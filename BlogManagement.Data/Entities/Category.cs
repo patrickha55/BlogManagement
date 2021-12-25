@@ -20,7 +20,7 @@ namespace BlogManagement.Data.Entities
         /// <summary>
         /// Id of a parent category which a category belongs to.
         /// </summary>
-        public long ParentId { get; set; }
+        public long? ParentId { get; set; }
         [Required]
         public string Title { get; set; }
         public string MetaTitle { get; set; }
