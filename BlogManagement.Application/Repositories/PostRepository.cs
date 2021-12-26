@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using X.PagedList;
@@ -84,19 +87,96 @@ namespace BlogManagement.Application.Repositories
 
             try
             {
+                if (!await IsExistsAsync(postId))
+                    throw new ArgumentException(Constants.InvalidArgument);
+
                 query = query.Include(p => p.User)
                     .Include(p => p.PostComments)
                     .Include(p => p.PostRatings)
+                    .Include(p => p.PostMetas)
                     .Include(p => p.CategoryPosts)
-                    .ThenInclude(cp => cp.Category);
+                    .ThenInclude(cp => cp.Category)
+                    .Include(p => p.PostTags)
+                    .ThenInclude(pt => pt.Tag);
 
                 return await query.AsNoTracking().SingleOrDefaultAsync(p => p.Id == postId);
             }
-            catch (Exception e)
+            catch (ArgumentException e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
+                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetPostDetailsAsync));
                 throw;
             }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostDetailsAsync));
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Post>> GetAllPostIdsAndTitles()
+        {
+            try
+            {
+                return await _context.Posts
+                    .AsNoTracking()
+                    .Select(p => new Post
+                    {
+                        Id = p.Id,
+                        Title = p.Title
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllPostIdsAndTitles));
+                throw;
+            }
+        }
+
+        public async Task<bool> CreatePostAsync(Post post, [CanBeNull] IFormFile formFile)
+        {
+            try
+            {
+                if (formFile is not null)
+                {
+                    post.ImageUrl = $@"images/{await HandleImageUpload(formFile)}";
+                }
+
+                var result = await _context.Posts.AddAsync(post);
+
+                if (result.State is EntityState.Added)
+                    return true;
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.InvalidDirectory, nameof(CreatePostAsync));
+                throw;
+            }
+            catch (FileNotFoundException e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.FileNotFound, nameof(CreatePostAsync));
+                throw;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostAsync));
+                throw;
+            }
+
+            return false;
+        }
+
+        private static async Task<string> HandleImageUpload(IFormFile formFile)
+        {
+            var uploadTime = DateTime.Now.ToString("MMddyyyHHmmss");
+            var imgName = uploadTime + "_" + Path.GetFileName(formFile.FileName);
+            var imgPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", imgName);
+
+            await using var fileStream = new FileStream(imgPath, FileMode.Create);
+
+            await formFile.CopyToAsync(fileStream);
+
+            return imgName;
         }
     }
 }

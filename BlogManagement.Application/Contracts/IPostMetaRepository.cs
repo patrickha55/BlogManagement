@@ -4,6 +4,5 @@ namespace BlogManagement.Application.Contracts
 {
     public interface IPostMetaRepository : IRepository<PostMeta>
     {
-
     }
 }

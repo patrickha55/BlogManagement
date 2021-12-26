@@ -2,20 +2,24 @@
 using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.PostVMs;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
+using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Data.Entities;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BlogManagement.Common.Models.PostMetaVMs;
+using BlogManagement.Common.Models.TagVMs;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -25,17 +29,23 @@ namespace BlogManagement.Web.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<PostsController> _logger;
         private readonly UserManager<User> _userManager;
+        private readonly IRepository<CategoryPost> _categoryPostRepository;
+        private readonly IRepository<PostTag> _postTagRepository;
 
         public PostsController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ILogger<PostsController> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IRepository<CategoryPost> categoryPostRepository,
+            IRepository<PostTag> postTagRepository)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
             _userManager = userManager;
+            _categoryPostRepository = categoryPostRepository;
+            _postTagRepository = postTagRepository;
         }
 
 
@@ -129,7 +139,39 @@ namespace BlogManagement.Web.Controllers
                 if (id <= 0 || !await _unitOfWork.PostRepository.IsExistsAsync(id))
                     throw new ArgumentException(Constants.InvalidArgument);
 
+                var post = await _unitOfWork.PostRepository.GetPostDetailsAsync(id);
 
+                var postDetailVM = _mapper.Map<PostDetailVM>(post);
+
+                postDetailVM.Author = _mapper.Map<AuthorVM>(post.User);
+
+                if (post.PostMetas.Any())
+                {
+                    postDetailVM.PostMetas = _mapper.Map<List<PostMetaDetailVM>>(post.PostMetas);
+                }
+
+                if (post.PostRatings.Any())
+                {
+                    postDetailVM.Rating = post.PostRatings.Average(pr => pr.Rating);
+                }
+
+                if (post.CategoryPosts.Any())
+                {
+                    foreach (var categoryPost in post.CategoryPosts)
+                    {
+                        postDetailVM.Categories.Add(_mapper.Map<CategoryVM>(categoryPost.Category));
+                    }
+                }
+
+                if (post.PostTags.Any())
+                {
+                    foreach (var postTag in post.PostTags)
+                    {
+                        postDetailVM.Tags.Add(_mapper.Map<TagVM>(postTag.Tag));
+                    }
+                }
+
+                return View(postDetailVM);
             }
             catch (ArgumentException e)
             {
@@ -139,13 +181,20 @@ namespace BlogManagement.Web.Controllers
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Details));
             }
-            return View();
+
+            return View("~/Views/Home/Index.cshtml");
         }
 
         // GET: PostsController/Create
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var selectLists = await GetSelectListsForPostCreation();
+
+            ViewBag.Categories = selectLists.categories;
+            ViewBag.Tags = selectLists.tags;
+            ViewBag.Posts = selectLists.posts;
+
             return View();
         }
 
@@ -153,16 +202,62 @@ namespace BlogManagement.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(PostCreateVM request)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+                    request.AuthorId = user.Id;
+
+                    var post = _mapper.Map<Post>(request);
+
+                    var createPostResult = 
+                        await _unitOfWork.PostRepository
+                        .CreatePostAsync(post, request.Image);
+
+                    if (createPostResult)
+                        await _unitOfWork.SaveAsync();
+
+                    var createCategoryResult = 
+                        await _categoryPostRepository
+                            .CreateAsync(
+                                new CategoryPost
+                                {
+                                    CategoryId = request.CategoryId,
+                                    PostId = post.Id
+                                });
+
+                    var createPostTagResult = false;
+
+                    foreach (var tagId in request.TagIds)
+                    {
+                        createPostTagResult =
+                            await _postTagRepository.CreateAsync(new PostTag { PostId = post.Id, TagId = tagId });
+                    }
+
+                    if (createPostTagResult && createCategoryResult)
+                    {
+                        await _unitOfWork.SaveAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
             }
+
+            var selectLists = await GetSelectListsForPostCreation(request.CategoryId, request.TagIds, request.ParentId);
+
+            ViewBag.Categories = selectLists.categories;
+            ViewBag.Tags = selectLists.tags;
+            ViewBag.Posts = selectLists.posts;
+
+            return View(request);
         }
 
         // GET: PostsController/Edit/5
@@ -214,6 +309,24 @@ namespace BlogManagement.Web.Controllers
         public IActionResult AuthorIndex()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private async Task<(SelectList categories, SelectList tags, SelectList posts)> GetSelectListsForPostCreation(long? categoryId = null, [CanBeNull] IEnumerable<long> tagIds = null, long? postId = null)
+        {
+            var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+            var tags = await _unitOfWork.TagRepository.GetAllTagIdsAndTitles();
+            var posts = await _unitOfWork.PostRepository.GetAllPostIdsAndTitles();
+
+            return
+            (
+                new SelectList(categories, "Id", "Title", categoryId),
+                new SelectList(tags, "Id", "Title", tagIds),
+                new SelectList(posts, "Id", "Title", postId)
+            );
         }
     }
 }

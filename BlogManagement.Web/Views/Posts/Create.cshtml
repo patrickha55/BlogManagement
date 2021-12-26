@@ -1,0 +1,161 @@
+﻿@model BlogManagement.Common.Models.PostVMs.PostCreateVM
+
+@{
+    ViewData["Title"] = "Create a new Post";
+    Layout = "_Layout";
+}
+
+<section class="ftco-section ftco-no-pt ftco-no-pb">
+    <div class="py-5 px-md-5">
+            <div class="row">
+                <div class="col-md-12 mt-5">
+                    <h2>Create a new Post</h2>
+                    <div id="stepper2" class="bs-stepper">
+                        <!-- Title for each post creation stage -->
+                        <div class="bs-stepper-header">
+                            <div class="step" data-target="#test-nl-1">
+                                <button type="button" class="btn step-trigger">
+                                    <span class="bs-stepper-circle">1</span>
+                                    <span class="bs-stepper-label">Basic Info</span>
+                                </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#test-nl-2">
+                                <div class="btn step-trigger">
+                                    <span class="bs-stepper-circle">2</span>
+                                    <span class="bs-stepper-label">Related Info</span>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#test-nl-3">
+                                <button type="button" class="btn step-trigger">
+                                    <span class="bs-stepper-circle">3</span>
+                                    <span class="bs-stepper-label">Content</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- End title for each post creation stage -->
+                        <div class="bs-stepper-content">
+                            <!-- Create form for post -->
+                            <form asp-action="Create" enctype="multipart/form-data">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <!-- First stage for basic info -->
+                                <div id="test-nl-1" class="content">
+                                    <div class="form-group">
+                                        <label asp-for="Title"></label><span class="text-danger ml-2">*</span>
+                                        <input type="text" class="form-control" placeholder="Enter category title" asp-for="Title">
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="MetaTitle"></label><span class="text-danger ml-2">*</span>
+                                        <input type="text" class="form-control" placeholder="Enter meta title" asp-for="MetaTitle">
+                                        <span asp-validation-for="MetaTitle" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Slug"></label><span class="text-danger ml-2">*</span>
+                                        <input type="text" class="form-control" placeholder="Enter category title" asp-for="Slug">
+                                        <span asp-validation-for="Slug" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label asp-for="Summary"></label>
+                                        <textarea style="resize: vertical;" rows="10" class="form-control" asp-for="Summary"></textarea>
+                                        <span asp-validation-for="Summary" class="text-danger"></span>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="stepper2.next()">Next</button>
+                                </div>
+                                <!-- Second stage for related info -->
+                                <div id="test-nl-2" class="content">
+                                    <div class="form-group">
+                                        <label asp-for="CategoryId"></label><span class="text-danger ml-2">*</span>
+                                        <select asp-for="CategoryId" class="form-control select2-category" style="width: 100%;" asp-items="@ViewBag.Categories">
+                                            <option value="@null"></option>
+                                        </select>
+                                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="ParentId"></label>
+                                        <select asp-for="ParentId" class="form-control select2-post" style="width: 100%;" asp-items="@ViewBag.Posts">
+                                            <option value="@null"></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="TagIds"></label><span class="text-danger ml-2">*</span>
+                                        <select asp-for="TagIds" class="select2bs4 js-states form-control" multiple="multiple" style="width: 100%;" asp-items="ViewBag.Tags">
+                                        </select>
+                                        <span asp-validation-for="TagIds" class="text-danger"></span>
+                                    </div>
+                                    @*<div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="inputGroupFileAddon01">
+                                                @Html.DisplayNameFor(model => model.Image)
+                                            </span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="inputGroupFile01"
+                                                   aria-describedby="inputGroupFileAddon01" accept="image/png, image/jpeg"
+                                                   asp-for="Image">
+                                            <label class="custom-file-label" for="inputGroupFile01">Choose an image</label>
+                                        </div>
+                                    </div>*@
+                                    <div class="form-group mb-2">
+                                        <label asp-for="Image"></label>
+                                        <input type="file" asp-for="Image" id="inputGroupFile01"/>
+                                    </div>
+                                    <button type="button" class="btn btn-primary mr-2" onclick="stepper2.previous()">Previous</button>
+                                    <button type="button" class="btn btn-primary" onclick="stepper2.next()">Next</button>
+                                </div>
+                                <!-- Third stage for post content -->
+                                <div id="test-nl-3" class="content">
+                                    <div class="form-group">
+                                        <textarea asp-for="Content" id="summernote" ></textarea>
+                                        <span asp-validation-for="Content" class="text-danger"></span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-primary mr-2" onclick="stepper2.previous()">Previous</button>
+                                        <button type="submit" class="btn btn-success" onclick="stepper2.next()">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- End create form for post -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+@section Scripts
+{
+<script>
+    var stepper2 = new Stepper(document.querySelector('#stepper2'),
+        {
+            linear: false,
+            animation: true
+        });
+
+    $(function() {
+        $('.select2bs4').select2({
+            placeholder: 'Please select at least one tag',
+            allowClear: true
+        });
+        $('.select2-category').select2({
+            placeholder: 'Please choose a category for this post',
+            allowClear: true
+        });
+        $('.select2-post').select2({
+            placeholder: 'Does this post belongs to another post?',
+            allowClear: true
+        });
+
+        $('#summernote').summernote({
+            placeholder: 'Have fun writing ...'
+        });
+    });
+
+    Dropzone.options.myDropZone = {
+        paramName: "Image"
+    }
+
+    $("#inputGroupFile01").dropzone();
+</script>
+}

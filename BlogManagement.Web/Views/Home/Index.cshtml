@@ -8,65 +8,72 @@
 <section class="ftco-section ftco-no-pt ftco-no-pb">
     @if (Model is null)
     {
-        <partial name="User/_LoaderPartial"/>
+        <partial name="User/_LoaderPartial" />
     }
     else
     {
         <div class="row d-flex">
-        <div class="col-xl-9 py-5 px-md-5">
-            <div class="row pt-md-4">
-                @foreach (var post in Model)
-                {
-                    <div class="col-md-12">
-                        <div class="blog-entry ftco-animate d-md-flex">
-                            <a href="single.html" class="img img-2" style="background-image: url(@post.ImageUrl);"></a>
-                            <div class="text text-2 pl-md-4">
-                                <h3 class="mb-2"><a href="single.html">@post.Title</a></h3>
-                                <div class="meta-wrap">
-                                    <p class="meta">
-                                        <span><i class="icon-calendar mr-2"></i>@post.CreatedAt.ToOrdinalWords()</span>
-                                        <span>
-                                            @if (post.Categories is not null)
-                                            {
-                                                @foreach (var catgeory in post.Categories)
+            <div class="col-xl-9 py-5 px-md-5">
+                <div class="row pt-md-4">
+                    @foreach (var post in Model)
+                    {
+                        <div class="col-md-12">
+                            <div class="blog-entry ftco-animate d-md-flex">
+                                <a asp-controller="Posts" asp-action="Details" asp-route-id="@post.Id"
+                           class="img img-2" style="background-image: url(@post.ImageUrl);"></a>
+                                <div class="text text-2 pl-md-4">
+                                    <h3 class="mb-2"><a asp-controller="Posts" asp-action="Details" asp-route-id="@post.Id">@post.Title</a></h3>
+                                    <div class="meta-wrap">
+                                        <p class="meta">
+                                            <span><i class="icon-calendar mr-2"></i>@post.CreatedAt.ToOrdinalWords()</span>
+                                            <span>
+                                                @if (post.Categories is not null)
                                                 {
-                                                    <a asp-controller="" asp-action="">
-                                                        <i class="icon-folder-o mr-2"></i>@catgeory.Title
-                                                    </a>
+                                                    @foreach (var catgeory in post.Categories)
+                                                    {
+                                                        <a asp-controller="" asp-action="">
+                                                            <i class="icon-folder-o mr-2"></i>@catgeory.Title
+                                                        </a>
+                                                    }
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <i class="icon-folder-o mr-2"></i> <span>There is no category</span>
-                                            }
-                                        </span>
-                                        <span><i class="icon-comment2 mr-2"></i>@post.PostComments.Count() Comment/s</span>
+                                                else
+                                                {
+                                                    <i class="icon-folder-o mr-2"></i> <span>There is no category</span>
+                                                }
+                                            </span>
+                                            <span><i class="icon-comment2 mr-2"></i>@post.PostComments.Count() Comment/s</span>
+                                        </p>
+                                    </div>
+                                    <p class="mb-4">@post.Summary</p>
+                                    <p>
+
+                                        <a asp-controller="Posts" asp-action="Details" asp-route-id="@post.Id"
+                                   class="btn-custom">
+                                            Read More <span class="ion-ios-arrow-forward"></span>
+                                        </a>
                                     </p>
                                 </div>
-                                <p class="mb-4">@post.Summary</p>
-                                <p><a asp-controller="Posts" asp-action="Details" class="btn-custom">Read More <span class="ion-ios-arrow-forward"></span></a></p>
                             </div>
                         </div>
-                    </div>
-                }
-            </div><!-- END-->
+                    }
+                </div><!-- END-->
             <div class="row">
-                <div class="col">
-                    <div class="block-27">
-                        <ul>
-                            <li><a href="#">&lt;</a></li>
-                            <li class="active"><span>1</span></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a href="#">&gt;</a></li>
-                        </ul>
+                    <div class="col">
+                        <div class="block-27">
+                            <ul>
+                                <li><a href="#">&lt;</a></li>
+                                <li class="active"><span>1</span></li>
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">3</a></li>
+                                <li><a href="#">4</a></li>
+                                <li><a href="#">5</a></li>
+                                <li><a href="#">&gt;</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+            <partial name="AsidePartial" />
         </div>
-        <partial name="AsidePartial" />
-    </div>
     }
 </section>
