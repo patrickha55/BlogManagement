@@ -94,7 +94,7 @@ namespace BlogManagement.Web.Controllers
         // GET: PostsController
         public async Task<IActionResult> AdminIndex(int pageNumber = 1, int pageSize = 10)
         {
-            var postVMs = new List<PostVM>();
+            var postVMs = new List<PostForAdminIndexVM>();
 
             try
             {
@@ -103,9 +103,14 @@ namespace BlogManagement.Web.Controllers
                     PageNumber = pageNumber,
                     PageSize = pageSize
                 };
-                var posts = await _unitOfWork.PostRepository.GetAllAsync(null, pagingRequest);
 
-                postVMs = _mapper.Map<List<PostVM>>(posts);
+                var includes = new List<string> { Constants.ChildPosts, Constants.PostRatings };
+
+                var posts =
+                    await _unitOfWork.PostRepository
+                        .GetAllAsync(null, pagingRequest, includes);
+
+                postVMs = _mapper.Map<List<PostForAdminIndexVM>>(posts);
             }
             catch (Exception e)
             {
@@ -124,7 +129,7 @@ namespace BlogManagement.Web.Controllers
                 if (id <= 0 || !await _unitOfWork.PostRepository.IsExistsAsync(id))
                     throw new ArgumentException(Constants.InvalidArgument);
 
-                
+
             }
             catch (ArgumentException e)
             {

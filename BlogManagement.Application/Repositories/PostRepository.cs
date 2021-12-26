@@ -65,7 +65,7 @@ namespace BlogManagement.Application.Repositories
 
                 query = query.Include(p => p.User)
                     .Include(p => p.PostComments)
-                    .Include(p => p.PostUserRatings)
+                    .Include(p => p.PostRatings)
                     .Include(p => p.CategoryPosts)
                     .ThenInclude(cp => cp.Category);
 
@@ -86,7 +86,7 @@ namespace BlogManagement.Application.Repositories
             {
                 query = query.Include(p => p.User)
                     .Include(p => p.PostComments)
-                    .Include(p => p.PostUserRatings)
+                    .Include(p => p.PostRatings)
                     .Include(p => p.CategoryPosts)
                     .ThenInclude(cp => cp.Category);
 

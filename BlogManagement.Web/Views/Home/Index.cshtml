@@ -26,11 +26,18 @@
                                     <p class="meta">
                                         <span><i class="icon-calendar mr-2"></i>@post.CreatedAt.ToOrdinalWords()</span>
                                         <span>
-                                            @foreach (var catgeory in post.Categories)
+                                            @if (post.Categories is not null)
                                             {
-                                                <a asp-controller="" asp-action="">
-                                                    <i class="icon-folder-o mr-2"></i>@catgeory.Title
-                                                </a>
+                                                @foreach (var catgeory in post.Categories)
+                                                {
+                                                    <a asp-controller="" asp-action="">
+                                                        <i class="icon-folder-o mr-2"></i>@catgeory.Title
+                                                    </a>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <i class="icon-folder-o mr-2"></i> <span>There is no category</span>
                                             }
                                         </span>
                                         <span><i class="icon-comment2 mr-2"></i>@post.PostComments.Count() Comment/s</span>

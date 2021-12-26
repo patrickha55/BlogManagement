@@ -1,11 +1,9 @@
 ﻿using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Repositories;
 using BlogManagement.Data;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using BlogManagement.Application.Repositories;
-using BlogManagement.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace BlogManagement.Application
 {
@@ -13,16 +11,21 @@ namespace BlogManagement.Application
     {
         private readonly BlogManagementContext _context;
         private IPostRepository _postsRepository;
-        private readonly ILogger<PostRepository> _logger;
+        private ITagRepository _tagRepository;
+        private readonly ILogger<PostRepository> _postLogger;
+        private readonly ILogger<TagRepository> _tagLogger;
         public UnitOfWork(
-            BlogManagementContext context, 
-            ILogger<PostRepository> logger)
+            BlogManagementContext context,
+            ILogger<PostRepository> postLogger,
+            ILogger<TagRepository> tagLogger)
         {
             _context = context;
-            _logger = logger;
+            _postLogger = postLogger;
+            _tagLogger = tagLogger;
         }
 
-        public IPostRepository PostRepository => _postsRepository ??= new PostRepository(_context, _logger);
+        public IPostRepository PostRepository => _postsRepository ??= new PostRepository(_context, _postLogger);
+        public ITagRepository TagRepository => _tagRepository ??= new TagRepository(_context, _tagLogger);
 
         public void Dispose()
         {

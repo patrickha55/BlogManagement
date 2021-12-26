@@ -11,13 +11,6 @@ namespace BlogManagement.Common.Models.PostVMs
         /// </summary>
         [Display(Name = "Author's ID")]
         public long AuthorId { get; set; }
-#nullable enable
-        /// <summary>
-        /// Id of a parent of a child post.
-        /// </summary>
-        [Display(Name = "Parent post ID")]
-        public long? ParentId { get; set; }
-#nullable disable
 
         public string Title { get; set; }
 

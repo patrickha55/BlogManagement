@@ -3,6 +3,7 @@ using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Common.Models.PostMetaVMs;
+using BlogManagement.Common.Models.PostRatingVMs;
 using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Data.Entities;
@@ -27,6 +28,7 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
 
             CreateMap<Post, PostVM>().ReverseMap();
             CreateMap<Post, PostDetailVM>().ReverseMap();
+            CreateMap<Post, PostForAdminIndexVM>().ReverseMap();
             CreateMap<Post, PostForIndexVM>().ReverseMap();
 
             #endregion
@@ -41,6 +43,12 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region PostMetaVMs mapper configs
 
             CreateMap<PostMeta, PostMetaVM>().ReverseMap();
+
+            #endregion
+
+            #region PostRatingVMs mapper configs
+
+            CreateMap<PostRating, PostRatingVM>().ReverseMap();
 
             #endregion
 

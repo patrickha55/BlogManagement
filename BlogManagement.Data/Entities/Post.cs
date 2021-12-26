@@ -91,7 +91,10 @@ namespace BlogManagement.Data.Entities
         /// </summary>
         public ICollection<PostTag> PostTags { get; set; }
 
-        public IEnumerable<PostRating> PostUserRatings { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<PostRating> PostRatings { get; set; }
 
         #endregion
     }

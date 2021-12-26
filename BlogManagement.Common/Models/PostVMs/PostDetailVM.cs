@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using BlogManagement.Common.Models.PostMetaVMs;
 using BlogManagement.Common.Models.TagVMs;
 
 namespace BlogManagement.Common.Models.PostVMs
