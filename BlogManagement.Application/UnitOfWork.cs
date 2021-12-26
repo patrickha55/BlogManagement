@@ -12,20 +12,37 @@ namespace BlogManagement.Application
         private readonly BlogManagementContext _context;
         private IPostRepository _postsRepository;
         private ITagRepository _tagRepository;
+        private ICategoryRepository _categoryRepository;
+        private IPostMetaRepository _postMetaRepository;
         private readonly ILogger<PostRepository> _postLogger;
         private readonly ILogger<TagRepository> _tagLogger;
+        private readonly ILogger<CategoryRepository> _categoryLogger;
+        private readonly ILogger<PostMetaRepository> _postMetaLogger;
         public UnitOfWork(
             BlogManagementContext context,
+            ILogger<CategoryRepository> categoryLogger, 
             ILogger<PostRepository> postLogger,
+            ILogger<PostMetaRepository> postMetaLogger,
             ILogger<TagRepository> tagLogger)
         {
             _context = context;
             _postLogger = postLogger;
             _tagLogger = tagLogger;
+            _categoryLogger = categoryLogger;
+            _postMetaLogger = postMetaLogger;
         }
 
-        public IPostRepository PostRepository => _postsRepository ??= new PostRepository(_context, _postLogger);
-        public ITagRepository TagRepository => _tagRepository ??= new TagRepository(_context, _tagLogger);
+        public IPostMetaRepository PostMetaRepository =>
+            _postMetaRepository ??= new PostMetaRepository(_context, _postMetaLogger);
+
+        public IPostRepository PostRepository => 
+            _postsRepository ??= new PostRepository(_context, _postLogger);
+
+        public ITagRepository TagRepository => 
+            _tagRepository ??= new TagRepository(_context, _tagLogger);
+
+        public ICategoryRepository CategoryRepository =>
+            _categoryRepository ??= new CategoryRepository(_context, _categoryLogger);
 
         public void Dispose()
         {
@@ -33,6 +50,6 @@ namespace BlogManagement.Application
             GC.SuppressFinalize(this);
         }
 
-        public async Task Save() => await _context.SaveChangesAsync();
+        public async Task SaveAsync() => await _context.SaveChangesAsync();
     }
 }

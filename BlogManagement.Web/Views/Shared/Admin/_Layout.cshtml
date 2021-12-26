@@ -76,11 +76,18 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="~/dist/js/pages/dashboard2.js"></script>
 
+    <!-- Sweet alert -->
+    <script src="~/lib/sweetalert/sweetalert.min.js"></script>
+
     <!-- DataTable -->
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
 
-
+    <script>
+        $(function() {
+            $(".table").DataTable();
+        })
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

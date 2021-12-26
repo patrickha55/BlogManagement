@@ -28,6 +28,7 @@ namespace BlogManagement.Data
         public DbSet<PostComment> PostComments { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<PostRating> PostRatings { get; set; }
 
         /// <summary>
         /// Configure the entities using Fluent API
@@ -51,8 +52,8 @@ namespace BlogManagement.Data
         }
 
         /*
-     * Auto filled the DateCreated and DateModified Dates before saving to the DB.
-     */
+         * Auto filled the DateCreated and DateModified Dates before saving to the DB.
+         */
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             var addedEntities =

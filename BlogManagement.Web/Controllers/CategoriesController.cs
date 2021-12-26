@@ -11,21 +11,23 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BlogManagement.Common.Models.CategoryVMs;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Web.Controllers
 {
     [Authorize(Roles = Roles.Administrator)]
-    [Route("Admins/Tags")]
-    public class TagsController : Controller
+    [Route("Admins/Categories")]
+    public class CategoriesController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger<TagsController> _logger;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public TagsController(
+        public CategoriesController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILogger<TagsController> logger)
+            ILogger<CategoriesController> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -34,7 +36,7 @@ namespace BlogManagement.Web.Controllers
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
-            var tagVMs = new List<TagVM>();
+            var categoryVMs = new List<CategoryVM>();
 
             try
             {
@@ -43,40 +45,47 @@ namespace BlogManagement.Web.Controllers
                     PageNumber = pageNumber,
                     PageSize = pageSize
                 };
-                var tags = await _unitOfWork.TagRepository.GetAllAsync(null, pagingRequest);
 
-                tagVMs = _mapper.Map<List<TagVM>>(tags);
+                var includes = new List<string> {"ParentCategory"};
+
+                var categories =
+                    await _unitOfWork.CategoryRepository
+                        .GetAllAsync(null, pagingRequest, includes);
+
+                categoryVMs = _mapper.Map<List<CategoryVM>>(categories);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Index));
             }
 
-            return View("~/Views/Admins/Tags/Index.cshtml", tagVMs);
+            return View("~/Views/Admins/Categories/Index.cshtml", categoryVMs);
         }
 
         [HttpGet("{id:long}")]
         public IActionResult Details(long id)
         {
-            return View("~/Views/Admins/Tags/Details.cshtml");
+            return View("~/Views/Admins/Categories/Details.cshtml");
         }
 
         [Route("Create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View("~/Views/Admins/Tags/Create.cshtml");
+            ViewBag.CategoryName = await GetCategoriesForSelectListAsync();
+
+            return View("~/Views/Admins/Categories/Create.cshtml");
         }
 
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TagCreateVM request)
+        public async Task<IActionResult> Create(CategoryCreateVM request)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var tag = _mapper.Map<Tag>(request);
-                    var result = await _unitOfWork.TagRepository.CreateAsync(tag);
+                    var category = _mapper.Map<Category>(request);
+                    var result = await _unitOfWork.CategoryRepository.CreateAsync(category);
 
                     if (result)
                     {
@@ -90,24 +99,28 @@ namespace BlogManagement.Web.Controllers
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
             }
 
-            return View("~/Views/Admins/Tags/Create.cshtml", request);
+            ViewBag.CategoryName = await GetCategoriesForSelectListAsync(request.ParentId);
+
+            return View("~/Views/Admins/Categories/Create.cshtml", request);
         }
 
         [Route("Edit/{id:long}")]
         public async Task<IActionResult> Edit(long id)
         {
-            var tagVM = new TagEditVM();
+            var categoryVM = new CategoryEditVM();
             try
             {
                 if (id <= 0)
                     throw new ArgumentException(Constants.InvalidArgument);
 
-                var tag = await _unitOfWork.TagRepository.GetAsync(t => t.Id == id);
+                var category = await _unitOfWork.CategoryRepository.GetAsync(t => t.Id == id);
 
-                if (tag is null)
+                if (category is null)
                     throw new ArgumentException(Constants.InvalidArgument);
 
-                tagVM = _mapper.Map<TagEditVM>(tag);
+                ViewBag.CategoryName = await GetCategoriesForSelectListAsync(category.ParentId);
+
+                categoryVM = _mapper.Map<CategoryEditVM>(category);
             }
             catch (ArgumentException e)
             {
@@ -117,12 +130,12 @@ namespace BlogManagement.Web.Controllers
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Edit));
             }
-            return View("~/Views/Admins/Tags/Edit.cshtml", tagVM);
+            return View("~/Views/Admins/Categories/Edit.cshtml", categoryVM);
         }
 
         [ValidateAntiForgeryToken]
         [HttpPost("Edit/{id:long}")]
-        public async Task<IActionResult> Edit(long id, TagEditVM request)
+        public async Task<IActionResult> Edit(long id, CategoryEditVM request)
         {
             try
             {
@@ -131,7 +144,7 @@ namespace BlogManagement.Web.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var result = await _unitOfWork.TagRepository.UpdateAsync(_mapper.Map<Tag>(request));
+                    var result = await _unitOfWork.CategoryRepository.UpdateAsync(_mapper.Map<Category>(request));
 
                     if (result)
                     {
@@ -142,7 +155,7 @@ namespace BlogManagement.Web.Controllers
             }
             catch (DbUpdateConcurrencyException e)
             {
-                if (!await _unitOfWork.TagRepository.IsExistsAsync(id))
+                if (!await _unitOfWork.CategoryRepository.IsExistsAsync(id))
                     return NotFound();
 
                 _logger.LogInformation(e, "{0} {1}", Constants.ObjectAlreadyExists, nameof(Edit));
@@ -152,7 +165,9 @@ namespace BlogManagement.Web.Controllers
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Edit));
             }
 
-            return View("~/Views/Admins/Tags/Edit.cshtml", request);
+            ViewBag.CategoryName = await GetCategoriesForSelectListAsync(request.ParentId);
+
+            return View("~/Views/Admins/Categories/Edit.cshtml", request);
         }
 
         [HttpPost]
@@ -165,11 +180,11 @@ namespace BlogManagement.Web.Controllers
                 if (id <= 0)
                     return NotFound();
 
-                var tag = await _unitOfWork.TagRepository.GetAsync(t => t.Id == id);
+                var category = await _unitOfWork.CategoryRepository.GetAsync(t => t.Id == id);
 
-                if (tag is null) return NotFound();
+                if (category is null) return NotFound();
 
-                var result = await _unitOfWork.TagRepository.DeleteAsync(tag);
+                var result = await _unitOfWork.CategoryRepository.DeleteAsync(category);
 
                 if (result) await _unitOfWork.SaveAsync();
             }
@@ -179,6 +194,19 @@ namespace BlogManagement.Web.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        private async Task<SelectList> GetCategoriesForSelectListAsync(long? parentId = null)
+        {
+            var categories =
+                await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+
+            return new SelectList(categories, "Id", "Title", parentId);
         }
     }
 }

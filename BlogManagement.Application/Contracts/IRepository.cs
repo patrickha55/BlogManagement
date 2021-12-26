@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using BlogManagement.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models;
 using X.PagedList;
 
 namespace BlogManagement.Application.Contracts

@@ -21,6 +21,8 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
 
             CreateMap<Category, CategoryVM>().ReverseMap();
             CreateMap<Category, CategoryForIndexVM>().ReverseMap();
+            CreateMap<Category, CategoryCreateVM>().ReverseMap();
+            CreateMap<Category, CategoryEditVM>().ReverseMap();
 
             #endregion
 
@@ -43,6 +45,7 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region PostMetaVMs mapper configs
 
             CreateMap<PostMeta, PostMetaVM>().ReverseMap();
+            CreateMap<PostMeta, PostMetaDetailVM>().ReverseMap();
 
             #endregion
 
@@ -55,6 +58,8 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region TagVMs mapper configs
 
             CreateMap<Tag, TagVM>().ReverseMap();
+            CreateMap<Tag, TagCreateVM>().ReverseMap();
+            CreateMap<Tag, TagEditVM>().ReverseMap();
 
             #endregion
 

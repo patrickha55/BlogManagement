@@ -1,4 +1,6 @@
-﻿namespace BlogManagement.Common.Models.TagVMs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BlogManagement.Common.Models.TagVMs
 {
     /// <summary>
     /// 
@@ -6,6 +8,7 @@
     public class TagVM
     {
         public long Id { get; set; }
+        [Required]
         public string Title { get; set; }
     }
 }

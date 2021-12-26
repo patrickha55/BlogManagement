@@ -17,6 +17,6 @@ namespace BlogManagement.Common.Models.PostVMs
         public DateTime? PublishedAt { get; set; }
 #nullable disable
         public IEnumerable<TagVM> Tags { get; set; }
-        public IEnumerable<PostMetaVM> PostMetas { get; set; }
+        public IEnumerable<PostMetaDetailVM> PostMetas { get; set; }
     }
 }

@@ -93,7 +93,7 @@ namespace BlogManagement.Application.Repositories
             {
                 var result = await _context.Set<TEntity>().AddAsync(entity);
 
-                return result.State is not EntityState.Added;
+                return result.State is EntityState.Added;
             }
             catch (Exception e)
             {
@@ -108,7 +108,7 @@ namespace BlogManagement.Application.Repositories
             {
                 var result = _context.Set<TEntity>().Update(entity);
 
-                return await Task.FromResult(result.State is not EntityState.Modified);
+                return await Task.FromResult(result.State is EntityState.Modified);
             }
             catch (Exception e)
             {
@@ -123,7 +123,7 @@ namespace BlogManagement.Application.Repositories
             {
                 var result = _context.Set<TEntity>().Remove(entity);
 
-                return await Task.FromResult(result.State is not EntityState.Deleted);
+                return await Task.FromResult(result.State is EntityState.Deleted);
             }
             catch (Exception e)
             {
