@@ -122,6 +122,7 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
                     user.LastName = Input.LastName;
 
                 user.IsPublic = Input.IsPublic;
+                user.ImageUrl = Constants.DefaultImage;
                 #endregion
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

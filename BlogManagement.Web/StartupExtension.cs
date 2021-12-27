@@ -29,7 +29,7 @@ namespace BlogManagement.Web
             services.AddTransient<IEmailSender>(o =>
                 new EmailSender(
                     "localhost",
-                    25, 
+                    25,
                     "no-reply@andreamooreblogspace.com")
             );
         }

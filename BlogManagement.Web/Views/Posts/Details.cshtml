@@ -3,6 +3,13 @@
 @{
     ViewData["Title"] = Model?.Item1.Title;
 }
+<style type="text/css">
+    .icon-star:hover {
+        color: #00bfff;
+        cursor: pointer;
+        transform: scale(1.1);
+    }
+</style>
 
 <section class="ftco-section ftco-no-pt ftco-no-pb">
     @if (Model.Item1 is null)
@@ -11,9 +18,14 @@
     }
     else
     {
+        @if (TempData.Any())
+        {
+            <partial name="User/Partials/_StatusPartial" model="@TempData["Status"]"/>
+        }
+
         <div class="row d-flex">
             <div class="col-lg-9 px-md-5 py-5">
-                <div class="row pt-md-4">
+                <div class=" pt-md-4">
                     <h1 class="mb-3">@Model.Item1.Title</h1>
 
                     <img style="width: 100%; max-height: 400px;"
@@ -33,24 +45,36 @@
                         </div>
                     </div>
 
-                    <div class="about-author d-flex p-4 bg-light">
+                    <div class="about-author d-flex p-4 bg-light w-75 mx-auto">
                         <div class="bio mr-5">
-                            @*TODO: change image for user*@
-                            <img src="~/images/person_1.jpg" alt="Image placeholder"
+                            <img src="~/@Model.Item1.Author.ImageUrl" alt="Image placeholder"
                              class="img-fluid mb-4" width="150" height="150">
                         </div>
                         <div class="desc">
                             <h3>@Model.Item1.Author.FullName</h3>
-                            <p>...</p>
+                            <p>@Model.Item1.Author.Intro</p>
                         </div>
                     </div>
 
+                    <div class="p-1 my-1 text-center">
+                        <form asp-controller="Posts" asp-action="RateAPost" onsubmit="return sendPostRating(this);">
+                            <h3>Rate this post</h3>
+                            <div class="mb-2">
+                                <i class="icon-star h2" data-index="0"></i>
+                                <i class="icon-star h2" data-index="1"></i>
+                                <i class="icon-star h2" data-index="2"></i>
+                                <i class="icon-star h2" data-index="3"></i>
+                                <i class="icon-star h2" data-index="4"></i>
+                            </div>
+                            <input type="hidden" value="@Model.Item1.Id" name="PostId"/>
+                            <input type="hidden" class="ratingInput" name="Rating"/>
+                            <button type="submit" class="btn-sm rounded shadow-lg btn-success btnRateSubmit">Submit</button>
+                        </form>
+                    </div>
 
-                    <div class="pt-5 mt-5 w-75 mx-auto">
+                    <div class="pt-5 mt-2 w-75 mx-auto">
                         <h3 class="mb-5 font-weight-bold">@Model.Item1.PostComments.Count() Comment/s</h3>
                         <ul class="comment-list">
-                            @*TODO: change image 2 for user*@
-
                             @if (Model.Item1.PostComments.Any())
                             {
                                 foreach (var comment in Model.Item1.PostComments)
@@ -60,7 +84,7 @@
 
                                     <li class="comment">
                                         <div class="vcard bio">
-                                            <img src="~/images/person_1.jpg" alt="@comment.User.FirstName">
+                                            <img src="~/@comment.User.ImageUrl" alt="@comment.User.FirstName">
                                         </div>
                                         <div class="comment-body border-bottom mb-4">
                                             <h3>@comment.User.FullName</h3>
@@ -79,7 +103,7 @@
                                                     {
                                                         <li class="comment">
                                                             <div class="vcard bio">
-                                                                <img src="~/images/person_1.jpg" alt="@childComment.User.FirstName">
+                                                                <img src="~/@childComment.User.ImageUrl" alt="@childComment.User.FirstName">
                                                             </div>
                                                             <div class="comment-body">
                                                                 <h3>@childComment.User.FullName</h3>
@@ -104,18 +128,18 @@
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <h3 class="mb-5">Leave a comment</h3>
-                                <form asp-controller="PostComments" asp-action="Create" method="post" onsubmit="return jQueryAjaxPost(this);"
-                                autocomplete="off" id="formComment" class="p-3 p-md-5 bg-light">
+                                <form asp-controller="PostComments" asp-action="Create" method="post" onsubmit="return sendPostComment(this);"
+                              autocomplete="off" id="formComment" class="p-3 p-md-5 bg-light">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <input type="hidden" asp-for="Item2.PostId" value="@Model.Item1.Id" />
+                                    <input type="hidden" name="PostId" value="@Model.Item1.Id" />
                                     <div class="form-group">
                                         <label asp-for="Item2.Title"></label><span class="text-danger ml-2">*</span>
-                                        <input type="text" class="form-control" placeholder="Enter title" asp-for="Item2.Title">
+                                        <input type="text" class="form-control" placeholder="Enter title" name="Title">
                                         <span asp-validation-for="Item2.Title" class="text-danger"></span>
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="Item2.Content"></label><span class="text-danger ml-2">*</span>
-                                        <textarea type="text" class="form-control" placeholder="Enter content" asp-for="Item2.Content"></textarea>
+                                        <textarea type="text" class="form-control" placeholder="Enter content" name="Content"></textarea>
                                         <span asp-validation-for="Item2.Content" class="text-danger"></span>
                                     </div>
                                     <div class="form-group">
@@ -146,41 +170,111 @@
 
 @section Scripts
 {
-<script>
-    $(document).ready(function() {
-        $("#content").html(stringToHTML(
-            $('#content').data('content')
-        ));
-    });
+    <script>
+        var ratedIndex = -1;
 
+        $(document).ready(function() {
+            $("#content").html(stringToHTML(
+                $('#content').data('content')
+            ));
 
-    var stringToHTML = function(str) {
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(str, 'text/html');
-        return doc.body;
-    };
+            resetStarColors();
 
-    jQueryAjaxPost = form => {
-        try {
-            $.ajax({
-                type: 'POST',
-                url: form.action,
-                data: new FormData(form),
-                contentType: false,
-                processData: false,
-                success: function(res) {
-                    alert("Added.");
-                },
-                error: function(res) {
-                    alert(res.statusMessage);
+            if (localStorage.getItem('RatedIndex') != null) {
+                setStars(parseInt(localStorage.getItem('RatedIndex')));
+            }
+
+            $('.icon-star').on('click', function() {
+                ratedIndex = parseInt($(this).data('index'));
+                localStorage.RatedIndex = ratedIndex + 1;
+            });
+
+            $('.icon-star').mouseover(function() {
+                resetStarColors();
+
+                var currentIndex = parseInt($(this).data('index'));
+
+                setStars(currentIndex);
+
+                console.log(currentIndex);
+            });
+
+            $('.icon-star').mouseleave(function() {
+                resetStarColors();
+
+                if (ratedIndex !== -1) {
+                    setStars(ratedIndex);
                 }
             });
-        } catch (e) {
-            console.log(e);
+
+            $('.btnRateSubmit').click(function() {
+                if (localStorage.getItem('RatedIndex') != null) {
+                    $('.ratingInput').val(localStorage.getItem('RatedIndex'));
+                }
+            });
+        });
+
+
+        var stringToHTML = function(str) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(str, 'text/html');
+            return doc.body;
+        };
+
+        sendPostComment = form => {
+            try {
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        alert("Added.");
+                    },
+                    error: function(res) {
+                        alert(res);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
+            // prevent default form submit event
+            return false;
         }
 
-        // prevent default form submit event
-        return false;
-    }
-</script>
+        sendPostRating = form => {
+            try {
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        alert(@TempData["Status"]);
+                    },
+                    error: function(res) {
+                        alert('Failed');
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
+            // prevent default form submit event
+            return false;
+        }
+
+        function setStars(max){
+            for (var i = 0; i <= max; i++) {
+                $('.icon-star:eq(' + i + ')').css('color', '#00bfff');
+            }
+        }
+
+        function resetStarColors() {
+            $('.icon-star').css('color', 'black');
+        }
+    </script>
 }

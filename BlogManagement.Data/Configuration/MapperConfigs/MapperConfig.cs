@@ -21,7 +21,6 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
 
             CreateMap<User, AuthorVM>().ReverseMap();
             CreateMap<User, AuthorDetailVM>().ReverseMap();
-            CreateMap<User, AuthorForIndexVM>().ReverseMap();
             CreateMap<User, AuthorAdminIndexVM>().ReverseMap();
 
             #endregion

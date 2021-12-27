@@ -1,20 +1,28 @@
-﻿<div class="col-lg-3 sidebar ftco-animate bg-light pt-5">
+﻿@inject BlogManagement.Application.Contracts.IUnitOfWork _unitOfWork
+
+@{
+    var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+    var tags = await _unitOfWork.TagRepository.GetAllTagIdsAndTitles();
+}
+
+<div class="col-xl-3 sidebar ftco-animate bg-light pt-5">
     <div class="sidebar-box pt-md-4">
-        <form action="#" class="search-form">
+        <form asp-controller="Home" asp-action="SearchAnything"
+              onkeydown="return searchAnything(this);" class="search-form">
             <div class="form-group">
                 <span class="icon icon-search"></span>
-                <input type="text" class="form-control" placeholder="Type a keyword and hit enter">
+                <input name="keyword" class="form-control"
+                       placeholder="Type a keyword and hit enter">
             </div>
         </form>
     </div>
     <div class="sidebar-box ftco-animate">
         <h3 class="sidebar-heading">Categories</h3>
         <ul class="categories">
-            <li><a href="#">Fashion <span>(6)</span></a></li>
-            <li><a href="#">Technology <span>(8)</span></a></li>
-            <li><a href="#">Travel <span>(2)</span></a></li>
-            <li><a href="#">Food <span>(2)</span></a></li>
-            <li><a href="#">Photography <span>(7)</span></a></li>
+            @foreach (var category in categories)
+            {
+                <li><a asp-controller="Posts">@category.Title</a></li>
+            }
         </ul>
     </div>
 
@@ -58,14 +66,10 @@
     <div class="sidebar-box ftco-animate">
         <h3 class="sidebar-heading">Tag Cloud</h3>
         <ul class="tagcloud">
-            <a href="#" class="tag-cloud-link">animals</a>
-            <a href="#" class="tag-cloud-link">human</a>
-            <a href="#" class="tag-cloud-link">people</a>
-            <a href="#" class="tag-cloud-link">cat</a>
-            <a href="#" class="tag-cloud-link">dog</a>
-            <a href="#" class="tag-cloud-link">nature</a>
-            <a href="#" class="tag-cloud-link">leaves</a>
-            <a href="#" class="tag-cloud-link">food</a>
+            @foreach (var tag in tags)
+            {
+                <a asp-controller="Posts" class="tag-cloud-link">@tag.Title</a>
+            }
         </ul>
     </div>
 
@@ -99,3 +103,32 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut.</p>
     </div>
 </div><!-- END COL -->
+
+@section Scripts
+{
+    <script>
+        $(function() {
+
+        })
+
+        var searchAnything = form => {
+            try {
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        alert("Searched.");
+                    },
+                    error: function(res) {
+                        alert(res.statusMessage);
+                    }
+                });
+            } catch (e) {
+
+            } 
+        }
+    </script>
+}

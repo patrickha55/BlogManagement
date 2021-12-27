@@ -59,7 +59,7 @@ namespace BlogManagement.Web.Controllers
         // POST: PostCommentsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(PostCommentCreateVM request)
+        public async Task<ActionResult> Create([Bind("PostId, Title, Content")] PostCommentCreateVM request)
         {
             try
             {
@@ -70,6 +70,7 @@ namespace BlogManagement.Web.Controllers
                     var postComment = _mapper.Map<PostComment>(request);
 
                     postComment.UserId = user.Id;
+                    postComment.CreatedAt = DateTime.Now;
 
                     var result = await _unitOfWork.PostCommentRepository.CreateAsync(postComment);
 

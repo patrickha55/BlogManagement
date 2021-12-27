@@ -13,6 +13,7 @@ using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Common.Models.PostVMs;
+using Exception = System.Exception;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -24,7 +25,7 @@ namespace BlogManagement.Web.Controllers
 
         public HomeController(
             ILogger<HomeController> logger,
-            IMapper mapper, 
+            IMapper mapper,
             IUnitOfWork unitOfWork)
         {
             _logger = logger;
@@ -98,6 +99,32 @@ namespace BlogManagement.Web.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SearchAnything(string keyword)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(keyword))
+                    throw new ArgumentNullException(Constants.InvalidArgument);
+
+                var users = await _unitOfWork.UserRepository.FindUsersAsync(u => (
+                    u.UserName.Contains(keyword) || u.FirstName.Contains(keyword) || u.Email.Contains(keyword)) && u.IsPublic == true );
+
+                if (users == null)
+                    return RedirectToAction("Index");
+
+                ViewData["Users"] = _mapper.Map<IEnumerable<AuthorVM>>(users);
+                return View("~/Views/Home/SearchAnything.cshtml");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(SearchAnything));
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

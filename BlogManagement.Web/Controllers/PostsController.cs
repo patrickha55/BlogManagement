@@ -5,7 +5,11 @@ using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
+using BlogManagement.Common.Models.PostMetaVMs;
+using BlogManagement.Common.Models.PostRatingVMs;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
@@ -18,9 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models.PostMetaVMs;
-using BlogManagement.Common.Models.TagVMs;
-using BlogManagement.Data;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -32,6 +33,7 @@ namespace BlogManagement.Web.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IRepository<CategoryPost> _categoryPostRepository;
         private readonly IRepository<PostTag> _postTagRepository;
+        private readonly IRepository<PostRating> _postRatingRepository;
         private readonly BlogManagementContext _context;
 
         public PostsController(
@@ -40,7 +42,9 @@ namespace BlogManagement.Web.Controllers
             ILogger<PostsController> logger,
             UserManager<User> userManager,
             IRepository<CategoryPost> categoryPostRepository,
-            IRepository<PostTag> postTagRepository, BlogManagementContext context)
+            IRepository<PostTag> postTagRepository,
+            BlogManagementContext context,
+            IRepository<PostRating> postRatingRepository)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -49,6 +53,7 @@ namespace BlogManagement.Web.Controllers
             _categoryPostRepository = categoryPostRepository;
             _postTagRepository = postTagRepository;
             _context = context;
+            _postRatingRepository = postRatingRepository;
         }
 
 
@@ -77,7 +82,7 @@ namespace BlogManagement.Web.Controllers
                     foreach (var post in posts)
                     {
                         if (postVM.AuthorId == post.AuthorId)
-                            postVM.Author = _mapper.Map<AuthorForIndexVM>(post.User);
+                            postVM.Author = _mapper.Map<AuthorVM>(post.User);
 
                         if (postVM.Id == post.PostComments
                                 .Select(p => p.PostId)
@@ -231,14 +236,14 @@ namespace BlogManagement.Web.Controllers
 
                     var post = _mapper.Map<Post>(request);
 
-                    var createPostResult = 
+                    var createPostResult =
                         await _unitOfWork.PostRepository
                         .CreatePostAsync(post, request.Image);
 
                     if (createPostResult)
                         await _unitOfWork.SaveAsync();
 
-                    var createCategoryResult = 
+                    var createCategoryResult =
                         await _categoryPostRepository
                             .CreateAsync(
                                 new CategoryPost
@@ -326,6 +331,41 @@ namespace BlogManagement.Web.Controllers
         public IActionResult AdminIndex()
         {
             throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RateAPost([Bind("PostId, Rating")] PostRatingVM request)
+        {
+            try
+            {
+                if (request is null || request.Rating is < 0 or > 5)
+                    throw new ArgumentException(Constants.InvalidArgument);
+
+                var postRating = _mapper.Map<PostRating>(request);
+
+                var user = await _userManager.FindByNameAsync(User.Identity?.Name);
+
+                postRating.UserId = user.Id;
+
+                var result = await _postRatingRepository.CreateAsync(postRating);
+
+                if (result)
+                {
+                    TempData["Status"] = "Post rated successfully!";
+                    await _unitOfWork.SaveAsync();
+                    return RedirectToAction(nameof(Details), new {id = request.PostId});
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(RateAPost));
+            }
+
+            TempData["Status"] = "Post rated fail!";
+
+            return RedirectToAction(nameof(Details), new { id = request.PostId });
         }
 
         /// <summary>

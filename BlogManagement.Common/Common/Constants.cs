@@ -15,5 +15,6 @@
         public const string ParentPost = "ParentPost";
         public const string ChildPosts = "ChildPosts";
         public const string PostRatings = "PostRatings";
+        public const string DefaultImage = "images/default-user.png";
     }
 }
