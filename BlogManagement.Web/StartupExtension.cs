@@ -1,5 +1,6 @@
 ﻿using BlogManagement.Application;
 using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Repositories;
 using BlogManagement.Application.Services;
 using BlogManagement.Data.Configuration.MapperConfigs;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -19,6 +20,7 @@ namespace BlogManagement.Web
         /// <param name="services"></param>
         public static void RegisterServices(this IServiceCollection services)
         {
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddAutoMapper(typeof(MapperConfig));
@@ -27,7 +29,7 @@ namespace BlogManagement.Web
             services.AddTransient<IEmailSender>(o =>
                 new EmailSender(
                     "localhost",
-                    25, 
+                    25,
                     "no-reply@andreamooreblogspace.com")
             );
         }

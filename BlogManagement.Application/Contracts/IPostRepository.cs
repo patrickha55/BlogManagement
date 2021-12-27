@@ -1,9 +1,10 @@
-﻿using System;
+﻿using BlogManagement.Common.Models;
 using BlogManagement.Data.Entities;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models;
 using X.PagedList;
 
 namespace BlogManagement.Application.Contracts
@@ -26,5 +27,23 @@ namespace BlogManagement.Application.Contracts
         /// <param name="request"></param>
         /// <returns></returns>
         Task<IPagedList<Post>> GetPostsForIndexAsync(Expression<Func<Post, bool>> expression, PagingRequest request);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        Task<Post> GetPostDetailsAsync(long postId);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<Post>> GetAllPostIdsAndTitles();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="post"></param>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
+        Task<bool> CreatePostAsync(Post post, IFormFile formFile);
     }
 }

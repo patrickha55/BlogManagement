@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BlogManagement.Common.Models.PostVMs.PostVM>
+﻿@model IEnumerable<BlogManagement.Common.Models.PostVMs.PostForAdminIndexVM>
 
 @{
     ViewData["Title"] = "Post overview";
@@ -43,13 +43,10 @@
                                 @Html.DisplayNameFor(model => model.Title)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.MetaTitle)
+                                @Html.DisplayNameFor(model => model.ChildPosts)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Slug)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Summary)
+                                @Html.DisplayNameFor(model => model.PostRatings)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Published)
@@ -80,22 +77,19 @@
                                     @Html.DisplayFor(modelItem => item.Title)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.MetaTitle)
+                                    @item.ChildPosts.Count()
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Slug)
+                                    @(item.PostRatings.Any() ? item.PostRatings.Average(p => p.Rating) : "N/A")
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Summary)
+                                    @(item.Published == 0 ? "Unpublished" : "Published")
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Published)
+                                    @(item.PublishedAt is null ? "N/A" : item.PublishedAt.Value.ToShortDateString())
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.PublishedAt)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                                    @item.CreatedAt.ToShortDateString()
                                 </td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

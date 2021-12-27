@@ -31,6 +31,11 @@ namespace BlogManagement.Data.Entities
 
         public string Profile { get; set; }
 
+        public string ImageUrl { get; set; }
+
+        public bool IsPublic { get; set; }
+
+        public bool IsEnabled { get; set; }
         #endregion
 
         #region Navigational properties

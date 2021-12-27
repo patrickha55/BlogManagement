@@ -1,0 +1,111 @@
+﻿@model List<BlogManagement.Common.Models.AuthorVMs.AuthorAdminIndexVM>
+
+@{
+    ViewData["Title"] = "Manage User";
+    Layout = "Admin/_Layout";
+}
+
+@if (Model is null)
+{
+    @await Html.PartialAsync("User/Partials/_InfoPartial", "tag")
+}
+else
+{
+    <h1>Users Overview</h1>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><a asp-controller="Admins" asp-action="CreateUser" class="btn" style="background-color: #00bfff;">Create New</a></h3>
+                </div>
+                <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].Id)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].FullName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].LastLogin)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].RegisteredAt)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].IsPublic)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="UserDetails" asp-route-id="@item.Id">
+                                            @Html.DisplayFor(modelItem => item.Id)
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.FullName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LastLogin)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RegisteredAt)
+                                    </td>
+                                    <td>
+                                        @(item.IsPublic ? "Public" : "Private")
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Admins" asp-action="EditUser" asp-route-id="@item.Id">Edit</a> |
+                                        <a asp-controller="Admins" asp-action="UserDetails" asp-route-id="@item.Id">Details</a> |
+                                        <button type="button" class="btn-sm btn-danger deleteBtn" data-id="@item.Id">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+        </div>
+            <!-- /.card -->
+    </div>
+    </div>
+
+    <form id="deleteForm" asp-action="Delete">
+        <input type="hidden" id="tagId" name="id" />
+    </form>
+
+    @section Scripts
+    {
+    <script>
+        $(function() {
+            $('.deleteBtn').click(function(e) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure you want to delete this record?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                }).then((confirm) => {
+                    if (confirm) {
+                        var btn = $(this);
+                        var id = btn.data("id");
+                        $('#tagId').val(id);
+                        $('#deleteForm').submit();
+                    }
+                });
+            });
+        });
+    </script>
+    }
+}

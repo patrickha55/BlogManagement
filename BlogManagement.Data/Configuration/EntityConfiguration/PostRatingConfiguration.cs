@@ -1,7 +1,6 @@
 ﻿using BlogManagement.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 
 namespace BlogManagement.Data.Configuration.EntityConfiguration
 {
@@ -10,17 +9,18 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
         public void Configure(EntityTypeBuilder<PostRating> builder)
         {
             builder.ToTable("PostRatings");
-
-            builder.HasKey(pu => new
+            builder.HasKey(pu => pu.Id);
+            builder.HasAlternateKey(pu => new
             {
                 pu.PostId,
                 pu.UserId
             });
 
+            builder.Property(pu => pu.Id).UseIdentityColumn();
             builder.Property(pu => pu.Rating).HasColumnType("float").IsRequired();
 
             builder.HasOne(pu => pu.Post)
-                .WithMany(p => p.PostUserRatings)
+                .WithMany(p => p.PostRatings)
                 .HasForeignKey(pu => pu.PostId)
                 .OnDelete(DeleteBehavior.NoAction);
 

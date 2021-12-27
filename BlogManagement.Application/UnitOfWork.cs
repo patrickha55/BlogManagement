@@ -1,11 +1,9 @@
 ﻿using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Repositories;
 using BlogManagement.Data;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using BlogManagement.Application.Repositories;
-using BlogManagement.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace BlogManagement.Application
 {
@@ -13,16 +11,53 @@ namespace BlogManagement.Application
     {
         private readonly BlogManagementContext _context;
         private IPostRepository _postsRepository;
-        private readonly ILogger<PostRepository> _logger;
+        private ITagRepository _tagRepository;
+        private ICategoryRepository _categoryRepository;
+        private IPostMetaRepository _postMetaRepository;
+        private IPostCommentRepository _postCommentRepository;
+        private IUserRepository _userRepository;
+        private readonly ILogger<PostRepository> _postLogger;
+        private readonly ILogger<TagRepository> _tagLogger;
+        private readonly ILogger<CategoryRepository> _categoryLogger;
+        private readonly ILogger<PostMetaRepository> _postMetaLogger;
+        private readonly ILogger<PostCommentRepository> _postCommentLogger;
+        private readonly ILogger<UserRepository> _userRepositoryLogger;
+
         public UnitOfWork(
-            BlogManagementContext context, 
-            ILogger<PostRepository> logger)
+            BlogManagementContext context,
+            ILogger<CategoryRepository> categoryLogger, 
+            ILogger<PostRepository> postLogger,
+            ILogger<PostMetaRepository> postMetaLogger,
+            ILogger<TagRepository> tagLogger, 
+            ILogger<PostCommentRepository> postCommentLogger, 
+            ILogger<UserRepository> userRepositoryLogger)
         {
             _context = context;
-            _logger = logger;
+            _postLogger = postLogger;
+            _tagLogger = tagLogger;
+            _postCommentLogger = postCommentLogger;
+            _userRepositoryLogger = userRepositoryLogger;
+            _categoryLogger = categoryLogger;
+            _postMetaLogger = postMetaLogger;
         }
 
-        public IPostRepository PostRepository => _postsRepository ??= new PostRepository(_context, _logger);
+        public IPostCommentRepository PostCommentRepository =>
+            _postCommentRepository ??= new PostCommentRepository(_context, _postCommentLogger);
+
+        public IPostMetaRepository PostMetaRepository =>
+            _postMetaRepository ??= new PostMetaRepository(_context, _postMetaLogger);
+
+        public IPostRepository PostRepository => 
+            _postsRepository ??= new PostRepository(_context, _postLogger);
+
+        public ITagRepository TagRepository => 
+            _tagRepository ??= new TagRepository(_context, _tagLogger);
+
+        public IUserRepository UserRepository =>
+            _userRepository ??= new UserRepository(_context, _userRepositoryLogger);
+
+        public ICategoryRepository CategoryRepository =>
+            _categoryRepository ??= new CategoryRepository(_context, _categoryLogger);
 
         public void Dispose()
         {
@@ -30,6 +65,6 @@ namespace BlogManagement.Application
             GC.SuppressFinalize(this);
         }
 
-        public async Task Save() => await _context.SaveChangesAsync();
+        public async Task SaveAsync() => await _context.SaveChangesAsync();
     }
 }

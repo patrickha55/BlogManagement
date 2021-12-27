@@ -1,0 +1,91 @@
+﻿@model List<BlogManagement.Common.Models.TagVMs.TagVM>
+
+@{
+    ViewData["Title"] = "Tags";
+    Layout = "Admin/_Layout";
+}
+
+@if (Model is null)
+{
+    @await Html.PartialAsync("User/Partials/_InfoPartial", "tag")
+}
+else
+{
+    <h1>Tags Overview</h1>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><a asp-controller="Tags" asp-action="Create" class="btn" style="background-color: #00bfff;">Create New</a></h3>
+                </div>
+                <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].Id)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].Title)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Id)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Title)
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Tags" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                        <a asp-controller="Tags" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                        <button type="button" class="btn-sm btn-danger deleteBtn" data-id="@item.Id">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+        </div>
+            <!-- /.card -->
+    </div>
+    </div>
+
+    <form id="deleteForm" asp-action="Delete">
+        <input type="hidden" id="tagId" name="id" />
+    </form>
+
+    @section Scripts
+    {
+    <script>
+        $(function() {
+            $('.deleteBtn').click(function(e) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure you want to delete this record?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                }).then((confirm) => {
+                    if (confirm) {
+                        var btn = $(this);
+                        var id = btn.data("id");
+                        $('#tagId').val(id);
+                        $('#deleteForm').submit();
+                    }
+                });
+            });
+        });
+    </script>
+    }
+}

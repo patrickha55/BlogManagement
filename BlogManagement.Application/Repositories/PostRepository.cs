@@ -1,37 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using BlogManagement.Application.Contracts;
+﻿using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using X.PagedList;
 
 namespace BlogManagement.Application.Repositories
 {
     public class PostRepository : Repository<Post>, IPostRepository
     {
-        private readonly BlogManagementContext _context;
-        private readonly ILogger<PostRepository> _logger;
-
         public PostRepository(
             BlogManagementContext context,
             ILogger<PostRepository> logger) : base(context, logger)
         {
-            _context = context;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<IEnumerable<Post>> GetByAuthorId(long authorId)
         {
             try
             {
-                var posts = await _context.Posts
+                var posts = await Context.Posts
                     .Where(p => p.AuthorId == authorId)
                     .ToListAsync();
 
@@ -42,19 +41,19 @@ namespace BlogManagement.Application.Repositories
             }
             catch (ArgumentException e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetByAuthorId));
+                Logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetByAuthorId));
                 throw;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetByAuthorId));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetByAuthorId));
                 throw;
             }
         }
 
         public async Task<IPagedList<Post>> GetPostsForIndexAsync(Expression<Func<Post, bool>> expression, PagingRequest request)
         {
-            IQueryable<Post> query = _context.Posts;
+            IQueryable<Post> query = Context.Posts;
 
             try
             {
@@ -65,7 +64,7 @@ namespace BlogManagement.Application.Repositories
 
                 query = query.Include(p => p.User)
                     .Include(p => p.PostComments)
-                    .Include(p => p.PostUserRatings)
+                    .Include(p => p.PostRatings)
                     .Include(p => p.CategoryPosts)
                     .ThenInclude(cp => cp.Category);
 
@@ -73,9 +72,111 @@ namespace BlogManagement.Application.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
                 throw;
             }
+        }
+
+        public async Task<Post> GetPostDetailsAsync(long postId)
+        {
+            IQueryable<Post> query = Context.Posts;
+
+            try
+            {
+                if (!await IsExistsAsync(postId))
+                    throw new ArgumentException(Constants.InvalidArgument);
+
+                query = query.Include(p => p.User)
+                    .Include(p => p.PostComments)
+                    .ThenInclude(pc => pc.User)
+                    .Include(p => p.PostComments)
+                    .ThenInclude(pc => pc.ChildPostComments)
+                    .ThenInclude(cp => cp.User)
+                    .Include(p => p.PostRatings)
+                    .Include(p => p.PostMetas)
+                    .Include(p => p.CategoryPosts)
+                    .ThenInclude(cp => cp.Category)
+                    .Include(p => p.PostTags)
+                    .ThenInclude(pt => pt.Tag);
+
+                return await query.SingleOrDefaultAsync(p => p.Id == postId);
+            }
+            catch (ArgumentException e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetPostDetailsAsync));
+                throw;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostDetailsAsync));
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Post>> GetAllPostIdsAndTitles()
+        {
+            try
+            {
+                return await Context.Posts
+                    .AsNoTracking()
+                    .Select(p => new Post
+                    {
+                        Id = p.Id,
+                        Title = p.Title
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllPostIdsAndTitles));
+                throw;
+            }
+        }
+
+        public async Task<bool> CreatePostAsync(Post post, [CanBeNull] IFormFile formFile)
+        {
+            try
+            {
+                if (formFile is not null)
+                {
+                    post.ImageUrl = $@"images/{await HandleImageUpload(formFile)}";
+                }
+
+                var result = await Context.Posts.AddAsync(post);
+
+                if (result.State is EntityState.Added)
+                    return true;
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.InvalidDirectory, nameof(CreatePostAsync));
+                throw;
+            }
+            catch (FileNotFoundException e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.FileNotFound, nameof(CreatePostAsync));
+                throw;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostAsync));
+                throw;
+            }
+
+            return false;
+        }
+
+        private static async Task<string> HandleImageUpload(IFormFile formFile)
+        {
+            var uploadTime = DateTime.Now.ToString("MMddyyyHHmmss");
+            var imgName = uploadTime + "_" + Path.GetFileName(formFile.FileName);
+            var imgPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", imgName);
+
+            await using var fileStream = new FileStream(imgPath, FileMode.Create);
+
+            await formFile.CopyToAsync(fileStream);
+
+            return imgName;
         }
     }
 }

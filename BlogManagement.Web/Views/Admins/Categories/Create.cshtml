@@ -1,0 +1,45 @@
+﻿@model BlogManagement.Common.Models.CategoryVMs.CategoryCreateVM
+
+@{
+    ViewData["Title"] = "Create a Category";
+    Layout = "Admin/_Layout";
+}
+
+<h1>Create a New Category</h1>
+
+<form asp-controller="Categories" asp-action="Create" method="post">
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Title"></label><span class="text-red ml-2">*</span>
+            <input type="text" class="form-control" placeholder="Enter category title" asp-for="Title">
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ParentId"></label>
+            <select asp-for="ParentId" class="form-control select2" style="width: 100%;" asp-items="@ViewBag.CategoryName">
+                <option selected="selected" value="@null">Does this category belongs to another category?</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="MetaTitle"></label><span class="text-red ml-2">*</span>
+            <input type="text" class="form-control" placeholder="Enter meta title" asp-for="MetaTitle">
+            <span asp-validation-for="MetaTitle" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Slug"></label><span class="text-red ml-2">*</span>
+            <input type="text" class="form-control" placeholder="Enter slug" asp-for="Slug">
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Content"></label>
+            <textarea asp-for="Content"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+    </div>
+    <!-- /.card-body -->
+
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>

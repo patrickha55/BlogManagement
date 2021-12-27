@@ -128,6 +128,9 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(75)
                         .HasColumnType("varchar(75)");
 
+                    b.Property<int>("TotalViewed")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -148,37 +151,40 @@ namespace BlogManagement.Data.Migrations
                             Id = 1L,
                             AuthorId = 1L,
                             CreatedAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "images\\which-shape-is-the-best.jpg",
+                            ImageUrl = "images/which-shape-is-the-best.jpg",
                             MetaTitle = "Best Shape",
                             Published = (byte)0,
                             Slug = "what-shape-is-the-best",
                             Summary = "Find out which shape is the best shape.",
-                            Title = "What shape is the best?"
+                            Title = "What shape is the best?",
+                            TotalViewed = 0
                         },
                         new
                         {
                             Id = 2L,
                             AuthorId = 2L,
                             CreatedAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "images\\best-way-to-board-a-plane.jpg",
+                            ImageUrl = "images/best-way-to-board-a-plane.jpg",
                             MetaTitle = "Best Way To Board A Plane",
                             Published = (byte)0,
                             Slug = "best-way-to-board-a-plane",
                             Summary = "Find out which way is the best way to board a plane.",
-                            Title = "What is the best way to board a plane?"
+                            Title = "What is the best way to board a plane?",
+                            TotalViewed = 0
                         },
                         new
                         {
                             Id = 3L,
                             AuthorId = 3L,
                             CreatedAt = new DateTime(2021, 12, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImageUrl = "images\\hexagon-bee-hive.jpg",
+                            ImageUrl = "images/hexagon-bee-hive.jpg",
                             MetaTitle = "Hexagon",
                             ParentId = 1L,
                             Published = (byte)0,
                             Slug = "hexagon",
                             Summary = "Let's talk about hexagon",
-                            Title = "The hexagon"
+                            Title = "The hexagon",
+                            TotalViewed = 0
                         });
                 });
 
@@ -257,16 +263,24 @@ namespace BlogManagement.Data.Migrations
 
             modelBuilder.Entity("BlogManagement.Data.Entities.PostRating", b =>
                 {
-                    b.Property<long>("PostId")
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<long>("UserId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<long>("PostId")
                         .HasColumnType("bigint");
 
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
-                    b.HasKey("PostId", "UserId");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("PostId", "UserId");
 
                     b.HasIndex("UserId");
 
@@ -348,9 +362,20 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Intro")
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLogin")
                         .HasColumnType("datetime2");
@@ -420,17 +445,19 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b013c30e-4d87-4061-8b3f-009be07e44c6",
+                            ConcurrencyStamp = "79454a04-75d5-4eed-894a-f70c19fa69a8",
                             Email = "phatHa@mail.com",
                             EmailConfirmed = true,
                             FirstName = "Phat",
                             Intro = "Intro 1",
+                            IsEnabled = false,
+                            IsPublic = false,
                             LastName = "Ha",
                             LockoutEnabled = false,
                             MiddleName = "Tan",
                             NormalizedEmail = "PHATHA@MAIL.COM",
                             NormalizedUserName = "PHATHA",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEE0taJnUbOfePvbCzGApXWEj20Ms1cezQbmFMuugIOPwCX+E8ZACXdQAWLmGuP0zQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOZhGkE6IXus9R6H9zjr8/HSID+td8i69AJQ1JNJt3xYCQzmHsopyCMkUCGDi7tZog==",
                             PhoneNumber = "09812374657384",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an author's profile information",
@@ -443,16 +470,18 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 2L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b2a02f2b-77e8-40bc-a921-9a2fb50f5574",
+                            ConcurrencyStamp = "cf5d5f6d-a3d2-4c79-bc75-1789e214347e",
                             Email = "mrWick@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             Intro = "Intro 2",
+                            IsEnabled = false,
+                            IsPublic = false,
                             LastName = "Wick",
                             LockoutEnabled = false,
                             NormalizedEmail = "MRWICK@MAIL.COM",
                             NormalizedUserName = "MRWICK",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDDYl0KqWJdEwJ+48NPAm1b1vsWZSHDXlqRH8kOCpFIP6Hc1J21pJrX6XhRt25WEDw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEfuSuSQnwNl9/mlBF6QlyoFq4fwGYIdKCYgNGZIn4oh849mXzglHawTIzhBz7Iz4A==",
                             PhoneNumber = "91283874571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an website admin",
@@ -465,16 +494,18 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 3L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "42194467-edc4-4870-a176-1b0f41e6441c",
+                            ConcurrencyStamp = "72e74455-b3f0-4ff3-9f19-e3b460f6737d",
                             Email = "AnonymousUser@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             Intro = "Intro 3",
+                            IsEnabled = false,
+                            IsPublic = false,
                             LastName = "Cena",
                             LockoutEnabled = false,
                             NormalizedEmail = "ANONYMOUSUSER@MAIL.COM",
                             NormalizedUserName = "ANONYMOUSUSER",
-                            PasswordHash = "AQAAAAEAACcQAAAAEF7iucmOKpAzmpCWsk7MrI5r3TazTG54Iq6qeH8w/7twyl0mRFoXpa5t4IQNdMw6Og==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELJICHb++PprOCyKGnxMgIW771tLPuPusqvFRDsTAKo70uquwWdTEz0HPjmauXBb0Q==",
                             PhoneNumber = "12654274571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is a normal user",
@@ -518,21 +549,21 @@ namespace BlogManagement.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            ConcurrencyStamp = "ece65d0a-549e-4636-ae2d-2e60656f685f",
+                            ConcurrencyStamp = "8aa60b89-0330-47e3-90a7-244a40d53f17",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
                             Id = 2L,
-                            ConcurrencyStamp = "ea3fb1d6-c59c-4f06-a1aa-ef3b0666a8ed",
+                            ConcurrencyStamp = "e3d17be2-6c54-406c-972c-dd536e016ddc",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
                             Id = 3L,
-                            ConcurrencyStamp = "a876258d-d58d-4618-a7ef-670352b18ae5",
+                            ConcurrencyStamp = "0c9c702e-aec8-48ea-a826-1fefd022f50f",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -677,13 +708,13 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Category", "Category")
                         .WithMany("CategoryPosts")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
                         .WithMany("CategoryPosts")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -749,7 +780,7 @@ namespace BlogManagement.Data.Migrations
             modelBuilder.Entity("BlogManagement.Data.Entities.PostRating", b =>
                 {
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
-                        .WithMany("PostUserRatings")
+                        .WithMany("PostRatings")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -770,13 +801,13 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
                         .WithMany("PostTags")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BlogManagement.Data.Entities.Tag", "Tag")
                         .WithMany("PostTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Post");
@@ -852,9 +883,9 @@ namespace BlogManagement.Data.Migrations
 
                     b.Navigation("PostMetas");
 
-                    b.Navigation("PostTags");
+                    b.Navigation("PostRatings");
 
-                    b.Navigation("PostUserRatings");
+                    b.Navigation("PostTags");
                 });
 
             modelBuilder.Entity("BlogManagement.Data.Entities.PostComment", b =>

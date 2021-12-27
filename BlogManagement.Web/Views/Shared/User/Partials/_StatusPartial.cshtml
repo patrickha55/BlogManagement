@@ -1,0 +1,20 @@
+﻿@model string
+
+@if (Model is not null)
+{
+    <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h5>
+            <i class="icon fas fa-check"></i>
+            @if (Model.Contains("success"))
+            {
+                <span>Success!</span>
+            }
+            @if (Model.Contains("fail"))
+            {
+                <span>Error!</span>
+            }
+        </h5>
+        @Model
+    </div>
+}

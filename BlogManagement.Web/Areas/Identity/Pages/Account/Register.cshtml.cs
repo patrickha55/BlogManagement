@@ -73,6 +73,10 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Register be become an Author in this blog?")]
             public bool IsAuthor { get; set; }
+            
+            [Required]
+            [Display(Name = "Do you want your account to be public?")]
+            public bool IsPublic { get; set; }
 
             [Required]
             [EmailAddress]
@@ -117,6 +121,8 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
                 if(!string.IsNullOrWhiteSpace(Input.LastName))
                     user.LastName = Input.LastName;
 
+                user.IsPublic = Input.IsPublic;
+                user.ImageUrl = Constants.DefaultImage;
                 #endregion
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

@@ -1,0 +1,280 @@
+﻿@model Tuple<BlogManagement.Common.Models.PostVMs.PostDetailVM, BlogManagement.Common.Models.PostCommentVMs.PostCommentCreateVM>
+
+@{
+    ViewData["Title"] = Model?.Item1.Title;
+}
+<style type="text/css">
+    .icon-star:hover {
+        color: #00bfff;
+        cursor: pointer;
+        transform: scale(1.1);
+    }
+</style>
+
+<section class="ftco-section ftco-no-pt ftco-no-pb">
+    @if (Model.Item1 is null)
+    {
+        <partial name="User/_LoaderPartial" />
+    }
+    else
+    {
+        @if (TempData.Any())
+        {
+            <partial name="User/Partials/_StatusPartial" model="@TempData["Status"]"/>
+        }
+
+        <div class="row d-flex">
+            <div class="col-lg-9 px-md-5 py-5">
+                <div class=" pt-md-4">
+                    <h1 class="mb-3">@Model.Item1.Title</h1>
+
+                    <img style="width: 100%; max-height: 400px;"
+                     src="~/@Model.Item1.ImageUrl" alt="@Model.Item1.Title" class="img-fluid">
+
+                    <div id="content" data-content="@Model.Item1.Content" class="my-4 w-100 lh-1"></div>
+
+                    <div class="tag-widget post-tag-container mb-5 mt-5">
+                        <div class="tagcloud">
+                            @if (Model.Item1.Tags.Any())
+                            {
+                                foreach (var tag in Model.Item1.Tags)
+                                {
+                                    <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id">@tag.Title</a>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div class="about-author d-flex p-4 bg-light w-75 mx-auto">
+                        <div class="bio mr-5">
+                            <img src="~/@Model.Item1.Author.ImageUrl" alt="Image placeholder"
+                             class="img-fluid mb-4" width="150" height="150">
+                        </div>
+                        <div class="desc">
+                            <h3>@Model.Item1.Author.FullName</h3>
+                            <p>@Model.Item1.Author.Intro</p>
+                        </div>
+                    </div>
+
+                    <div class="p-1 my-1 text-center">
+                        <form asp-controller="Posts" asp-action="RateAPost" onsubmit="return sendPostRating(this);">
+                            <h3>Rate this post</h3>
+                            <div class="mb-2">
+                                <i class="icon-star h2" data-index="0"></i>
+                                <i class="icon-star h2" data-index="1"></i>
+                                <i class="icon-star h2" data-index="2"></i>
+                                <i class="icon-star h2" data-index="3"></i>
+                                <i class="icon-star h2" data-index="4"></i>
+                            </div>
+                            <input type="hidden" value="@Model.Item1.Id" name="PostId"/>
+                            <input type="hidden" class="ratingInput" name="Rating"/>
+                            <button type="submit" class="btn-sm rounded shadow-lg btn-success btnRateSubmit">Submit</button>
+                        </form>
+                    </div>
+
+                    <div class="pt-5 mt-2 w-75 mx-auto">
+                        <h3 class="mb-5 font-weight-bold">@Model.Item1.PostComments.Count() Comment/s</h3>
+                        <ul class="comment-list">
+                            @if (Model.Item1.PostComments.Any())
+                            {
+                                foreach (var comment in Model.Item1.PostComments)
+                                {
+                                    @if (comment.ParentId is not null)
+                                        continue;
+
+                                    <li class="comment">
+                                        <div class="vcard bio">
+                                            <img src="~/@comment.User.ImageUrl" alt="@comment.User.FirstName">
+                                        </div>
+                                        <div class="comment-body border-bottom mb-4">
+                                            <h3>@comment.User.FullName</h3>
+                                            <div class="meta">@comment.CreatedAt.Humanize()</div>
+                                            <h6>@comment.Title</h6>
+                                            <p>@comment.Content</p>
+                                            <p><a href="#" class="reply">Reply</a></p>
+                                        </div>
+
+                                        @if (comment.ChildPostComments.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var childComment in comment.ChildPostComments)
+                                                {
+                                                    @if (childComment.ParentId == comment.Id)
+                                                    {
+                                                        <li class="comment">
+                                                            <div class="vcard bio">
+                                                                <img src="~/@childComment.User.ImageUrl" alt="@childComment.User.FirstName">
+                                                            </div>
+                                                            <div class="comment-body">
+                                                                <h3>@childComment.User.FullName</h3>
+                                                                <div class="meta">@childComment.CreatedAt.Humanize()</div>
+                                                                <h6>@childComment.Title</h6>
+                                                                <p>@childComment.Content</p>
+                                                                <p><a href="#" class="reply">Reply</a></p>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                            }
+
+                        </ul>
+                        <!-- END comment-list -->
+
+                    <div class="comment-form-wrap pt-5">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <h3 class="mb-5">Leave a comment</h3>
+                                <form asp-controller="PostComments" asp-action="Create" method="post" onsubmit="return sendPostComment(this);"
+                              autocomplete="off" id="formComment" class="p-3 p-md-5 bg-light">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" name="PostId" value="@Model.Item1.Id" />
+                                    <div class="form-group">
+                                        <label asp-for="Item2.Title"></label><span class="text-danger ml-2">*</span>
+                                        <input type="text" class="form-control" placeholder="Enter title" name="Title">
+                                        <span asp-validation-for="Item2.Title" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Item2.Content"></label><span class="text-danger ml-2">*</span>
+                                        <textarea type="text" class="form-control" placeholder="Enter content" name="Content"></textarea>
+                                        <span asp-validation-for="Item2.Content" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary" id="formSubmit">Submit</button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <h3>Register an account or login to leave a comment</h3>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">Register</a>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">Login</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div><!-- END-->
+        </div>
+            @await Html.PartialAsync("User/Partials/AsidePartialForDetailPage")
+        </div>
+    }
+</section>
+
+@section Scripts
+{
+    <script>
+        var ratedIndex = -1;
+
+        $(document).ready(function() {
+            $("#content").html(stringToHTML(
+                $('#content').data('content')
+            ));
+
+            resetStarColors();
+
+            if (localStorage.getItem('RatedIndex') != null) {
+                setStars(parseInt(localStorage.getItem('RatedIndex')));
+            }
+
+            $('.icon-star').on('click', function() {
+                ratedIndex = parseInt($(this).data('index'));
+                localStorage.RatedIndex = ratedIndex + 1;
+            });
+
+            $('.icon-star').mouseover(function() {
+                resetStarColors();
+
+                var currentIndex = parseInt($(this).data('index'));
+
+                setStars(currentIndex);
+
+                console.log(currentIndex);
+            });
+
+            $('.icon-star').mouseleave(function() {
+                resetStarColors();
+
+                if (ratedIndex !== -1) {
+                    setStars(ratedIndex);
+                }
+            });
+
+            $('.btnRateSubmit').click(function() {
+                if (localStorage.getItem('RatedIndex') != null) {
+                    $('.ratingInput').val(localStorage.getItem('RatedIndex'));
+                }
+            });
+        });
+
+
+        var stringToHTML = function(str) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(str, 'text/html');
+            return doc.body;
+        };
+
+        sendPostComment = form => {
+            try {
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        alert("Added.");
+                    },
+                    error: function(res) {
+                        alert(res);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
+            // prevent default form submit event
+            return false;
+        }
+
+        sendPostRating = form => {
+            try {
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        alert(@TempData["Status"]);
+                    },
+                    error: function(res) {
+                        alert('Failed');
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
+            // prevent default form submit event
+            return false;
+        }
+
+        function setStars(max){
+            for (var i = 0; i <= max; i++) {
+                $('.icon-star:eq(' + i + ')').css('color', '#00bfff');
+            }
+        }
+
+        function resetStarColors() {
+            $('.icon-star').css('color', 'black');
+        }
+    </script>
+}
