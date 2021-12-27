@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BlogManagement.Common.Models.PostMetaVMs;
 using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Data;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -31,6 +32,7 @@ namespace BlogManagement.Web.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IRepository<CategoryPost> _categoryPostRepository;
         private readonly IRepository<PostTag> _postTagRepository;
+        private readonly BlogManagementContext _context;
 
         public PostsController(
             IUnitOfWork unitOfWork,
@@ -38,7 +40,7 @@ namespace BlogManagement.Web.Controllers
             ILogger<PostsController> logger,
             UserManager<User> userManager,
             IRepository<CategoryPost> categoryPostRepository,
-            IRepository<PostTag> postTagRepository)
+            IRepository<PostTag> postTagRepository, BlogManagementContext context)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -46,6 +48,7 @@ namespace BlogManagement.Web.Controllers
             _userManager = userManager;
             _categoryPostRepository = categoryPostRepository;
             _postTagRepository = postTagRepository;
+            _context = context;
         }
 
 
@@ -63,7 +66,7 @@ namespace BlogManagement.Web.Controllers
                     PageSize = pageSize
                 };
 
-                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                var user = await _userManager.FindByNameAsync(User.Identity?.Name);
 
                 var posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(p => p.AuthorId == user.Id, pagingRequest);
 
@@ -80,7 +83,7 @@ namespace BlogManagement.Web.Controllers
                                 .Select(p => p.PostId)
                                 .FirstOrDefault())
                         {
-                            postVM.PostComments = _mapper.Map<List<PostCommentForIndexVM>>(post.PostComments);
+                            postVM.PostComments = _mapper.Map<List<PostCommentVM>>(post.PostComments);
                         }
 
                         if (postVM.Id == post.CategoryPosts
@@ -131,9 +134,8 @@ namespace BlogManagement.Web.Controllers
         }
 
         // GET: PostsController/Details/5
-        public async Task<ActionResult> Details(int id)
+        public async Task<ActionResult> Details(long id)
         {
-            var postVM = new PostDetailVM();
             try
             {
                 if (id <= 0 || !await _unitOfWork.PostRepository.IsExistsAsync(id))
@@ -171,7 +173,22 @@ namespace BlogManagement.Web.Controllers
                     }
                 }
 
-                return View(postDetailVM);
+                /*if (post.PostComments.Any())
+                {
+                    for (int i = 0; i < post.PostComments.Count(); i++)
+                    {
+                        postDetailVM.PostComments.Add(_mapper.Map<PostCommentDetailVM>(post.PostComments[i]));
+                        postDetailVM.PostComments[i].User = _mapper.Map<AuthorDetailVM>(post.PostComments[i].User);
+                    }
+                }*/
+
+                post.TotalViewed += 1;
+                var result = await _unitOfWork.PostRepository.UpdateAsync(post);
+
+                if (result)
+                    await _unitOfWork.SaveAsync();
+
+                return View(new Tuple<PostDetailVM, PostCommentCreateVM>(postDetailVM, new PostCommentCreateVM()));
             }
             catch (ArgumentException e)
             {
@@ -208,7 +225,7 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                    var user = await _userManager.FindByNameAsync(User.Identity?.Name);
 
                     request.AuthorId = user.Id;
 
@@ -261,16 +278,16 @@ namespace BlogManagement.Web.Controllers
         }
 
         // GET: PostsController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(long id)
         {
-            return View();
+            throw new NotImplementedException();
         }
 
         // POST: PostsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(long id, IFormCollection collection)
         {
             try
             {
@@ -278,22 +295,22 @@ namespace BlogManagement.Web.Controllers
             }
             catch
             {
-                return View();
+                throw new NotImplementedException();
             }
         }
 
         // GET: PostsController/Delete/5
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
-            return View();
+            throw new NotImplementedException();
         }
 
         // POST: PostsController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(long id, IFormCollection collection)
         {
             try
             {
@@ -301,12 +318,12 @@ namespace BlogManagement.Web.Controllers
             }
             catch
             {
-                return View();
+                throw new NotImplementedException();
             }
         }
 
 
-        public IActionResult AuthorIndex()
+        public IActionResult AdminIndex()
         {
             throw new NotImplementedException();
         }

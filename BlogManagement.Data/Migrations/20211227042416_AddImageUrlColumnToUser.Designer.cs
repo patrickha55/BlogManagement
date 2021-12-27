@@ -4,6 +4,7 @@ using BlogManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogManagement.Data.Migrations
 {
     [DbContext(typeof(BlogManagementContext))]
-    partial class BlogManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20211227042416_AddImageUrlColumnToUser")]
+    partial class AddImageUrlColumnToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,9 +130,6 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(75)
                         .HasColumnType("varchar(75)");
 
-                    b.Property<int>("TotalViewed")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -156,8 +155,7 @@ namespace BlogManagement.Data.Migrations
                             Published = (byte)0,
                             Slug = "what-shape-is-the-best",
                             Summary = "Find out which shape is the best shape.",
-                            Title = "What shape is the best?",
-                            TotalViewed = 0
+                            Title = "What shape is the best?"
                         },
                         new
                         {
@@ -169,8 +167,7 @@ namespace BlogManagement.Data.Migrations
                             Published = (byte)0,
                             Slug = "best-way-to-board-a-plane",
                             Summary = "Find out which way is the best way to board a plane.",
-                            Title = "What is the best way to board a plane?",
-                            TotalViewed = 0
+                            Title = "What is the best way to board a plane?"
                         },
                         new
                         {
@@ -183,8 +180,7 @@ namespace BlogManagement.Data.Migrations
                             Published = (byte)0,
                             Slug = "hexagon",
                             Summary = "Let's talk about hexagon",
-                            Title = "The hexagon",
-                            TotalViewed = 0
+                            Title = "The hexagon"
                         });
                 });
 
@@ -369,14 +365,6 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
-                    b.Property<bool>("IsEnabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("LastLogin")
                         .HasColumnType("datetime2");
 
@@ -445,19 +433,17 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "79454a04-75d5-4eed-894a-f70c19fa69a8",
+                            ConcurrencyStamp = "a8c0c6dc-89fa-4a19-b3f1-d1f4b4f30bbf",
                             Email = "phatHa@mail.com",
                             EmailConfirmed = true,
                             FirstName = "Phat",
                             Intro = "Intro 1",
-                            IsEnabled = false,
-                            IsPublic = false,
                             LastName = "Ha",
                             LockoutEnabled = false,
                             MiddleName = "Tan",
                             NormalizedEmail = "PHATHA@MAIL.COM",
                             NormalizedUserName = "PHATHA",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOZhGkE6IXus9R6H9zjr8/HSID+td8i69AJQ1JNJt3xYCQzmHsopyCMkUCGDi7tZog==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKvpUU8AFBd/z5awefJ8riHsdl8AFT5dNRvcPJnRHLSfBG0p5NHI/MvKWMug3rikiQ==",
                             PhoneNumber = "09812374657384",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an author's profile information",
@@ -470,18 +456,16 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 2L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cf5d5f6d-a3d2-4c79-bc75-1789e214347e",
+                            ConcurrencyStamp = "3f62dbfb-7e18-466e-8055-8613b1f3deff",
                             Email = "mrWick@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             Intro = "Intro 2",
-                            IsEnabled = false,
-                            IsPublic = false,
                             LastName = "Wick",
                             LockoutEnabled = false,
                             NormalizedEmail = "MRWICK@MAIL.COM",
                             NormalizedUserName = "MRWICK",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEfuSuSQnwNl9/mlBF6QlyoFq4fwGYIdKCYgNGZIn4oh849mXzglHawTIzhBz7Iz4A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHrTFNJhRg8QpsSL2/amwz00XhFYCZvfWebOL61GNRzLROMAUb5Qa0LSi7ddq+BcZw==",
                             PhoneNumber = "91283874571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an website admin",
@@ -494,18 +478,16 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 3L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "72e74455-b3f0-4ff3-9f19-e3b460f6737d",
+                            ConcurrencyStamp = "7a0771ee-2d90-4be5-87bd-d217d7c071d1",
                             Email = "AnonymousUser@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             Intro = "Intro 3",
-                            IsEnabled = false,
-                            IsPublic = false,
                             LastName = "Cena",
                             LockoutEnabled = false,
                             NormalizedEmail = "ANONYMOUSUSER@MAIL.COM",
                             NormalizedUserName = "ANONYMOUSUSER",
-                            PasswordHash = "AQAAAAEAACcQAAAAELJICHb++PprOCyKGnxMgIW771tLPuPusqvFRDsTAKo70uquwWdTEz0HPjmauXBb0Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB6rYFnMRNYyhMTVhTAw/6cfiX58/s0lG/oiFiE9IzM5kcJSY03C3XpNL2COC3IOvg==",
                             PhoneNumber = "12654274571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is a normal user",
@@ -549,21 +531,21 @@ namespace BlogManagement.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            ConcurrencyStamp = "8aa60b89-0330-47e3-90a7-244a40d53f17",
+                            ConcurrencyStamp = "1cd6592e-66d8-4b09-8f66-c6f9908060d2",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
                             Id = 2L,
-                            ConcurrencyStamp = "e3d17be2-6c54-406c-972c-dd536e016ddc",
+                            ConcurrencyStamp = "64ac304d-3eac-4249-a8dd-b770c8d0c30b",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
                             Id = 3L,
-                            ConcurrencyStamp = "0c9c702e-aec8-48ea-a826-1fefd022f50f",
+                            ConcurrencyStamp = "9e527318-fba6-4406-a472-e19a1b82f7d8",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -708,13 +690,13 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Category", "Category")
                         .WithMany("CategoryPosts")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
                         .WithMany("CategoryPosts")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -801,13 +783,13 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
                         .WithMany("PostTags")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BlogManagement.Data.Entities.Tag", "Tag")
                         .WithMany("PostTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Post");

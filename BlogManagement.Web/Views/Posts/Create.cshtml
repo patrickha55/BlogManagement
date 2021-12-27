@@ -48,13 +48,19 @@
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="MetaTitle"></label><span class="text-danger ml-2">*</span>
-                                        <input type="text" class="form-control" placeholder="Enter meta title" asp-for="MetaTitle">
+                                        <input type="text" class="form-control" placeholder="Enter meta title" asp-for="MetaTitle" aria-describedby="metaTitleHelpBlock">
                                         <span asp-validation-for="MetaTitle" class="text-danger"></span>
+                                        <small id="metaTitleHelpBlock" class="form-text text-muted">
+                                            Meta title must be uppercase and must be at least 2 characters.
+                                        </small>
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="Slug"></label><span class="text-danger ml-2">*</span>
-                                        <input type="text" class="form-control" placeholder="Enter category title" asp-for="Slug">
+                                        <input type="text" class="form-control" placeholder="Enter category title" asp-for="Slug" aria-describedby="slugHelpBlock">
                                         <span asp-validation-for="Slug" class="text-danger"></span>
+                                        <small id="slugHelpBlock" class="form-text text-muted">
+                                            (Ex: slug-name-for-url)
+                                        </small>
                                     </div>
                                     <div class="form-group mb-2">
                                         <label asp-for="Summary"></label>
@@ -97,9 +103,12 @@
                                             <label class="custom-file-label" for="inputGroupFile01">Choose an image</label>
                                         </div>
                                     </div>*@
-                                    <div class="form-group mb-2">
-                                        <label asp-for="Image"></label>
-                                        <input type="file" asp-for="Image" id="inputGroupFile01"/>
+                                    <div class="form-group mb-2 dropzone" id="my-dropzone">
+                                        <div class="dz-default dz-message"></div>
+                                        <div class="fallback">
+                                            <label asp-for="Image"></label>
+                                            <input type="file" asp-for="Image" />
+                                        </div>
                                     </div>
                                     <button type="button" class="btn btn-primary mr-2" onclick="stepper2.previous()">Previous</button>
                                     <button type="button" class="btn btn-primary" onclick="stepper2.next()">Next</button>
@@ -152,10 +161,16 @@
         });
     });
 
+    Dropzone.autoDiscover = false;
     Dropzone.options.myDropZone = {
         paramName: "Image"
     }
 
-    $("#inputGroupFile01").dropzone();
+    $("#my-dropzone").dropzone({
+        url: "/Account/Create",
+        autoProcessQueue: false,
+        uploadMultiple: false,
+        acceptedFiles: "image/*",
+    });
 </script>
 }

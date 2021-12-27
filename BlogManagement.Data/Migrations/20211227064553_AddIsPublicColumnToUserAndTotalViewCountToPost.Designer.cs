@@ -4,6 +4,7 @@ using BlogManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogManagement.Data.Migrations
 {
     [DbContext(typeof(BlogManagementContext))]
-    partial class BlogManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20211227064553_AddIsPublicColumnToUserAndTotalViewCountToPost")]
+    partial class AddIsPublicColumnToUserAndTotalViewCountToPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,11 +371,6 @@ namespace BlogManagement.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
-                    b.Property<bool>("IsEnabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit");
 
@@ -445,19 +442,18 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "79454a04-75d5-4eed-894a-f70c19fa69a8",
+                            ConcurrencyStamp = "3c384a78-a6a4-4981-a2c4-017bee5d8e82",
                             Email = "phatHa@mail.com",
                             EmailConfirmed = true,
                             FirstName = "Phat",
                             Intro = "Intro 1",
-                            IsEnabled = false,
                             IsPublic = false,
                             LastName = "Ha",
                             LockoutEnabled = false,
                             MiddleName = "Tan",
                             NormalizedEmail = "PHATHA@MAIL.COM",
                             NormalizedUserName = "PHATHA",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOZhGkE6IXus9R6H9zjr8/HSID+td8i69AJQ1JNJt3xYCQzmHsopyCMkUCGDi7tZog==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMnFzJhhaCHib0ewFJCqfYEPYHiYQRehHa0rdCt9PfpsZPEQ++xWGHKyMYPpzveE0w==",
                             PhoneNumber = "09812374657384",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an author's profile information",
@@ -470,18 +466,17 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 2L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cf5d5f6d-a3d2-4c79-bc75-1789e214347e",
+                            ConcurrencyStamp = "23c147c4-72b1-4ec2-ab00-79dda06d8763",
                             Email = "mrWick@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             Intro = "Intro 2",
-                            IsEnabled = false,
                             IsPublic = false,
                             LastName = "Wick",
                             LockoutEnabled = false,
                             NormalizedEmail = "MRWICK@MAIL.COM",
                             NormalizedUserName = "MRWICK",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEfuSuSQnwNl9/mlBF6QlyoFq4fwGYIdKCYgNGZIn4oh849mXzglHawTIzhBz7Iz4A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPtr68WNRWwZw4FWtyif0INOXzHoFVbYu/moTE9xSkNzhIJDyCTtyKB9rsr60NCWUA==",
                             PhoneNumber = "91283874571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is an website admin",
@@ -494,18 +489,17 @@ namespace BlogManagement.Data.Migrations
                         {
                             Id = 3L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "72e74455-b3f0-4ff3-9f19-e3b460f6737d",
+                            ConcurrencyStamp = "3fe0eceb-115d-41a1-8067-46c75b877904",
                             Email = "AnonymousUser@mail.com",
                             EmailConfirmed = true,
                             FirstName = "John",
                             Intro = "Intro 3",
-                            IsEnabled = false,
                             IsPublic = false,
                             LastName = "Cena",
                             LockoutEnabled = false,
                             NormalizedEmail = "ANONYMOUSUSER@MAIL.COM",
                             NormalizedUserName = "ANONYMOUSUSER",
-                            PasswordHash = "AQAAAAEAACcQAAAAELJICHb++PprOCyKGnxMgIW771tLPuPusqvFRDsTAKo70uquwWdTEz0HPjmauXBb0Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKPpIuE1jkn+hcatLB8tsIxIOCFdoe4Mlchi+2zWdCDHCr2/e54HP0TfyyVUQxSgtg==",
                             PhoneNumber = "12654274571",
                             PhoneNumberConfirmed = false,
                             Profile = "This is a normal user",
@@ -549,21 +543,21 @@ namespace BlogManagement.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            ConcurrencyStamp = "8aa60b89-0330-47e3-90a7-244a40d53f17",
+                            ConcurrencyStamp = "ba5c36fd-a684-4b1a-81f3-5eefd6367a39",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
                             Id = 2L,
-                            ConcurrencyStamp = "e3d17be2-6c54-406c-972c-dd536e016ddc",
+                            ConcurrencyStamp = "239d43d4-6042-4205-96bb-751377ad1655",
                             Name = "Author",
                             NormalizedName = "AUTHOR"
                         },
                         new
                         {
                             Id = 3L,
-                            ConcurrencyStamp = "0c9c702e-aec8-48ea-a826-1fefd022f50f",
+                            ConcurrencyStamp = "85b1a843-bd1c-434d-91aa-320215f6f573",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -708,13 +702,13 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Category", "Category")
                         .WithMany("CategoryPosts")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
                         .WithMany("CategoryPosts")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -801,13 +795,13 @@ namespace BlogManagement.Data.Migrations
                     b.HasOne("BlogManagement.Data.Entities.Post", "Post")
                         .WithMany("PostTags")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BlogManagement.Data.Entities.Tag", "Tag")
                         .WithMany("PostTags")
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Post");

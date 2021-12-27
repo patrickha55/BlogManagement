@@ -1,9 +1,8 @@
-﻿using System;
-using BlogManagement.Common.Extensions;
-using BlogManagement.Data.Entities;
+﻿using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 
 namespace BlogManagement.Data.Configuration.EntityConfiguration
 {
@@ -31,9 +30,9 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
             builder.Property(u => u.LastName).HasColumnType("varchar").HasMaxLength(50);
             builder.Property(u => u.PhoneNumber).HasColumnType("varchar").HasMaxLength(15);
             builder.Property(u => u.Intro).HasColumnType("varchar").HasMaxLength(2000);
+            builder.Property(u => u.IsEnabled).HasDefaultValue(true);
 
             #endregion
-
 
             #region Seed data
 

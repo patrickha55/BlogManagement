@@ -1,34 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using BlogManagement.Application.Contracts;
+﻿using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using X.PagedList;
 
 namespace BlogManagement.Application.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private readonly BlogManagementContext _context;
-        private readonly ILogger<Repository<TEntity>> _logger;
+        protected BlogManagementContext Context;
+        protected ILogger<Repository<TEntity>> Logger;
 
         public Repository(
             BlogManagementContext context,
             ILogger<Repository<TEntity>> logger)
         {
-            _context = context;
-            _logger = logger;
+            Context = context;
+            Logger = logger;
         }
 
         public async Task<IPagedList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression, PagingRequest request, List<string> includes = null)
         {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
+            IQueryable<TEntity> query = Context.Set<TEntity>();
 
             try
             {
@@ -49,14 +49,14 @@ namespace BlogManagement.Application.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllAsync));
                 throw;
             }
         }
 
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression, List<string> includes = null)
         {
-            IQueryable<TEntity> query = _context.Set<TEntity>();
+            IQueryable<TEntity> query = Context.Set<TEntity>();
 
             try
             {
@@ -77,12 +77,12 @@ namespace BlogManagement.Application.Repositories
             }
             catch (ArgumentException e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetAsync));
+                Logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetAsync));
                 throw;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAsync));
                 throw;
             }
         }
@@ -91,13 +91,13 @@ namespace BlogManagement.Application.Repositories
         {
             try
             {
-                var result = await _context.Set<TEntity>().AddAsync(entity);
+                var result = await Context.Set<TEntity>().AddAsync(entity);
 
                 return result.State is EntityState.Added;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateAsync));
                 throw;
             }
         }
@@ -106,13 +106,13 @@ namespace BlogManagement.Application.Repositories
         {
             try
             {
-                var result = _context.Set<TEntity>().Update(entity);
+                var result = Context.Set<TEntity>().Update(entity);
 
                 return await Task.FromResult(result.State is EntityState.Modified);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdateAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdateAsync));
                 throw;
             }
         }
@@ -121,13 +121,13 @@ namespace BlogManagement.Application.Repositories
         {
             try
             {
-                var result = _context.Set<TEntity>().Remove(entity);
+                var result = Context.Set<TEntity>().Remove(entity);
 
                 return await Task.FromResult(result.State is EntityState.Deleted);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeleteAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeleteAsync));
                 throw;
             }
         }
@@ -136,12 +136,12 @@ namespace BlogManagement.Application.Repositories
         {
             try
             {
-                var model = await _context.Set<TEntity>().FindAsync(id);
+                var model = await Context.Set<TEntity>().FindAsync(id);
                 return model is not null;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(IsExistsAsync));
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(IsExistsAsync));
                 throw;
             }
         }

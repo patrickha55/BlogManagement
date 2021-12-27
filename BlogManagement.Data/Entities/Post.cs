@@ -52,6 +52,7 @@ namespace BlogManagement.Data.Entities
 
         public string ImageUrl { get; set; }
 
+        public int TotalViewed { get; set; }
         #endregion
 
         #region Navigational Properties
@@ -69,27 +70,27 @@ namespace BlogManagement.Data.Entities
         /// <summary>
         /// A post can have many child posts.
         /// </summary>
-        public ICollection<Post> ChildPosts { get; set; }
+        public List<Post> ChildPosts { get; set; }
         
         /// <summary>
         /// A post can have many post metas.
         /// </summary>
-        public ICollection<PostMeta> PostMetas { get; set; }
+        public List<PostMeta> PostMetas { get; set; }
 
         /// <summary>
         /// A post can have many comments.
         /// </summary>
-        public ICollection<PostComment> PostComments { get; set; }
+        public List<PostComment> PostComments { get; set; }
 
         /// <summary>
         /// A post belongs to one or many Categories.
         /// </summary>
-        public ICollection<CategoryPost> CategoryPosts { get; set; }
+        public List<CategoryPost> CategoryPosts { get; set; }
 
         /// <summary>
         /// A post can have many Tags.
         /// </summary>
-        public ICollection<PostTag> PostTags { get; set; }
+        public List<PostTag> PostTags { get; set; }
 
         /// <summary>
         /// 

@@ -59,7 +59,7 @@ namespace BlogManagement.Web.Controllers
                                 .Select(p => p.PostId)
                                 .FirstOrDefault())
                         {
-                            postVM.PostComments = _mapper.Map<List<PostCommentForIndexVM>>(post.PostComments);
+                            postVM.PostComments = _mapper.Map<List<PostCommentVM>>(post.PostComments);
                         }
 
                         if (postVM.Id == post.CategoryPosts

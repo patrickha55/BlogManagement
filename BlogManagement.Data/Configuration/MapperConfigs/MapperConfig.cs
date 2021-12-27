@@ -17,6 +17,14 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
     {
         public MapperConfig()
         {
+            #region AuthorVM mapper configs
+
+            CreateMap<User, AuthorVM>().ReverseMap();
+            CreateMap<User, AuthorDetailVM>().ReverseMap();
+            CreateMap<User, AuthorForIndexVM>().ReverseMap();
+            CreateMap<User, AuthorAdminIndexVM>().ReverseMap();
+
+            #endregion
             #region CategoryVM mapper configs
 
             CreateMap<Category, CategoryVM>().ReverseMap();
@@ -39,7 +47,9 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region PostCommentVMs mapper configs
 
             CreateMap<PostComment, PostCommentVM>().ReverseMap();
-            CreateMap<PostComment, PostCommentForIndexVM>().ReverseMap();
+            CreateMap<PostComment, PostCommentCreateVM>().ReverseMap();
+            CreateMap<PostComment, PostCommentDetailVM>().ReverseMap();
+            CreateMap<PostComment, PostCommentEditVM>().ReverseMap();
 
             #endregion
 
@@ -64,12 +74,6 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
 
             #endregion
 
-            #region AuthorVM mapper configs
-
-            CreateMap<User, AuthorVM>().ReverseMap();
-            CreateMap<User, AuthorForIndexVM>().ReverseMap();
-
-            #endregion
         }
     }
 }

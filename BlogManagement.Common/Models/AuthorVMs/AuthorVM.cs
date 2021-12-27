@@ -11,5 +11,6 @@ namespace BlogManagement.Common.Models.AuthorVMs
         public string LastName { get; set; }
         [Display(Name = "Author's Full Name")]
         public string FullName => $"{FirstName} {LastName}";
+        public string ImageUrl { get; set; }
     }
 }

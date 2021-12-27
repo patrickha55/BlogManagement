@@ -18,7 +18,7 @@ namespace BlogManagement.Common.Models.PostVMs
         [Display(Name = "Parent post Title")]
         public string ParentTitle { get; set; }
         public string Summary { get; set; }
-        public List<PostCommentForIndexVM> PostComments { get; set; } = new();
+        public List<PostCommentVM> PostComments { get; set; } = new();
         public List<CategoryVM> Categories { get; set; } = new();
     }
 }

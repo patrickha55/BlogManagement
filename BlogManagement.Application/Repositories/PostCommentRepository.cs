@@ -1,34 +1,33 @@
-﻿using BlogManagement.Application.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogManagement.Application.Repositories
 {
-    public class CategoryRepository : Repository<Category>, ICategoryRepository
+    public class PostCommentRepository : Repository<PostComment>, IPostCommentRepository
     {
-        public CategoryRepository(BlogManagementContext context, ILogger<CategoryRepository> logger) : base(context, logger)
+        public PostCommentRepository(BlogManagementContext context, ILogger<PostCommentRepository> logger) : base(context, logger)
         {
             Logger = logger;
         }
 
-
-        public async Task<IEnumerable<Category>> GetAllIdAndNameWithoutPagingAsync()
+        public async Task<IEnumerable<PostComment>> GetAllIdAndNameWithoutPagingAsync()
         {
             try
             {
-                return await Context.Categories
+                return await Context.PostComments
                     .AsNoTracking()
-                    .Select(c => new Category
+                    .Select(pc => new PostComment()
                     {
-                        Id = c.Id,
-                        Title = c.Title
+                        Id = pc.Id,
+                        Title = pc.Title
                     })
                     .ToListAsync();
             }

@@ -18,5 +18,7 @@ namespace BlogManagement.Common.Models.PostVMs
         public DateTime CreatedAt { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public int TotalViewed { get; set; }
     }
 }

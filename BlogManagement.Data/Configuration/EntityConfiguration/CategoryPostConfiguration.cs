@@ -36,12 +36,12 @@ namespace BlogManagement.Data.Configuration.EntityConfiguration
             builder.HasOne(cp => cp.Category)
                 .WithMany(c => c.CategoryPosts)
                 .HasForeignKey(cp => cp.CategoryId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(cp => cp.Post)
                 .WithMany(c => c.CategoryPosts)
                 .HasForeignKey(cp => cp.PostId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             #endregion
         }

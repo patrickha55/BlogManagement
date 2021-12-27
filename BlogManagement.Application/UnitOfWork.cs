@@ -14,23 +14,35 @@ namespace BlogManagement.Application
         private ITagRepository _tagRepository;
         private ICategoryRepository _categoryRepository;
         private IPostMetaRepository _postMetaRepository;
+        private IPostCommentRepository _postCommentRepository;
+        private IUserRepository _userRepository;
         private readonly ILogger<PostRepository> _postLogger;
         private readonly ILogger<TagRepository> _tagLogger;
         private readonly ILogger<CategoryRepository> _categoryLogger;
         private readonly ILogger<PostMetaRepository> _postMetaLogger;
+        private readonly ILogger<PostCommentRepository> _postCommentLogger;
+        private readonly ILogger<UserRepository> _userRepositoryLogger;
+
         public UnitOfWork(
             BlogManagementContext context,
             ILogger<CategoryRepository> categoryLogger, 
             ILogger<PostRepository> postLogger,
             ILogger<PostMetaRepository> postMetaLogger,
-            ILogger<TagRepository> tagLogger)
+            ILogger<TagRepository> tagLogger, 
+            ILogger<PostCommentRepository> postCommentLogger, 
+            ILogger<UserRepository> userRepositoryLogger)
         {
             _context = context;
             _postLogger = postLogger;
             _tagLogger = tagLogger;
+            _postCommentLogger = postCommentLogger;
+            _userRepositoryLogger = userRepositoryLogger;
             _categoryLogger = categoryLogger;
             _postMetaLogger = postMetaLogger;
         }
+
+        public IPostCommentRepository PostCommentRepository =>
+            _postCommentRepository ??= new PostCommentRepository(_context, _postCommentLogger);
 
         public IPostMetaRepository PostMetaRepository =>
             _postMetaRepository ??= new PostMetaRepository(_context, _postMetaLogger);
@@ -40,6 +52,9 @@ namespace BlogManagement.Application
 
         public ITagRepository TagRepository => 
             _tagRepository ??= new TagRepository(_context, _tagLogger);
+
+        public IUserRepository UserRepository =>
+            _userRepository ??= new UserRepository(_context, _userRepositoryLogger);
 
         public ICategoryRepository CategoryRepository =>
             _categoryRepository ??= new CategoryRepository(_context, _categoryLogger);

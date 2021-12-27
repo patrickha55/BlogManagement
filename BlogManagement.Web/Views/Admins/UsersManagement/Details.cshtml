@@ -1,0 +1,178 @@
+﻿@using BlogManagement.Common.Common
+@model BlogManagement.Common.Models.AuthorVMs.AuthorDetailVM
+
+@{
+    ViewData["Title"] = "User Profile";
+    Layout = "Admin/_Layout";
+}
+
+@if (Model is null)
+{
+    @await Html.PartialAsync("User/Partials/_InfoPartial", "tag")
+}
+else
+{
+    @if (TempData.Any())
+    {
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-check"></i> Alert!</h5>
+            @TempData["Status"]
+        </div>
+    }
+
+        <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Profile</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">User Profile</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <!-- Profile Image -->
+                <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle" src="~/@Model.ImageUrl"
+                                 alt="User profile picture">
+                            </div>
+
+                            <h3 class="profile-username text-center">@Model.FullName</h3>
+
+                            <p class="text-muted text-center">@Model.UserName</p>
+
+                            <ul class="list-group list-group-unbordered mb-3">
+                                @if (User.IsInRole(Roles.Author))
+                                {
+                                    <li class="list-group-item">
+                                        <b>Number of Post</b> <a class="float-right">@Model.Posts.Count()</a>
+                                    </li>
+                                }
+                                <li class="list-group-item">
+                                    <b>@Html.DisplayNameFor(m=>m.PostComments)</b> <a class="float-right">@Model.PostComments.Count()</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>@Html.DisplayNameFor(m=>m.PostUserRatings)</b> <a class="float-right">@Model.PostUserRatings.Count()</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- /.card-body -->
+                </div>
+                    <!-- /.card -->
+                    <!-- About Me Box -->
+                <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">About Me</h3>
+                        </div>
+                        <!-- /.card-header -->
+                    <div class="card-body">
+                            <strong>
+                                <i class="fas fa-book mr-1"></i>
+                                @Html.DisplayNameFor(m => m.Intro)
+                            </strong>
+
+                            <p class="text-muted">@Model.Intro</p>
+
+                            <hr>
+
+                            <strong>
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                @Html.DisplayNameFor(m => m.Email)
+                            </strong>
+
+                            <p class="text-muted">@Model.Email</p>
+
+                            <hr>
+
+                            <strong>
+                                <i class="fas fa-pencil-alt mr-1"></i>
+                                @Html.DisplayNameFor(m => m.PhoneNumber)
+                            </strong>
+
+                            <p class="text-muted">@Model.PhoneNumber</p>
+
+                            <hr>
+
+                            <strong>
+                                <i class="far fa-file-alt mr-1"></i>
+                                @Html.DisplayNameFor(m => m.Profile)
+                            </strong>
+
+                            <p class="text-muted">@Model.Profile</p>
+                        </div>
+                        <!-- /.card-body -->
+                </div>
+                    <!-- /.card -->
+            </div>
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Other Information</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a></li>
+                            </ul>
+                        </div><!-- /.card-header -->
+                    <div class="card-body">
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="activity">
+                                    <!-- Post -->
+                                    <!-- /.user-block -->
+                                <div class="card">
+                                        <!-- /.card-header -->
+                                    <div class="card-body">
+                                            <dl class="row">
+                                                <dt class="col-sm-4">@Html.DisplayNameFor(m=>m.RegisteredAt)</dt>
+                                                <dd class="col-sm-8">@Model.RegisteredAt.ToLongDateString()</dd>
+                                                <dt class="col-sm-4">@Html.DisplayNameFor(m=>m.LastLogin)</dt>
+                                                <dd class="col-sm-8">@(Model.LastLogin is null ? "N/A" : Model.LastLogin.Value.ToLongDateString())</dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                    <!-- /.post -->
+                            </div>
+                                <!-- /.tab-pane -->
+                            <div class="tab-pane" id="settings">
+                                    <form class="form-horizontal" asp-controller="Admins"
+                                      asp-action="EditUserStatuses" asp-route-id="@Model.Id">
+                                        <div class="form-group row">
+                                            <label asp-for="IsPublic" class="col-sm-2 col-form-label"></label>
+                                            <div class="col-sm-10">
+                                                <input type="checkbox" class="form-control" asp-for="IsPublic">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label asp-for="IsEnabled" class="col-sm-2 col-form-label"></label>
+                                            <div class="col-sm-10">
+                                                <input asp-for="IsEnabled" type="checkbox" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-pri" type="submit">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- /.tab-pane -->
+                        </div>
+                            <!-- /.tab-content -->
+                    </div><!-- /.card-body -->
+                </div>
+                    <!-- /.card -->
+            </div>
+            </div>
+            <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+}

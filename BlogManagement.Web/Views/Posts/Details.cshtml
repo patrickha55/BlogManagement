@@ -1,12 +1,11 @@
-﻿@using Microsoft.CodeAnalysis
-@model BlogManagement.Common.Models.PostVMs.PostDetailVM
+﻿@model Tuple<BlogManagement.Common.Models.PostVMs.PostDetailVM, BlogManagement.Common.Models.PostCommentVMs.PostCommentCreateVM>
 
 @{
-    ViewData["Title"] = Model?.Title;
+    ViewData["Title"] = Model?.Item1.Title;
 }
 
 <section class="ftco-section ftco-no-pt ftco-no-pb">
-    @if (Model is null)
+    @if (Model.Item1 is null)
     {
         <partial name="User/_LoaderPartial" />
     }
@@ -15,17 +14,18 @@
         <div class="row d-flex">
             <div class="col-lg-9 px-md-5 py-5">
                 <div class="row pt-md-4">
-                    <h1 class="mb-3">@Model.Title</h1>
+                    <h1 class="mb-3">@Model.Item1.Title</h1>
 
-                    <img src="~/@Model.ImageUrl" alt="" class="img-fluid">
+                    <img style="width: 100%; max-height: 400px;"
+                     src="~/@Model.Item1.ImageUrl" alt="@Model.Item1.Title" class="img-fluid">
 
-                    <p class="content"></p>
+                    <div id="content" data-content="@Model.Item1.Content" class="my-4 w-100 lh-1"></div>
 
                     <div class="tag-widget post-tag-container mb-5 mt-5">
                         <div class="tagcloud">
-                            @if (Model.Tags.Any())
+                            @if (Model.Item1.Tags.Any())
                             {
-                                foreach (var tag in Model.Tags)
+                                foreach (var tag in Model.Item1.Tags)
                                 {
                                     <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id">@tag.Title</a>
                                 }
@@ -35,138 +35,152 @@
 
                     <div class="about-author d-flex p-4 bg-light">
                         <div class="bio mr-5">
-                            <img src="images/person_1.jpg" alt="Image placeholder" class="img-fluid mb-4">
+                            @*TODO: change image for user*@
+                            <img src="~/images/person_1.jpg" alt="Image placeholder"
+                             class="img-fluid mb-4" width="150" height="150">
                         </div>
                         <div class="desc">
-                            <h3>@Model.Author.FullName</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur similique, inventore eos fugit cupiditate numquam!</p>
+                            <h3>@Model.Item1.Author.FullName</h3>
+                            <p>...</p>
                         </div>
                     </div>
 
 
-                    <div class="pt-5 mt-5">
-                        <h3 class="mb-5 font-weight-bold">6 Comments</h3>
+                    <div class="pt-5 mt-5 w-75 mx-auto">
+                        <h3 class="mb-5 font-weight-bold">@Model.Item1.PostComments.Count() Comment/s</h3>
                         <ul class="comment-list">
-                            <li class="comment">
-                                <div class="vcard bio">
-                                    <img src="images/person_1.jpg" alt="Image placeholder">
-                                </div>
-                                <div class="comment-body">
-                                    <h3>John Doe</h3>
-                                    <div class="meta">October 03, 2018 at 2:21pm</div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-                                    <p><a href="#" class="reply">Reply</a></p>
-                                </div>
-                            </li>
+                            @*TODO: change image 2 for user*@
 
-                            <li class="comment">
-                                <div class="vcard bio">
-                                    <img src="images/person_1.jpg" alt="Image placeholder">
-                                </div>
-                                <div class="comment-body">
-                                    <h3>John Doe</h3>
-                                    <div class="meta">October 03, 2018 at 2:21pm</div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-                                    <p><a href="#" class="reply">Reply</a></p>
-                                </div>
+                            @if (Model.Item1.PostComments.Any())
+                            {
+                                foreach (var comment in Model.Item1.PostComments)
+                                {
+                                    @if (comment.ParentId is not null)
+                                        continue;
 
-                                <ul class="children">
                                     <li class="comment">
                                         <div class="vcard bio">
-                                            <img src="images/person_1.jpg" alt="Image placeholder">
+                                            <img src="~/images/person_1.jpg" alt="@comment.User.FirstName">
                                         </div>
-                                        <div class="comment-body">
-                                            <h3>John Doe</h3>
-                                            <div class="meta">October 03, 2018 at 2:21pm</div>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
+                                        <div class="comment-body border-bottom mb-4">
+                                            <h3>@comment.User.FullName</h3>
+                                            <div class="meta">@comment.CreatedAt.Humanize()</div>
+                                            <h6>@comment.Title</h6>
+                                            <p>@comment.Content</p>
                                             <p><a href="#" class="reply">Reply</a></p>
                                         </div>
 
-
-                                        <ul class="children">
-                                            <li class="comment">
-                                                <div class="vcard bio">
-                                                    <img src="images/person_1.jpg" alt="Image placeholder">
-                                                </div>
-                                                <div class="comment-body">
-                                                    <h3>John Doe</h3>
-                                                    <div class="meta">October 03, 2018 at 2:21pm</div>
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-                                                    <p><a href="#" class="reply">Reply</a></p>
-                                                </div>
-
-                                                <ul class="children">
-                                                    <li class="comment">
-                                                        <div class="vcard bio">
-                                                            <img src="images/person_1.jpg" alt="Image placeholder">
-                                                        </div>
-                                                        <div class="comment-body">
-                                                            <h3>John Doe</h3>
-                                                            <div class="meta">October 03, 2018 at 2:21pm</div>
-                                                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-                                                            <p><a href="#" class="reply">Reply</a></p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
+                                        @if (comment.ChildPostComments.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var childComment in comment.ChildPostComments)
+                                                {
+                                                    @if (childComment.ParentId == comment.Id)
+                                                    {
+                                                        <li class="comment">
+                                                            <div class="vcard bio">
+                                                                <img src="~/images/person_1.jpg" alt="@childComment.User.FirstName">
+                                                            </div>
+                                                            <div class="comment-body">
+                                                                <h3>@childComment.User.FullName</h3>
+                                                                <div class="meta">@childComment.CreatedAt.Humanize()</div>
+                                                                <h6>@childComment.Title</h6>
+                                                                <p>@childComment.Content</p>
+                                                                <p><a href="#" class="reply">Reply</a></p>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                }
+                                            </ul>
+                                        }
                                     </li>
-                                </ul>
-                            </li>
+                                }
+                            }
 
-                            <li class="comment">
-                                <div class="vcard bio">
-                                    <img src="images/person_1.jpg" alt="Image placeholder">
-                                </div>
-                                <div class="comment-body">
-                                    <h3>John Doe</h3>
-                                    <div class="meta">October 03, 2018 at 2:21pm</div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-                                    <p><a href="#" class="reply">Reply</a></p>
-                                </div>
-                            </li>
                         </ul>
                         <!-- END comment-list -->
 
                     <div class="comment-form-wrap pt-5">
-                            <h3 class="mb-5">Leave a comment</h3>
-                            <form action="#" class="p-3 p-md-5 bg-light">
-                                <div class="form-group">
-                                    <label for="name">Name *</label>
-                                    <input type="text" class="form-control" id="name">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <h3 class="mb-5">Leave a comment</h3>
+                                <form asp-controller="PostComments" asp-action="Create" method="post" onsubmit="return jQueryAjaxPost(this);"
+                                autocomplete="off" id="formComment" class="p-3 p-md-5 bg-light">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="Item2.PostId" value="@Model.Item1.Id" />
+                                    <div class="form-group">
+                                        <label asp-for="Item2.Title"></label><span class="text-danger ml-2">*</span>
+                                        <input type="text" class="form-control" placeholder="Enter title" asp-for="Item2.Title">
+                                        <span asp-validation-for="Item2.Title" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Item2.Content"></label><span class="text-danger ml-2">*</span>
+                                        <textarea type="text" class="form-control" placeholder="Enter content" asp-for="Item2.Content"></textarea>
+                                        <span asp-validation-for="Item2.Content" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary" id="formSubmit">Submit</button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <h3>Register an account or login to leave a comment</h3>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">Register</a>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">Login</a>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="email">Email *</label>
-                                    <input type="email" class="form-control" id="email">
-                                </div>
-                                <div class="form-group">
-                                    <label for="website">Website</label>
-                                    <input type="url" class="form-control" id="website">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="message">Message</label>
-                                    <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
-                                </div>
-
-                            </form>
+                            }
                         </div>
                     </div>
                 </div><!-- END-->
         </div>
-            <partial name="AsidePartial"/>
+            @await Html.PartialAsync("User/Partials/AsidePartialForDetailPage")
         </div>
     }
 </section>
 
 @section Scripts
 {
-    <script>
-        $(function() {
-            $(".content").innerHTML += @Model.Content;
-        })
-    </script>
+<script>
+    $(document).ready(function() {
+        $("#content").html(stringToHTML(
+            $('#content').data('content')
+        ));
+    });
+
+
+    var stringToHTML = function(str) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(str, 'text/html');
+        return doc.body;
+    };
+
+    jQueryAjaxPost = form => {
+        try {
+            $.ajax({
+                type: 'POST',
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function(res) {
+                    alert("Added.");
+                },
+                error: function(res) {
+                    alert(res.statusMessage);
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+
+        // prevent default form submit event
+        return false;
+    }
+</script>
 }
