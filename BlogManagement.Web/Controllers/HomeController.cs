@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AutoMapper;
+using BlogManagement.Application.Contracts;
+using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.AuthorVMs;
+using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Common.Models.PostVMs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Common.Common;
-using BlogManagement.Common.Models.AuthorVMs;
-using BlogManagement.Common.Models.CategoryVMs;
-using BlogManagement.Common.Models.PostCommentVMs;
-using BlogManagement.Common.Models.PostVMs;
 using Exception = System.Exception;
 
 namespace BlogManagement.Web.Controllers
@@ -33,7 +32,7 @@ namespace BlogManagement.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = default)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             var postForIndexVMs = new List<PostForIndexVM>();
 
@@ -53,28 +52,22 @@ namespace BlogManagement.Web.Controllers
                 {
                     foreach (var post in posts)
                     {
-                        if (postVM.AuthorId == post.AuthorId)
-                            postVM.Author = _mapper.Map<AuthorVM>(post.User);
+                        if (postVM.Id != post.Id)
+                            continue;
 
-                        if (postVM.Id == post.PostComments
-                                .Select(p => p.PostId)
-                                .FirstOrDefault())
-                        {
-                            postVM.PostComments = _mapper.Map<List<PostCommentVM>>(post.PostComments);
-                        }
+                        postVM.Categories = _mapper.Map<List<CategoryVM>>(post.CategoryPosts.Select(c => c.Category));
 
-                        if (postVM.Id == post.CategoryPosts
-                                .Select(p => p.PostId)
-                                .FirstOrDefault())
+                        if (post.PostRatings.Any())
                         {
-                            postVM.Categories = _mapper.Map<List<CategoryVM>>(post.CategoryPosts.Select(c => c.Category));
+                            postVM.Rating = post.PostRatings
+                                .Average(pr => pr.Rating);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Index));
+                _logger.LogError(e, "Error: {0} {1}", Constants.ErrorMessageLogging, nameof(Index));
             }
 
             return View(postForIndexVMs);
@@ -111,7 +104,7 @@ namespace BlogManagement.Web.Controllers
                     throw new ArgumentNullException(Constants.InvalidArgument);
 
                 var users = await _unitOfWork.UserRepository.FindUsersAsync(u => (
-                    u.UserName.Contains(keyword) || u.FirstName.Contains(keyword) || u.Email.Contains(keyword)) && u.IsPublic == true );
+                    u.UserName.Contains(keyword) || u.FirstName.Contains(keyword) || u.Email.Contains(keyword)) && u.IsPublic == true);
 
                 if (users == null)
                     return RedirectToAction("Index");

@@ -1,4 +1,5 @@
-﻿using BlogManagement.Application;
+﻿using System;
+using BlogManagement.Application;
 using BlogManagement.Application.Contracts;
 using BlogManagement.Application.Repositories;
 using BlogManagement.Application.Services;
@@ -32,6 +33,17 @@ namespace BlogManagement.Web
                     25,
                     "no-reply@andreamooreblogspace.com")
             );
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.SlidingExpiration = true;
+            });
         }
     }
 }

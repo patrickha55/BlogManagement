@@ -10,12 +10,14 @@ namespace BlogManagement.Application
     public class UnitOfWork : IUnitOfWork
     {
         private readonly BlogManagementContext _context;
+
         private IPostRepository _postsRepository;
         private ITagRepository _tagRepository;
         private ICategoryRepository _categoryRepository;
         private IPostMetaRepository _postMetaRepository;
         private IPostCommentRepository _postCommentRepository;
         private IUserRepository _userRepository;
+
         private readonly ILogger<PostRepository> _postLogger;
         private readonly ILogger<TagRepository> _tagLogger;
         private readonly ILogger<CategoryRepository> _categoryLogger;

@@ -93,6 +93,7 @@ namespace BlogManagement.Application.Repositories
                     .ThenInclude(pc => pc.ChildPostComments)
                     .ThenInclude(cp => cp.User)
                     .Include(p => p.PostRatings)
+                    .ThenInclude(pr => pr.User)
                     .Include(p => p.PostMetas)
                     .Include(p => p.CategoryPosts)
                     .ThenInclude(cp => cp.Category)

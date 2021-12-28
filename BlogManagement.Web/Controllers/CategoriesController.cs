@@ -50,7 +50,7 @@ namespace BlogManagement.Web.Controllers
 
                 var categories =
                     await _unitOfWork.CategoryRepository
-                        .GetAllAsync(null, pagingRequest, includes);
+                        .GetAllAsync(pagingRequest, null, includes);
 
                 categoryVMs = _mapper.Map<List<CategoryVM>>(categories);
             }

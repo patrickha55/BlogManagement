@@ -10,18 +10,18 @@ using X.PagedList;
 namespace BlogManagement.Application.Contracts
 {
     /// <summary>
-    /// 
+    /// Post repository that implement a generic repository
     /// </summary>
     public interface IPostRepository : IRepository<Post>
     {
         /// <summary>
-        /// 
+        /// This method gets all posts of an author.
         /// </summary>
-        /// <param name="authorId"></param>
-        /// <returns></returns>
+        /// <param name="authorId">Author Id to search</param>
+        /// <returns>A list of Posts</returns>
         Task<IEnumerable<Post>> GetByAuthorId(long authorId);
         /// <summary>
-        /// 
+        /// This method gets all posts with related data for displaying on Index pages.
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="request"></param>

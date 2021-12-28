@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = Model?.Item1.Title;
+            //TODO: add rating, view count
 }
 <style type="text/css">
     .icon-star:hover {
@@ -20,7 +21,7 @@
     {
         @if (TempData.Any())
         {
-            <partial name="User/Partials/_StatusPartial" model="@TempData["Status"]"/>
+            <partial name="User/Partials/_StatusPartial" model="@TempData["Status"]" />
         }
 
         <div class="row d-flex">
@@ -28,8 +29,35 @@
                 <div class=" pt-md-4">
                     <h1 class="mb-3">@Model.Item1.Title</h1>
 
+                    <div class="meta-wrap mb-2">
+                        <div class="meta d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="mr-2"><i class="icon-calendar mr-2"></i>@Model.Item1.CreatedAt.ToOrdinalWords()</span>
+                                @if (Model.Item1.Categories is not null)
+                                {
+                                    @foreach (var category in Model.Item1.Categories)
+                                    {
+                                        <a asp-controller="" asp-action="">
+                                            <i class="icon-folder-o mr-2"></i>@category.Title
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <i class="icon-folder-o mr-2"></i>
+                                    <span>There is no category</span>
+                                }
+                            </div>
+                            <div class="ml-5 meta">
+                                <span><i class="icon-star2 pr-2"></i>@Model.Item1.Rating</span>
+                                <span><i class="icon-eye px-2"></i>@Model.Item1.TotalViewed</span>
+                                <span><i class="icon-comment px-2"></i>@Model.Item1.PostComments.Count()</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <img style="width: 100%; max-height: 400px;"
-                     src="~/@Model.Item1.ImageUrl" alt="@Model.Item1.Title" class="img-fluid">
+                     src="~/@Model.Item1.ImageUrl" alt="@Model.Item1.Title" class="img-fluid rounded">
 
                     <div id="content" data-content="@Model.Item1.Content" class="my-4 w-100 lh-1"></div>
 
@@ -47,32 +75,73 @@
 
                     <div class="about-author d-flex p-4 bg-light w-75 mx-auto">
                         <div class="bio mr-5">
-                            <img src="~/@Model.Item1.Author.ImageUrl" alt="Image placeholder"
+                            <img src="~/@Model.Item1.User.ImageUrl" alt="Image placeholder"
                              class="img-fluid mb-4" width="150" height="150">
                         </div>
                         <div class="desc">
-                            <h3>@Model.Item1.Author.FullName</h3>
-                            <p>@Model.Item1.Author.Intro</p>
+                            <h3>@Model.Item1.User.FullName</h3>
+                            <p>@Model.Item1.User.Intro</p>
                         </div>
                     </div>
 
-                    <div class="p-1 my-1 text-center">
-                        <form asp-controller="Posts" asp-action="RateAPost" onsubmit="return sendPostRating(this);">
-                            <h3>Rate this post</h3>
-                            <div class="mb-2">
-                                <i class="icon-star h2" data-index="0"></i>
-                                <i class="icon-star h2" data-index="1"></i>
-                                <i class="icon-star h2" data-index="2"></i>
-                                <i class="icon-star h2" data-index="3"></i>
-                                <i class="icon-star h2" data-index="4"></i>
-                            </div>
-                            <input type="hidden" value="@Model.Item1.Id" name="PostId"/>
-                            <input type="hidden" class="ratingInput" name="Rating"/>
-                            <button type="submit" class="btn-sm rounded shadow-lg btn-success btnRateSubmit">Submit</button>
-                        </form>
-                    </div>
+                    <div class="pt-2 w-75 mx-auto">
+                        <div class="comment-form-wrap py-5">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <div class="p-1 my-1 text-center">
+                                    <form asp-controller="Posts" asp-action="RateAPost" onsubmit="return sendPostRating(this);">
+                                        <h3>Rate this post</h3>
+                                        <div class="mb-2">
+                                            <i class="icon-star h2" data-index="0"></i>
+                                            <i class="icon-star h2" data-index="1"></i>
+                                            <i class="icon-star h2" data-index="2"></i>
+                                            <i class="icon-star h2" data-index="3"></i>
+                                            <i class="icon-star h2" data-index="4"></i>
+                                        </div>
+                                        <input type="hidden" value="@Model.Item1.Id" name="PostId" />
+                                        <input type="hidden" class="ratingInput" name="Rating" />
+                                        <button type="submit" class="btn-sm rounded shadow-lg btn-success btnRateSubmit">Submit</button>
+                                    </form>
+                                </div>
 
-                    <div class="pt-5 mt-2 w-75 mx-auto">
+                                <h3 class="mb-5">Leave a comment</h3>
+                                <form asp-controller="PostComments" asp-action="Create" method="post" onsubmit="return sendPostComment(this);"
+                              autocomplete="off" id="formComment" class="p-3 p-md-5 bg-light">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" name="PostId" value="@Model.Item1.Id" />
+                                    <div class="form-group">
+                                        <label asp-for="Item2.Title"></label><span class="text-danger ml-2">*</span>
+                                        <input type="text" class="form-control" placeholder="Enter title" name="Title">
+                                        <span asp-validation-for="Item2.Title" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Item2.Content"></label><span class="text-danger ml-2">*</span>
+                                        <textarea type="text" class="form-control" placeholder="Enter content" name="Content"></textarea>
+                                        <span asp-validation-for="Item2.Content" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary" id="formSubmit">Submit</button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <h4>Register an account or login to leave a comment and rate this post</h4>
+                                <div class="row w-50 mx-auto border-bottom">
+                                    <div class="col-md-6 col-sm-12 text-center">
+                                        <a class="nav-link text-dark h5 fw-bold" asp-area="Identity" asp-page="/Account/Register" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">
+                                            <i class="icon-account_box mr-2"></i>Register
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 text-center h5 fw-bold">
+                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">
+                                            <i class="icon-sign-in mr-2"></i> Login
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
                         <h3 class="mb-5 font-weight-bold">@Model.Item1.PostComments.Count() Comment/s</h3>
                         <ul class="comment-list">
                             @if (Model.Item1.PostComments.Any())
@@ -123,43 +192,6 @@
 
                         </ul>
                         <!-- END comment-list -->
-
-                    <div class="comment-form-wrap pt-5">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <h3 class="mb-5">Leave a comment</h3>
-                                <form asp-controller="PostComments" asp-action="Create" method="post" onsubmit="return sendPostComment(this);"
-                              autocomplete="off" id="formComment" class="p-3 p-md-5 bg-light">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <input type="hidden" name="PostId" value="@Model.Item1.Id" />
-                                    <div class="form-group">
-                                        <label asp-for="Item2.Title"></label><span class="text-danger ml-2">*</span>
-                                        <input type="text" class="form-control" placeholder="Enter title" name="Title">
-                                        <span asp-validation-for="Item2.Title" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label asp-for="Item2.Content"></label><span class="text-danger ml-2">*</span>
-                                        <textarea type="text" class="form-control" placeholder="Enter content" name="Content"></textarea>
-                                        <span asp-validation-for="Item2.Content" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary" id="formSubmit">Submit</button>
-                                    </div>
-                                </form>
-                            }
-                            else
-                            {
-                                <h3>Register an account or login to leave a comment</h3>
-                                <div class="row">
-                                    <div class="col-md-6 col-sm-12">
-                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">Register</a>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login" asp-route-returnurl="/Posts/Details/@Model.Item1.Id">Login</a>
-                                    </div>
-                                </div>
-                            }
-                        </div>
                     </div>
                 </div><!-- END-->
         </div>
@@ -170,111 +202,118 @@
 
 @section Scripts
 {
-    <script>
-        var ratedIndex = -1;
+<script>
+    var ratedIndex = -1;
 
-        $(document).ready(function() {
-            $("#content").html(stringToHTML(
-                $('#content').data('content')
-            ));
+    $(document).ready(function() {
+        if (localStorage.getItem('RatedIndex') != null) {
+            localStorage.RatedIndex = -1;
+        }
 
-            resetStarColors();
+        $("#content").html(stringToHTML(
+            $('#content').data('content')
+        ));
 
-            if (localStorage.getItem('RatedIndex') != null) {
-                setStars(parseInt(localStorage.getItem('RatedIndex')));
-            }
+        resetStarColors();
 
-            $('.icon-star').on('click', function() {
-                ratedIndex = parseInt($(this).data('index'));
-                localStorage.RatedIndex = ratedIndex + 1;
-            });
+        if (@Model.Item1.CurrentLoggedInUserRating > 0) {
+            setStars(parseInt(@Model.Item1.CurrentLoggedInUserRating - 1));
+        } else {
+            
+            setStars(parseInt(localStorage.getItem('RatedIndex')));
+        }
 
-            $('.icon-star').mouseover(function() {
-                resetStarColors();
-
-                var currentIndex = parseInt($(this).data('index'));
-
-                setStars(currentIndex);
-
-                console.log(currentIndex);
-            });
-
-            $('.icon-star').mouseleave(function() {
-                resetStarColors();
-
-                if (ratedIndex !== -1) {
-                    setStars(ratedIndex);
-                }
-            });
-
-            $('.btnRateSubmit').click(function() {
-                if (localStorage.getItem('RatedIndex') != null) {
-                    $('.ratingInput').val(localStorage.getItem('RatedIndex'));
-                }
-            });
+        $('.icon-star').on('click', function() {
+            ratedIndex = parseInt($(this).data('index'));
+            localStorage.RatedIndex = ratedIndex + 1;
         });
 
+        $('.icon-star').mouseover(function() {
+            resetStarColors();
 
-        var stringToHTML = function(str) {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(str, 'text/html');
-            return doc.body;
-        };
+            var currentIndex = parseInt($(this).data('index'));
 
-        sendPostComment = form => {
-            try {
-                $.ajax({
-                    type: 'POST',
-                    url: form.action,
-                    data: new FormData(form),
-                    contentType: false,
-                    processData: false,
-                    success: function(res) {
-                        alert("Added.");
-                    },
-                    error: function(res) {
-                        alert(res);
-                    }
-                });
-            } catch (e) {
-                console.log(e);
+            setStars(currentIndex);
+
+            console.log(currentIndex);
+        });
+
+        $('.icon-star').mouseleave(function() {
+            resetStarColors();
+
+            if (ratedIndex !== -1) {
+                setStars(ratedIndex);
             }
+        });
 
-            // prevent default form submit event
-            return false;
-        }
-
-        sendPostRating = form => {
-            try {
-                $.ajax({
-                    type: 'POST',
-                    url: form.action,
-                    data: new FormData(form),
-                    contentType: false,
-                    processData: false,
-                    success: function(res) {
-                        alert(@TempData["Status"]);
-                    },
-                    error: function(res) {
-                        alert('Failed');
-                    }
-                });
-            } catch (e) {
-                console.log(e);
+        $('.btnRateSubmit').click(function() {
+            if (localStorage.getItem('RatedIndex') != null) {
+                $('.ratingInput').val(localStorage.getItem('RatedIndex'));
             }
+        });
+    });
 
-            // prevent default form submit event
-            return false;
+
+    sendPostComment = form => {
+        try {
+            $.ajax({
+                type: 'POST',
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function(res) {
+                    alert("Added.");
+                },
+                error: function(res) {
+                    alert(res);
+                }
+            });
+        } catch (e) {
+            console.log(e);
         }
 
-        function setStars(max){
-            for (var i = 0; i <= max; i++) {
-                $('.icon-star:eq(' + i + ')').css('color', '#00bfff');
-            }
+        // prevent default form submit event
+        return false;
+    }
+
+    sendPostRating = form => {
+        try {
+            $.ajax({
+                type: 'POST',
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function(res) {
+                    alert(@TempData["Status"]);
+                },
+                error: function(res) {
+                    alert('Failed');
+                }
+            });
+        } catch (e) {
+            console.log(e);
         }
 
-        function resetStarColors() {
-            $('.icon-star').css('color', 'black');
+        // prevent default form submit event
+        return false;
+    }
+
+    function setStars(max){
+        for (var i = 0; i <= max; i++) {
+            $('.icon-star:eq(' + i + ')').css('color', '#00bfff');
         }
-    </script>
+    }
+
+    function resetStarColors() {
+        $('.icon-star').css('color', 'black');
+    }
+
+    function stringToHTML(str) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(str, 'text/html');
+        return doc.body;
+    }
+</script>
 }

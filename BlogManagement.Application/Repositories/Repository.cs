@@ -26,7 +26,7 @@ namespace BlogManagement.Application.Repositories
             Logger = logger;
         }
 
-        public async Task<IPagedList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> expression, PagingRequest request, List<string> includes = null)
+        public async Task<IPagedList<TEntity>> GetAllAsync(PagingRequest request, Expression<Func<TEntity, bool>> expression = null, List<string> includes = null)
         {
             IQueryable<TEntity> query = Context.Set<TEntity>();
 
@@ -89,10 +89,13 @@ namespace BlogManagement.Application.Repositories
 
         public async Task<bool> CreateAsync(TEntity entity)
         {
+            await using var transaction = await Context.Database.BeginTransactionAsync();
+
             try
             {
                 var result = await Context.Set<TEntity>().AddAsync(entity);
 
+                await transaction.CommitAsync();
                 return result.State is EntityState.Added;
             }
             catch (Exception e)
@@ -104,10 +107,13 @@ namespace BlogManagement.Application.Repositories
 
         public async Task<bool> UpdateAsync(TEntity entity)
         {
+            await using var transaction = await Context.Database.BeginTransactionAsync();
+
             try
             {
                 var result = Context.Set<TEntity>().Update(entity);
 
+                await transaction.CommitAsync();
                 return await Task.FromResult(result.State is EntityState.Modified);
             }
             catch (Exception e)
@@ -119,10 +125,13 @@ namespace BlogManagement.Application.Repositories
 
         public async Task<bool> DeleteAsync(TEntity entity)
         {
+            await using var transaction = await Context.Database.BeginTransactionAsync();
+
             try
             {
                 var result = Context.Set<TEntity>().Remove(entity);
 
+                await transaction.CommitAsync();
                 return await Task.FromResult(result.State is EntityState.Deleted);
             }
             catch (Exception e)

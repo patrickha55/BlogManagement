@@ -15,21 +15,29 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-controller="Users" asp-action="Details" asp-route-id="@user.Id">Hello @User.Identity.Name</a>
+        <a class="nav-link text-dark d-flex align-items-center" asp-controller="Users" asp-action="Details" asp-route-id="@user.Id">
+            <i class="icon-account_box mr-1"></i> Hello @User.Identity.Name
+        </a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item d-flex align-items-center">
         <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+            <button type="submit" class="nav-link btn btn-link text-dark">
+                <i class="icon-sign-out mr-1"></i>Logout
+            </button>
         </form>
     </li>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link text-dark d-flex align-items-center" asp-area="Identity" asp-page="/Account/Register">
+            <i class="icon-account_box mr-1"></i>Register
+        </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link text-dark d-flex align-items-center" asp-area="Identity" asp-page="/Account/Login">
+            <i class="icon-sign-in mr-1"></i>Login
+        </a>
     </li>
 }
 </ul>

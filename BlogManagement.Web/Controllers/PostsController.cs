@@ -2,10 +2,8 @@
 using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
-using BlogManagement.Common.Models.PostMetaVMs;
 using BlogManagement.Common.Models.PostRatingVMs;
 using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Common.Models.TagVMs;
@@ -81,21 +79,15 @@ namespace BlogManagement.Web.Controllers
                 {
                     foreach (var post in posts)
                     {
-                        if (postVM.AuthorId == post.AuthorId)
-                            postVM.Author = _mapper.Map<AuthorVM>(post.User);
+                        if (postVM.Id != post.Id)
+                            continue;
 
-                        if (postVM.Id == post.PostComments
-                                .Select(p => p.PostId)
-                                .FirstOrDefault())
-                        {
-                            postVM.PostComments = _mapper.Map<List<PostCommentVM>>(post.PostComments);
-                        }
+                        postVM.Categories = _mapper.Map<List<CategoryVM>>(post.CategoryPosts.Select(c => c.Category));
 
-                        if (postVM.Id == post.CategoryPosts
-                                .Select(p => p.PostId)
-                                .FirstOrDefault())
+                        if (post.PostRatings.Any())
                         {
-                            postVM.Categories = _mapper.Map<List<CategoryVM>>(post.CategoryPosts.Select(c => c.Category));
+                            postVM.Rating = post.PostRatings
+                                .Average(pr => pr.Rating);
                         }
                     }
                 }
@@ -126,7 +118,7 @@ namespace BlogManagement.Web.Controllers
 
                 var posts =
                     await _unitOfWork.PostRepository
-                        .GetAllAsync(null, pagingRequest, includes);
+                        .GetAllAsync(pagingRequest, null, includes);
 
                 postVMs = _mapper.Map<List<PostForAdminIndexVM>>(posts);
             }
@@ -150,18 +142,6 @@ namespace BlogManagement.Web.Controllers
 
                 var postDetailVM = _mapper.Map<PostDetailVM>(post);
 
-                postDetailVM.Author = _mapper.Map<AuthorVM>(post.User);
-
-                if (post.PostMetas.Any())
-                {
-                    postDetailVM.PostMetas = _mapper.Map<List<PostMetaDetailVM>>(post.PostMetas);
-                }
-
-                if (post.PostRatings.Any())
-                {
-                    postDetailVM.Rating = post.PostRatings.Average(pr => pr.Rating);
-                }
-
                 if (post.CategoryPosts.Any())
                 {
                     foreach (var categoryPost in post.CategoryPosts)
@@ -178,20 +158,19 @@ namespace BlogManagement.Web.Controllers
                     }
                 }
 
-                /*if (post.PostComments.Any())
+                if (post.PostRatings.Any())
                 {
-                    for (int i = 0; i < post.PostComments.Count(); i++)
-                    {
-                        postDetailVM.PostComments.Add(_mapper.Map<PostCommentDetailVM>(post.PostComments[i]));
-                        postDetailVM.PostComments[i].User = _mapper.Map<AuthorDetailVM>(post.PostComments[i].User);
-                    }
-                }*/
+                    postDetailVM.Rating = post.PostRatings.Average(pr => pr.Rating);
+                    //postDetailVM.PostUserRatings = _mapper.Map<PostRatingDetailVM>(post.PostRatings);
+                }
 
-                post.TotalViewed += 1;
-                var result = await _unitOfWork.PostRepository.UpdateAsync(post);
+                postDetailVM.CurrentLoggedInUserRating =
+                    postDetailVM.PostRatings
+                        .Where(p => p.PostId == postDetailVM.Id && p.User.UserName == User.Identity.Name)
+                        .Select(p => p.Rating)
+                        .FirstOrDefault();
 
-                if (result)
-                    await _unitOfWork.SaveAsync();
+                await UpdatePostViewCount(post);
 
                 return View(new Tuple<PostDetailVM, PostCommentCreateVM>(postDetailVM, new PostCommentCreateVM()));
             }
@@ -205,6 +184,19 @@ namespace BlogManagement.Web.Controllers
             }
 
             return View("~/Views/Home/Index.cshtml");
+        }
+
+        /// <summary>
+        /// This method increase a post view count by one.
+        /// </summary>
+        /// <param name="post">A Post to increase view</param>
+        private async Task UpdatePostViewCount(Post post)
+        {
+            post.TotalViewed += 1;
+            var result = await _unitOfWork.PostRepository.UpdateAsync(post);
+
+            if (result)
+                await _unitOfWork.SaveAsync();
         }
 
         // GET: PostsController/Create
@@ -355,7 +347,7 @@ namespace BlogManagement.Web.Controllers
                 {
                     TempData["Status"] = "Post rated successfully!";
                     await _unitOfWork.SaveAsync();
-                    return RedirectToAction(nameof(Details), new {id = request.PostId});
+                    return RedirectToAction(nameof(Details), new { id = request.PostId });
                 }
             }
             catch (Exception e)

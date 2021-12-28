@@ -62,6 +62,7 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region PostRatingVMs mapper configs
 
             CreateMap<PostRating, PostRatingVM>().ReverseMap();
+            CreateMap<PostRating, PostRatingDetailVM>().ReverseMap();
 
             #endregion
 

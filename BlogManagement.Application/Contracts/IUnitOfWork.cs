@@ -3,6 +3,16 @@ using System.Threading.Tasks;
 
 namespace BlogManagement.Application.Contracts
 {
+    /// <summary>
+    /// This class acts as a central place to communicate with all of the repositories in the application.
+    /// Contains:
+    ///     + CategoryRepository.
+    ///     + PostCommentRepository.
+    ///     + PostMetaRepository.
+    ///     + PostRepository.
+    ///     + TagRepository.
+    ///     + UserRepository.
+    /// </summary>
     public interface IUnitOfWork : IDisposable
     {
         ICategoryRepository CategoryRepository { get; }

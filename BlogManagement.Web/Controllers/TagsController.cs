@@ -43,7 +43,7 @@ namespace BlogManagement.Web.Controllers
                     PageNumber = pageNumber,
                     PageSize = pageSize
                 };
-                var tags = await _unitOfWork.TagRepository.GetAllAsync(null, pagingRequest);
+                var tags = await _unitOfWork.TagRepository.GetAllAsync(pagingRequest, null);
 
                 tagVMs = _mapper.Map<List<TagVM>>(tags);
             }
