@@ -15,12 +15,20 @@ namespace BlogManagement.Application.Contracts
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
+        #region Repositories
+
         ICategoryRepository CategoryRepository { get; }
         IPostCommentRepository PostCommentRepository { get; }
         IPostMetaRepository PostMetaRepository { get; }
         IPostRepository PostRepository { get; }
         ITagRepository TagRepository { get; }
         IUserRepository UserRepository { get; }
+
+            #endregion
+
+        /// <summary>
+        /// This method call the save method on the DbContext to commit this transaction.
+        /// </summary>
         Task SaveAsync();
     }
 }

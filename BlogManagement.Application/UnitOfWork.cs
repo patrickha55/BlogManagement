@@ -7,9 +7,22 @@ using System.Threading.Tasks;
 
 namespace BlogManagement.Application
 {
+    /// <summary>
+    /// This class acts as a central place to communicate with all of the repositories in the application and
+    /// as a transaction when get injected. Will get dispose after the method SaveAsync get called.
+    /// Contains:
+    ///     + CategoryRepository.
+    ///     + PostCommentRepository.
+    ///     + PostMetaRepository.
+    ///     + PostRepository.
+    ///     + TagRepository.
+    ///     + UserRepository.
+    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
         private readonly BlogManagementContext _context;
+
+        #region Repositories
 
         private IPostRepository _postsRepository;
         private ITagRepository _tagRepository;
@@ -18,12 +31,18 @@ namespace BlogManagement.Application
         private IPostCommentRepository _postCommentRepository;
         private IUserRepository _userRepository;
 
+        #endregion
+
+        #region Logger
+
         private readonly ILogger<PostRepository> _postLogger;
         private readonly ILogger<TagRepository> _tagLogger;
         private readonly ILogger<CategoryRepository> _categoryLogger;
         private readonly ILogger<PostMetaRepository> _postMetaLogger;
         private readonly ILogger<PostCommentRepository> _postCommentLogger;
         private readonly ILogger<UserRepository> _userRepositoryLogger;
+
+        #endregion
 
         public UnitOfWork(
             BlogManagementContext context,
@@ -42,6 +61,10 @@ namespace BlogManagement.Application
             _categoryLogger = categoryLogger;
             _postMetaLogger = postMetaLogger;
         }
+
+        /*
+         * Check if a repository already exist. If yes then use that repository, else create a new instance of it.
+         */
 
         public IPostCommentRepository PostCommentRepository =>
             _postCommentRepository ??= new PostCommentRepository(_context, _postCommentLogger);

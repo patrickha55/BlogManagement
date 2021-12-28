@@ -1,5 +1,8 @@
 ﻿namespace BlogManagement.Common.Models
 {
+    /// <summary>
+    /// This class stores a paging request contains of page number and page size
+    /// </summary>
     public class PagingRequest
     {
         private const int MaxPageSize = 20;

@@ -11,7 +11,7 @@ using BlogManagement.Data.Entities;
 namespace BlogManagement.Data.Configuration.MapperConfigs
 {
     /// <summary>
-    /// 
+    /// Configuration for AutoMapper.
     /// </summary>
     public class MapperConfig : Profile
     {

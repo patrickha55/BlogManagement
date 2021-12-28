@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace BlogManagement.Application.Services
 {
+    /// <summary>
+    /// This class implement IEmailSender interface to handle the email sending logic.
+    /// </summary>
     public class EmailSender : IEmailSender
     {
         private readonly string smtpServer;

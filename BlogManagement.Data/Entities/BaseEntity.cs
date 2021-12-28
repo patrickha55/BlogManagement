@@ -2,6 +2,9 @@
 
 namespace BlogManagement.Data.Entities
 {
+    /// <summary>
+    /// Base entity class contains common properties for all entity.
+    /// </summary>
     public abstract class BaseEntity
     {
         public long Id { get; set; }
