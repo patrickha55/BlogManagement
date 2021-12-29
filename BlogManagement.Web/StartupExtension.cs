@@ -1,5 +1,4 @@
-﻿using System;
-using BlogManagement.Application;
+﻿using BlogManagement.Application;
 using BlogManagement.Application.Contracts;
 using BlogManagement.Application.Contracts.Repositories;
 using BlogManagement.Application.Contracts.Services;
@@ -8,6 +7,10 @@ using BlogManagement.Application.Services;
 using BlogManagement.Data.Configuration.MapperConfigs;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using BlogManagement.Data;
+using BlogManagement.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace BlogManagement.Web
 {
@@ -16,7 +19,6 @@ namespace BlogManagement.Web
     /// </summary>
     public static class StartupExtension
     {
-
         /// <summary>
         /// 
         /// </summary>
@@ -24,9 +26,13 @@ namespace BlogManagement.Web
         public static void RegisterServices(this IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITagService, TagService>();
+            services.AddScoped<IPostService, PostService>();
+            services.AddScoped<IPostRatingService, PostRatingService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(typeof(MapperConfig));
 
@@ -37,8 +43,17 @@ namespace BlogManagement.Web
                     25,
                     "no-reply@andreamooreblogspace.com")
             );
+        }
 
-            
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole<long>>()
+                .AddEntityFrameworkStores<BlogManagementContext>();
 
             services.ConfigureApplicationCookie(options =>
             {

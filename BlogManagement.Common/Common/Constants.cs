@@ -15,6 +15,7 @@
         public const string InvalidDirectory = "The directory is invalid. ";
         public const string Success = "Success!";
         public const string SuccessMessage = "Process completed successfully!";
+        public const string RatingSuccessMessage = "Thank you for your rating!";
         public const string Error = "Error!";
         public const string ErrorMessage = "Something went wrong. Please try again!";
 

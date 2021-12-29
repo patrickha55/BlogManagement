@@ -154,7 +154,7 @@ namespace BlogManagement.Application.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Delete));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeleteCategoryAsync));
             }
 
             return false;

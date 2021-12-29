@@ -1,38 +1,34 @@
-﻿using System;
-using System.Threading.Tasks;
-using AutoMapper;
-using BlogManagement.Application.Contracts;
+﻿using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
-using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
+using AutoMapper;
+using BlogManagement.Application.Contracts;
 
 namespace BlogManagement.Web.Controllers
 {
     public class PostCommentsController : Controller
     {
+        private readonly ILogger<PostCommentsController> _logger;
+        private readonly IPostCommentService _postCommentService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger<PostCommentsController> _logger;
-        private readonly UserManager<User> _userManager;
 
         public PostCommentsController(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
             ILogger<PostCommentsController> logger,
-            UserManager<User> userManager)
+            IPostCommentService postCommentService,
+            IUnitOfWork unitOfWork, IMapper mapper)
         {
+            _logger = logger;
+            _postCommentService = postCommentService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _logger = logger;
-            _userManager = userManager;
         }
 
         [Authorize(Roles = Roles.Administrator)]
@@ -52,7 +48,7 @@ namespace BlogManagement.Web.Controllers
         // GET: PostCommentsController/Create
         public async Task<ActionResult> Create()
         {
-            ViewBag.PostComments = await GetPostCommentsForSelectListAsync();
+            ViewBag.PostComments = await _postCommentService.GetPostCommentsForSelectListAsync();
             return View();
         }
 
@@ -65,29 +61,23 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var user = await _userManager.FindByNameAsync(User.Identity.Name);
-
-                    var postComment = _mapper.Map<PostComment>(request);
-
-                    postComment.UserId = user.Id;
-                    postComment.CreatedAt = DateTime.Now;
-
-                    var result = await _unitOfWork.PostCommentRepository.CreateAsync(postComment);
+                    var result = await _postCommentService.CreatePostCommentAsync(request, User.Identity?.Name);
 
                     if (result)
                     {
-                        await _unitOfWork.SaveAsync();
+                        TempData[Constants.Success] = Constants.SuccessMessage;
                         return RedirectToRoute($"Posts/{request.PostId}");
                     }
                 }
-                
+
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
             }
 
-            ViewBag.PostComments = GetPostCommentsForSelectListAsync(request.ParentId);
+            ViewBag.PostComments = await _postCommentService.GetPostCommentsForSelectListAsync(request.ParentId);
             return RedirectToRoute($"Posts/{request.PostId}");
         }
 
@@ -105,7 +95,7 @@ namespace BlogManagement.Web.Controllers
                 if (postComment is null)
                     throw new ArgumentException(Constants.InvalidArgument);
 
-                ViewBag.PostComments = await GetPostCommentsForSelectListAsync(postComment.ParentId);
+                ViewBag.PostComments = await _postCommentService.GetPostCommentsForSelectListAsync(postComment.ParentId);
 
                 postCommentVM = _mapper.Map<PostCommentEditVM>(postComment);
             }
@@ -153,7 +143,7 @@ namespace BlogManagement.Web.Controllers
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Edit));
             }
 
-            ViewBag.PostComments = await GetPostCommentsForSelectListAsync(request.ParentId);
+            ViewBag.PostComments = await _postCommentService.GetPostCommentsForSelectListAsync(request.ParentId);
 
             return View(request);
         }
@@ -163,10 +153,10 @@ namespace BlogManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(long id)
         {
-            long postId = 0L; 
+            long postId = 0L;
             try
             {
-                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                var user = await _unitOfWork.UserRepository.GetAsync(u => u.UserName == User.Identity?.Name);
 
                 if (id <= 0)
                     return NotFound();
@@ -187,14 +177,6 @@ namespace BlogManagement.Web.Controllers
             }
 
             return RedirectToRoute($"Posts/{postId}");
-        }
-
-        private async Task<SelectList> GetPostCommentsForSelectListAsync(long? parentId = null)
-        {
-            var postComments =
-                await _unitOfWork.PostCommentRepository.GetAllIdAndNameWithoutPagingAsync();
-
-            return new SelectList(postComments, "Id", "Title", parentId);
         }
     }
 }

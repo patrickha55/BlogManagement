@@ -51,7 +51,7 @@ namespace BlogManagement.Application.Repositories
             }
         }
 
-        public async Task<IPagedList<Post>> GetPostsForIndexAsync(Expression<Func<Post, bool>> expression, PagingRequest request)
+        public async Task<IPagedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null)
         {
             IQueryable<Post> query = Context.Posts;
 

@@ -1,4 +1,5 @@
-﻿@model List<BlogManagement.Common.Models.TagVMs.TagVM>
+﻿@using BlogManagement.Common.Common
+@model List<BlogManagement.Common.Models.TagVMs.TagVM>
 
 @{
     ViewData["Title"] = "Tags";
@@ -12,6 +13,15 @@
 else
 {
     <h1>Tags Overview</h1>
+
+    @if (TempData[Constants.Success] is not null)
+    {
+        @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Success])
+    }
+    else if (TempData[Constants.Error] is not null)
+    {
+        @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Error])
+    }
 
     <div class="row">
         <div class="col-12">

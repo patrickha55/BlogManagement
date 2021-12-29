@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Models.AuthorVMs;
 
 namespace BlogManagement.Web.Controllers
@@ -15,12 +16,18 @@ namespace BlogManagement.Web.Controllers
         private readonly ILogger<AdminsController> _logger;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
 
-        public UsersController(ILogger<AdminsController> logger, IMapper mapper, IUnitOfWork unitOfWork)
+        public UsersController(
+            ILogger<AdminsController> logger,
+            IMapper mapper,
+            IUnitOfWork unitOfWork,
+            IUserService userService)
         {
             _logger = logger;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
         // GET: UsersController/Details/5
@@ -28,24 +35,18 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                var user = await _unitOfWork.UserRepository.FindUserDetailAsync(u => u.Id == id);
-
-                if (user is null)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                var userVM = _mapper.Map<AuthorDetailVM>(user);
+                var userVM = await _userService.FindAuthorDetailVMAsync(id);
 
                 return View(userVM);
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Details));
             }
 
-            TempData["Error"] = "Something went wrong please try again later.";
+            TempData[Constants.Error] = Constants.ErrorMessage;
+
             return RedirectToAction(nameof(Index), "Home");
         }
 

@@ -22,6 +22,6 @@ namespace BlogManagement.Application.Contracts.Repositories
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        Task<IEnumerable<User>> FindUsersAsync(Expression<Func<User,bool>> expression);
+        Task<List<User>> FindUsersAsync(Expression<Func<User,bool>> expression);
     }
 }

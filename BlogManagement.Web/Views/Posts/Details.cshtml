@@ -13,15 +13,19 @@
 </style>
 
 <section class="ftco-section ftco-no-pt ftco-no-pb">
-    @if (Model.Item1 is null)
+    @if (Model?.Item1 is null)
     {
         <partial name="User/_LoaderPartial" />
     }
     else
     {
-        @if (TempData.Any())
+        @if (TempData[Constants.Success] is not null)
         {
-            <partial name="User/Partials/_StatusPartial" model="@TempData["Status"]" />
+            @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Success])
+        }
+        else if (TempData[Constants.Error] is not null)
+        {
+            @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Error])
         }
 
         <div class="row d-flex">
@@ -286,10 +290,8 @@
                 contentType: false,
                 processData: false,
                 success: function(res) {
-                    alert(@TempData["Status"]);
                 },
                 error: function(res) {
-                    alert('Failed');
                 }
             });
         } catch (e) {

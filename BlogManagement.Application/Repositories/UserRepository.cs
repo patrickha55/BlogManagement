@@ -40,7 +40,7 @@ namespace BlogManagement.Application.Repositories
             }
         }
 
-        public async Task<IEnumerable<User>> FindUsersAsync(Expression<Func<User, bool>> expression)
+        public async Task<List<User>> FindUsersAsync(Expression<Func<User, bool>> expression)
         {
             var user = new User();
 
