@@ -156,7 +156,7 @@ namespace BlogManagement.Web.Controllers
             long postId = 0L;
             try
             {
-                var user = await _unitOfWork.UserRepository.GetAsync(u => u.UserName == User.Identity?.Name);
+                var user = await _unitOfWork.UserRepository.GetAsync(u => u.UserName == User.Identity.Name);
 
                 if (id <= 0)
                     return NotFound();

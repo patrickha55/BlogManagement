@@ -33,6 +33,7 @@ namespace BlogManagement.Web
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IPostRatingService, PostRatingService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPostCommentService, PostCommentService>();
 
             services.AddAutoMapper(typeof(MapperConfig));
 
