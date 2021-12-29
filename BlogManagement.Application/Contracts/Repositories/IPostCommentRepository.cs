@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts
+namespace BlogManagement.Application.Contracts.Repositories
 {
     /// <summary>
     /// Post comment repository that implement a generic repository

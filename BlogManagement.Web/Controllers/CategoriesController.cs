@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using BlogManagement.Application.Contracts;
+﻿using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
-using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.TagVMs;
-using BlogManagement.Data.Entities;
+using BlogManagement.Common.Models.CategoryVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models.CategoryVMs;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -20,42 +15,27 @@ namespace BlogManagement.Web.Controllers
     [Route("Admins/Categories")]
     public class CategoriesController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly ILogger<CategoriesController> _logger;
+        private readonly ICategoryService _categoryService;
 
         public CategoriesController(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            ILogger<CategoriesController> logger)
+            ILogger<CategoriesController> logger,
+            ICategoryService categoryService)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _logger = logger;
+            _categoryService = categoryService;
         }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             var categoryVMs = new List<CategoryVM>();
-
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
-
-                var includes = new List<string> {"ParentCategory"};
-
-                var categories =
-                    await _unitOfWork.CategoryRepository
-                        .GetAllAsync(pagingRequest, null, includes);
-
-                categoryVMs = _mapper.Map<List<CategoryVM>>(categories);
+                categoryVMs = await _categoryService.GetCategoryVMsAsync(pageNumber, pageSize);
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Index));
             }
 
@@ -71,7 +51,7 @@ namespace BlogManagement.Web.Controllers
         [Route("Create")]
         public async Task<IActionResult> Create()
         {
-            ViewBag.CategoryName = await GetCategoriesForSelectListAsync();
+            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync();
 
             return View("~/Views/Admins/Categories/Create.cshtml");
         }
@@ -84,22 +64,22 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var category = _mapper.Map<Category>(request);
-                    var result = await _unitOfWork.CategoryRepository.CreateAsync(category);
+                    var result = await _categoryService.CreateCategoryAsync(request);
 
                     if (result)
                     {
-                        await _unitOfWork.SaveAsync();
+                        TempData["Success"] = Constants.Success;
                         return RedirectToAction(nameof(Index));
                     }
                 }
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
             }
 
-            ViewBag.CategoryName = await GetCategoriesForSelectListAsync(request.ParentId);
+            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(request.ParentId);
 
             return View("~/Views/Admins/Categories/Create.cshtml", request);
         }
@@ -108,28 +88,18 @@ namespace BlogManagement.Web.Controllers
         public async Task<IActionResult> Edit(long id)
         {
             var categoryVM = new CategoryEditVM();
+
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
+                categoryVM = await _categoryService.GetCategoryEditVMsAsync(id);
 
-                var category = await _unitOfWork.CategoryRepository.GetAsync(t => t.Id == id);
-
-                if (category is null)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                ViewBag.CategoryName = await GetCategoriesForSelectListAsync(category.ParentId);
-
-                categoryVM = _mapper.Map<CategoryEditVM>(category);
-            }
-            catch (ArgumentException e)
-            {
-                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(Edit));
+                ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(categoryVM.ParentId);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Edit));
             }
+
             return View("~/Views/Admins/Categories/Edit.cshtml", categoryVM);
         }
 
@@ -139,33 +109,32 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                if (id != request.Id)
-                    return NotFound();
-
                 if (ModelState.IsValid)
                 {
-                    var result = await _unitOfWork.CategoryRepository.UpdateAsync(_mapper.Map<Category>(request));
+                    var result = await _categoryService.UpdateCategoryAsync(id, request);
 
                     if (result)
                     {
-                        await _unitOfWork.SaveAsync();
+                        TempData[Constants.Success] = Constants.SuccessMessage;
                         return RedirectToAction(nameof(Index));
                     }
                 }
             }
             catch (DbUpdateConcurrencyException e)
             {
-                if (!await _unitOfWork.CategoryRepository.IsExistsAsync(id))
+                if (!await _categoryService.IsCategoryExist(id))
                     return NotFound();
 
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogInformation(e, "{0} {1}", Constants.ObjectAlreadyExists, nameof(Edit));
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Edit));
             }
 
-            ViewBag.CategoryName = await GetCategoriesForSelectListAsync(request.ParentId);
+            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(request.ParentId);
 
             return View("~/Views/Admins/Categories/Edit.cshtml", request);
         }
@@ -177,36 +146,19 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                if (id <= 0)
-                    return NotFound();
+                var result = await _categoryService.DeleteCategoryAsync(id);
 
-                var category = await _unitOfWork.CategoryRepository.GetAsync(t => t.Id == id);
-
-                if (category is null) return NotFound();
-
-                var result = await _unitOfWork.CategoryRepository.DeleteAsync(category);
-
-                if (result) await _unitOfWork.SaveAsync();
+                if (!result) TempData[Constants.Error] = Constants.ErrorMessage;
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Delete));
             }
 
+            TempData[Constants.Success] = Constants.SuccessMessage;
+
             return RedirectToAction(nameof(Index));
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="parentId"></param>
-        /// <returns></returns>
-        private async Task<SelectList> GetCategoriesForSelectListAsync(long? parentId = null)
-        {
-            var categories =
-                await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
-
-            return new SelectList(categories, "Id", "Title", parentId);
         }
     }
 }

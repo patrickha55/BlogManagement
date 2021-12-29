@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BlogManagement.Application.Contracts.Repositories;
 
 namespace BlogManagement.Application.Contracts
 {

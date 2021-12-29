@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts
+namespace BlogManagement.Application.Contracts.Repositories
 {
     /// <summary>
     /// 

@@ -1,13 +1,13 @@
-﻿using BlogManagement.Common.Models;
-using BlogManagement.Data.Entities;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using BlogManagement.Common.Models;
+using BlogManagement.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using X.PagedList;
 
-namespace BlogManagement.Application.Contracts
+namespace BlogManagement.Application.Contracts.Repositories
 {
     /// <summary>
     /// Post repository that implement a generic repository

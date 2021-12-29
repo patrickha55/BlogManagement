@@ -4,6 +4,7 @@ using BlogManagement.Data;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using BlogManagement.Application.Contracts.Repositories;
 
 namespace BlogManagement.Application
 {

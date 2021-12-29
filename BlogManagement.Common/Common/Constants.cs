@@ -13,6 +13,10 @@
         public const string NoRolesFound = "There are no roles matching the provided role names. ";
         public const string FileNotFound = "The image provided doesn't exists. ";
         public const string InvalidDirectory = "The directory is invalid. ";
+        public const string Success = "Success!";
+        public const string SuccessMessage = "Process completed successfully!";
+        public const string Error = "Error!";
+        public const string ErrorMessage = "Something went wrong. Please try again!";
 
         #endregion
 

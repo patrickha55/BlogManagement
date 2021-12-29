@@ -1,6 +1,8 @@
 ﻿using System;
 using BlogManagement.Application;
 using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Contracts.Repositories;
+using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Application.Repositories;
 using BlogManagement.Application.Services;
 using BlogManagement.Data.Configuration.MapperConfigs;
@@ -24,6 +26,8 @@ namespace BlogManagement.Web
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
+            services.AddScoped<ICategoryService, CategoryService>();
+
             services.AddAutoMapper(typeof(MapperConfig));
 
             // Register email sender service
@@ -33,6 +37,8 @@ namespace BlogManagement.Web
                     25,
                     "no-reply@andreamooreblogspace.com")
             );
+
+            
 
             services.ConfigureApplicationCookie(options =>
             {

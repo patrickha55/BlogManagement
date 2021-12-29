@@ -1,4 +1,4 @@
-﻿using BlogManagement.Application.Contracts;
+﻿using BlogManagement.Application.Contracts.Repositories;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Data;

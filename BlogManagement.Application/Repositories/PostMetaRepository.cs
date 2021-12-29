@@ -1,4 +1,4 @@
-﻿using BlogManagement.Application.Contracts;
+﻿using BlogManagement.Application.Contracts.Repositories;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using Microsoft.Extensions.Logging;
