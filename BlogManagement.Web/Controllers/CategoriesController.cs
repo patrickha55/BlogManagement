@@ -68,7 +68,7 @@ namespace BlogManagement.Web.Controllers
 
                     if (result)
                     {
-                        TempData["Success"] = Constants.Success;
+                        TempData[Constants.Success] = Constants.SuccessMessage;
                         return RedirectToAction(nameof(Index));
                     }
                 }

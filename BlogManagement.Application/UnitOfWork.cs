@@ -21,10 +21,7 @@ namespace BlogManagement.Application
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly BlogManagementContext _context;
-
         #region Repositories
-
         private IPostRepository _postsRepository;
         private ITagRepository _tagRepository;
         private ICategoryRepository _categoryRepository;
@@ -47,14 +44,14 @@ namespace BlogManagement.Application
 
         public UnitOfWork(
             BlogManagementContext context,
-            ILogger<CategoryRepository> categoryLogger, 
+            ILogger<CategoryRepository> categoryLogger,
             ILogger<PostRepository> postLogger,
             ILogger<PostMetaRepository> postMetaLogger,
-            ILogger<TagRepository> tagLogger, 
-            ILogger<PostCommentRepository> postCommentLogger, 
+            ILogger<TagRepository> tagLogger,
+            ILogger<PostCommentRepository> postCommentLogger,
             ILogger<UserRepository> userRepositoryLogger)
         {
-            _context = context;
+            Context = context;
             _postLogger = postLogger;
             _tagLogger = tagLogger;
             _postCommentLogger = postCommentLogger;
@@ -68,29 +65,34 @@ namespace BlogManagement.Application
          */
 
         public IPostCommentRepository PostCommentRepository =>
-            _postCommentRepository ??= new PostCommentRepository(_context, _postCommentLogger);
+            _postCommentRepository ??= new PostCommentRepository(Context, _postCommentLogger);
 
         public IPostMetaRepository PostMetaRepository =>
-            _postMetaRepository ??= new PostMetaRepository(_context, _postMetaLogger);
+            _postMetaRepository ??= new PostMetaRepository(Context, _postMetaLogger);
 
-        public IPostRepository PostRepository => 
-            _postsRepository ??= new PostRepository(_context, _postLogger);
+        public IPostRepository PostRepository =>
+            _postsRepository ??= new PostRepository(Context, _postLogger);
 
-        public ITagRepository TagRepository => 
-            _tagRepository ??= new TagRepository(_context, _tagLogger);
+        public ITagRepository TagRepository =>
+            _tagRepository ??= new TagRepository(Context, _tagLogger);
 
         public IUserRepository UserRepository =>
-            _userRepository ??= new UserRepository(_context, _userRepositoryLogger);
+            _userRepository ??= new UserRepository(Context, _userRepositoryLogger);
 
         public ICategoryRepository CategoryRepository =>
-            _categoryRepository ??= new CategoryRepository(_context, _categoryLogger);
+            _categoryRepository ??= new CategoryRepository(Context, _categoryLogger);
+
+        public BlogManagementContext Context { get; }
 
         public void Dispose()
         {
-            _context.Dispose();
+            Context.Dispose();
             GC.SuppressFinalize(this);
         }
 
-        public async Task SaveAsync() => await _context.SaveChangesAsync();
+        public async Task SaveAsync()
+        {
+            await Context.SaveChangesAsync();
+        }
     }
 }

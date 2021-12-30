@@ -20,8 +20,8 @@ namespace BlogManagement.Application.Services
         private readonly ILogger<CategoryService> _logger;
 
         public CategoryService(
-            IUnitOfWork unitOfWork, 
-            IMapper mapper, 
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
             ILogger<CategoryService> logger)
         {
             _unitOfWork = unitOfWork;
@@ -90,6 +90,7 @@ namespace BlogManagement.Application.Services
 
         public async Task<bool> CreateCategoryAsync(CategoryCreateVM request)
         {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
             try
             {
                 var category = _mapper.Map<Category>(request);
@@ -98,12 +99,15 @@ namespace BlogManagement.Application.Services
                 if (result)
                 {
                     await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
                     return true;
                 }
+
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateCategoryAsync));
+                await transaction.RollbackAsync();
             }
 
             return false;
