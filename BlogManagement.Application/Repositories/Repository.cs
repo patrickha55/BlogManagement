@@ -101,6 +101,7 @@ namespace BlogManagement.Application.Repositories
             catch (Exception e)
             {
                 Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateAsync));
+                await transaction.RollbackAsync();
                 throw;
             }
         }

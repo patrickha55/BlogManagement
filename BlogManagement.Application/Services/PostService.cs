@@ -27,7 +27,6 @@ namespace BlogManagement.Application.Services
         private readonly UserManager<User> _userManager;
         private readonly IRepository<CategoryPost> _categoryPostRepository;
         private readonly IRepository<PostTag> _postTagRepository;
-        private readonly IRepository<PostRating> _postRatingRepository;
 
         public PostService(
             IUnitOfWork unitOfWork,
@@ -35,8 +34,7 @@ namespace BlogManagement.Application.Services
             ILogger<PostService> logger,
             UserManager<User> userManager,
             IRepository<CategoryPost> categoryPostRepository,
-            IRepository<PostTag> postTagRepository,
-            IRepository<PostRating> postRatingRepository)
+            IRepository<PostTag> postTagRepository)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -44,7 +42,6 @@ namespace BlogManagement.Application.Services
             _userManager = userManager;
             _categoryPostRepository = categoryPostRepository;
             _postTagRepository = postTagRepository;
-            _postRatingRepository = postRatingRepository;
         }
         public async Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(string userName = null, int pageNumber = 1, int pageSize = 10)
         {
