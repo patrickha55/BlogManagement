@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BlogManagement.Application.Contracts.Repositories;
+using BlogManagement.Data;
 
 namespace BlogManagement.Application.Contracts
 {
@@ -16,8 +17,8 @@ namespace BlogManagement.Application.Contracts
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
+        BlogManagementContext Context { get; }
         #region Repositories
-
         ICategoryRepository CategoryRepository { get; }
         IPostCommentRepository PostCommentRepository { get; }
         IPostMetaRepository PostMetaRepository { get; }
@@ -25,7 +26,7 @@ namespace BlogManagement.Application.Contracts
         ITagRepository TagRepository { get; }
         IUserRepository UserRepository { get; }
 
-            #endregion
+        #endregion
 
         /// <summary>
         /// This method call the save method on the DbContext to commit this transaction.

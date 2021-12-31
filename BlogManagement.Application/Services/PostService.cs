@@ -2,7 +2,6 @@
 using BlogManagement.Application.Contracts;
 using BlogManagement.Application.Contracts.Repositories;
 using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
@@ -16,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
+using Constants = BlogManagement.Common.Common.Constants;
 
 namespace BlogManagement.Application.Services
 {
@@ -191,6 +191,7 @@ namespace BlogManagement.Application.Services
 
         public async Task<bool> CreatePostAsync(PostCreateVM request, string userName)
         {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
             try
             {
                 var user = await _userManager.FindByNameAsync(userName);
@@ -226,6 +227,7 @@ namespace BlogManagement.Application.Services
                 if (createPostResult && createPostTagResult && createCategoryResult)
                 {
                     await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
                     return true;
                 }
 
@@ -233,6 +235,7 @@ namespace BlogManagement.Application.Services
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostAsync));
+                await transaction.RollbackAsync();
                 throw;
             }
 
