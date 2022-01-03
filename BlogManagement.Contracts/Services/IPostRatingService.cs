@@ -1,10 +1,11 @@
 ﻿using BlogManagement.Common.Models.PostRatingVMs;
+using JetBrains.Annotations;
 
 namespace BlogManagement.Contracts.Services
 {
     public interface IPostRatingService
     {
-        Task<PostRatingVM> GetPostRatingVMAsync(long id);
+        [ItemCanBeNull] Task<PostRatingVM> GetPostRatingVMAsync(long id);
 
         Task<PostRatingVM> RateAPostAsync(PostRatingCreateVM request);
     }

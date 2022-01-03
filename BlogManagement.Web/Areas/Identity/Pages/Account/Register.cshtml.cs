@@ -14,7 +14,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AutoMapper;
 using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.UserDTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using Constants = BlogManagement.Common.Common.Constants;
@@ -25,7 +27,6 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
-        private readonly RoleManager<IdentityRole<long>> _roleManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
@@ -34,14 +35,12 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            RoleManager<IdentityRole<long>> roleManager)
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -108,42 +107,23 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = Input.UserName, Email = Input.Email };
+                var userRegisterDTO = new UserRegisterDTO
+                {
+                    FirstName = Input.FirstName,
+                    MiddleName = Input.MiddleName,
+                    LastName = Input.LastName,
+                    UserName = Input.UserName,
+                    IsAuthor = Input.IsAuthor,
+                    IsPublic = Input.IsPublic,
+                    Email = Input.Email,
+                    Password = Input.Password
+                };
 
-                #region Fill in the customized user's info
+                // TODO: Add call to http client
 
-                if(!string.IsNullOrWhiteSpace(Input.FirstName))
-                    user.FirstName = Input.FirstName;
-
-                if(!string.IsNullOrWhiteSpace(Input.MiddleName))
-                    user.MiddleName = Input.MiddleName;
-
-                if(!string.IsNullOrWhiteSpace(Input.LastName))
-                    user.LastName = Input.LastName;
-
-                user.IsPublic = Input.IsPublic;
-                user.ImageUrl = Constants.DefaultImage;
-                #endregion
-
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    #region Add new user to a user or author role.
-
-                    var isRoleUserExists = await _roleManager.Roles
-                        .AnyAsync(r => r.Name == Roles.User);
-                    var isRoleAuthorExists = await _roleManager.Roles
-                        .AnyAsync(r => r.Name == Roles.Author);
-
-                    if (!isRoleUserExists || !isRoleAuthorExists)
-                        throw new KeyNotFoundException(Constants.NoRolesFound + nameof(OnPostAsync));
-
-                    await _userManager.AddToRoleAsync(user, Input.IsAuthor ? Roles.Author : Roles.User);
-
-                    #endregion
-
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(

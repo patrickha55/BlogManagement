@@ -1,4 +1,7 @@
-﻿using BlogManagement.Common.Models.AuthorVMs;
+﻿using BlogManagement.Common.DTOs.UserDTOs;
+using BlogManagement.Common.Models.AuthorVMs;
+using BlogManagement.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace BlogManagement.Contracts.Services
 {
@@ -8,5 +11,6 @@ namespace BlogManagement.Contracts.Services
         Task<AuthorDetailVM> FindAuthorDetailVMAsync(long id);
         Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword);
         Task<bool> EditUserStatusesAsync(long id, AuthorDetailVM request);
+        Task<(IdentityResult, User)> RegisterAsync(UserRegisterDTO userRegisterDTO);
     }
 }

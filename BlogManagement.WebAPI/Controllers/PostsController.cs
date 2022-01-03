@@ -1,14 +1,14 @@
-﻿using System;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Contracts.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Common.Common;
-using BlogManagement.Common.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

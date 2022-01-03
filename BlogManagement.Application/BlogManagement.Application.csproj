@@ -14,4 +14,8 @@
     <ProjectReference Include="..\BlogManagement.Data\BlogManagement.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

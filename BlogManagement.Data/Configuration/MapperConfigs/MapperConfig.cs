@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlogManagement.Common.DTOs.UserDTOs;
 using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
@@ -73,6 +74,13 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             CreateMap<Tag, TagVM>().ReverseMap();
             CreateMap<Tag, TagCreateVM>().ReverseMap();
             CreateMap<Tag, TagEditVM>().ReverseMap();
+
+            #endregion
+
+            #region UserDTOs
+
+            CreateMap<User, UserLoginDTO>().ReverseMap();
+            CreateMap<User, UserRegisterDTO>().ReverseMap();
 
             #endregion
 

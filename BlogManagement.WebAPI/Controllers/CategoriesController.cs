@@ -1,12 +1,14 @@
-﻿using System;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Contracts.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Common.Common;
-using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.CategoryVMs;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,6 +31,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // GET: api/<CategoriesController>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<CategoryVM>>> Get([FromQuery] PagingRequest pagingRequest)
         {
             var categories = new List<CategoryVM>();
@@ -49,7 +52,8 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         // GET api/<CategoriesController>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:long}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CategoryVM>> Get(long id)
         {
             try
@@ -78,7 +82,7 @@ namespace BlogManagement.WebAPI.Controllers
         {
             try
             {
-                if (request is null) 
+                if (request is null)
                     return BadRequest(Constants.PleaseFillIn);
 
                 var result = await _categoryService.CreateCategoryAsync(request);

@@ -21,15 +21,12 @@ namespace BlogManagement.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogManagement.WebAPI", Version = "v1" });
-            });
-
+            services.ConfigureSwagger();
             services.ConfigureApplicationContext(Configuration);
             services.RegisterServices();
             services.ConfigureCors();
             services.ConfigureIdentity();
+            services.ConfigureJwt(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +37,7 @@ namespace BlogManagement.WebAPI
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlogManagement.WebAPI v1"));
+
             }
 
             app.UseHttpsRedirection();
