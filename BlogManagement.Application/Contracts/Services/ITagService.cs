@@ -12,7 +12,7 @@ namespace BlogManagement.Application.Contracts.Services
         Task<TagEditVM> GetTagEditVMsAsync(long id);
         Task<bool> CreateTagAsync(TagCreateVM request);
         Task<bool> UpdateTagAsync(long id, TagEditVM request);
-        Task<bool> DeleteTagAsync(long id);
+        Task<bool> DeleteTagAsync(TagVM tagVM);
         Task<bool> IsTagExist(long id);
     }
 }

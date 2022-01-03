@@ -144,21 +144,7 @@ namespace BlogManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(long id)
         {
-            try
-            {
-                var result = await _categoryService.DeleteCategoryAsync(id);
-
-                if (!result) TempData[Constants.Error] = Constants.ErrorMessage;
-            }
-            catch (Exception e)
-            {
-                TempData[Constants.Error] = Constants.ErrorMessage;
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Delete));
-            }
-
-            TempData[Constants.Success] = Constants.SuccessMessage;
-
-            return RedirectToAction(nameof(Index));
+            throw new NotImplementedException();
         }
     }
 }

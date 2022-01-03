@@ -72,5 +72,12 @@ namespace BlogManagement.Data
 
             return base.SaveChangesAsync(cancellationToken);
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
     }
 }

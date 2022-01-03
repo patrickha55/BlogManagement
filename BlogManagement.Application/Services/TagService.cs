@@ -1,18 +1,14 @@
-﻿using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Common.Models.CategoryVMs;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BlogManagement.Application.Services
 {
@@ -57,30 +53,34 @@ namespace BlogManagement.Application.Services
             return tagVMs;
         }
 
-        public Task<TagVM> GetTagVMAsync(long id)
+        public async Task<TagVM> GetTagVMAsync(long id)
         {
-            throw new NotImplementedException();
+            TagVM tagVM;
+
+            try
+            {
+                var tag = await _unitOfWork.TagRepository.GetAsync(t => t.Id == id);
+
+                tagVM = _mapper.Map<TagVM>(tag);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetTagEditVMsAsync));
+                throw;
+            }
+
+            return tagVM;
         }
 
         public async Task<TagEditVM> GetTagEditVMsAsync(long id)
         {
-            var tagVM = new TagEditVM();
+            TagEditVM tagVM;
+
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
                 var tag = await _unitOfWork.TagRepository.GetAsync(t => t.Id == id);
-
-                if (tag is null)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
+                
                 tagVM = _mapper.Map<TagEditVM>(tag);
-            }
-            catch (ArgumentException e)
-            {
-                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetTagEditVMsAsync));
-                throw;
             }
             catch (Exception e)
             {
@@ -93,20 +93,25 @@ namespace BlogManagement.Application.Services
 
         public async Task<bool> CreateTagAsync(TagCreateVM request)
         {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+
             try
             {
                 var tag = _mapper.Map<Tag>(request);
+
                 var result = await _unitOfWork.TagRepository.CreateAsync(tag);
 
                 if (result)
                 {
                     await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
                     return true;
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateTagAsync));
+                await transaction.RollbackAsync();
                 throw;
             }
 
@@ -115,6 +120,8 @@ namespace BlogManagement.Application.Services
 
         public async Task<bool> UpdateTagAsync(long id, TagEditVM request)
         {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+
             try
             {
                 if (id != request.Id)
@@ -125,28 +132,25 @@ namespace BlogManagement.Application.Services
                 if (result)
                 {
                     await _unitOfWork.SaveAsync();
+                    await transaction.RollbackAsync();
                     return true;
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdateTagAsync));
+                await transaction.RollbackAsync();
                 throw;
             }
 
             return false;
         }
 
-        public async Task<bool> DeleteTagAsync(long id)
+        public async Task<bool> DeleteTagAsync(TagVM tagVM)
         {
             try
             {
-                if (id <= 0)
-                    return false;
-
-                var tag = await _unitOfWork.TagRepository.GetAsync(t => t.Id == id);
-
-                if (tag is null) return false;
+                var tag = _mapper.Map<Tag>(tagVM);
 
                 var result = await _unitOfWork.TagRepository.DeleteAsync(tag);
 

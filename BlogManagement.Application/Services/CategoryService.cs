@@ -1,15 +1,15 @@
-﻿using BlogManagement.Application.Contracts.Services;
+﻿using AutoMapper;
+using BlogManagement.Application.Contracts;
+using BlogManagement.Application.Contracts.Services;
+using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Common.Common;
-using BlogManagement.Common.Models;
-using BlogManagement.Data.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace BlogManagement.Application.Services
 {
@@ -88,9 +88,40 @@ namespace BlogManagement.Application.Services
             return categoryVM;
         }
 
+        public async Task<CategoryVM> GetCategoryVMAsync(long id)
+        {
+            CategoryVM categoryVM;
+
+            try
+            {
+                if (id <= 0)
+                    throw new ArgumentException(Constants.InvalidArgument);
+
+                var category = await _unitOfWork.CategoryRepository.GetAsync(t => t.Id == id);
+
+                if (category is null)
+                    throw new ArgumentException(Constants.InvalidArgument);
+
+                categoryVM = _mapper.Map<CategoryVM>(category);
+            }
+            catch (ArgumentException e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(GetCategoryEditVMsAsync));
+                throw;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoryEditVMsAsync));
+                throw;
+            }
+
+            return categoryVM;
+        }
+
         public async Task<bool> CreateCategoryAsync(CategoryCreateVM request)
         {
             await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+
             try
             {
                 var category = _mapper.Map<Category>(request);
@@ -139,16 +170,11 @@ namespace BlogManagement.Application.Services
             return false;
         }
 
-        public async Task<bool> DeleteCategoryAsync(long id)
+        public async Task<bool> DeleteCategoryAsync(CategoryVM categoryVM)
         {
             try
             {
-                if (id <= 0)
-                    return false;
-
-                var category = await _unitOfWork.CategoryRepository.GetAsync(t => t.Id == id);
-
-                if (category is null) return false;
+                var category = _mapper.Map<Category>(categoryVM);
 
                 var result = await _unitOfWork.CategoryRepository.DeleteAsync(category);
 

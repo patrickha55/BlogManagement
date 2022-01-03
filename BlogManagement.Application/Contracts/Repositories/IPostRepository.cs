@@ -1,10 +1,11 @@
-﻿using System;
+﻿using BlogManagement.Common.Models;
+using BlogManagement.Data.Entities;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models;
-using BlogManagement.Data.Entities;
-using Microsoft.AspNetCore.Http;
 using X.PagedList;
 
 namespace BlogManagement.Application.Contracts.Repositories
@@ -39,11 +40,27 @@ namespace BlogManagement.Application.Contracts.Repositories
         /// <returns></returns>
         Task<IEnumerable<Post>> GetAllPostIdsAndTitles();
         /// <summary>
+        /// This method gets all post without using paging.
+        /// </summary>
+        /// <param name="expression">Delegate method for filtering out posts</param>
+        /// <param name="includes">Related relationship of a post</param>
+        /// <returns>List of posts</returns>
+        Task<IEnumerable<Post>> GetAllPostWithoutPaging([CanBeNull] Expression<Func<Post, bool>> expression = null,
+            [CanBeNull] List<string> includes = null);
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="post"></param>
         /// <param name="formFile"></param>
         /// <returns></returns>
-        Task<bool> CreatePostAsync(Post post, IFormFile formFile);
+        Task<Post> CreatePostAsync(Post post, IFormFile formFile);
+
+        /// <summary>
+        /// This method update an existing post in DB
+        /// </summary>
+        /// <param name="post"></param>
+        /// <param name="formFile">Image of a post to to update</param>
+        /// <returns></returns>
+        Task<bool> UpdatePostAsync(Post post, [CanBeNull] IFormFile formFile);
     }
 }

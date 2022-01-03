@@ -18,6 +18,9 @@
         public const string RatingSuccessMessage = "Thank you for your rating!";
         public const string Error = "Error!";
         public const string ErrorMessage = "Something went wrong. Please try again!";
+        public const string PleaseFillIn = "Please fill in the field.";
+        public const string NotFoundResponse = "Can't find the object with the provided argument.";
+        public const string ErrorForUser = "Something went wrong.";
 
         #endregion
 

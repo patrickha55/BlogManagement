@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BlogManagement.Application.Contracts.Repositories;
 using BlogManagement.Data;
+using BlogManagement.Data.Entities;
 
 namespace BlogManagement.Application.Contracts
 {
@@ -14,6 +15,8 @@ namespace BlogManagement.Application.Contracts
     ///     + PostRepository.
     ///     + TagRepository.
     ///     + UserRepository.
+    ///     + CategoryPostRepository.
+    ///     + PostTagRepository.
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
@@ -25,6 +28,8 @@ namespace BlogManagement.Application.Contracts
         IPostRepository PostRepository { get; }
         ITagRepository TagRepository { get; }
         IUserRepository UserRepository { get; }
+        IRepository<CategoryPost> CategoryPostRepository { get; }
+        IRepository<PostTag> PostTagRepository { get; }
 
         #endregion
 

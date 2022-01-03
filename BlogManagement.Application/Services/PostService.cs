@@ -43,29 +43,21 @@ namespace BlogManagement.Application.Services
             _categoryPostRepository = categoryPostRepository;
             _postTagRepository = postTagRepository;
         }
-        public async Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(string userName = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest, long? authorId = null)
         {
-            var postVMs = new List<PostForIndexVM>();
+            List<PostForIndexVM> postVMs;
 
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
-
                 IPagedList<Post> posts;
 
-                if (userName is null)
+                if (authorId is null)
                 {
                     posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest);
                 }
                 else
                 {
-                    var user = await _userManager.FindByNameAsync(userName);
-
-                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest, p => p.AuthorId == user.Id);
+                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest, p => p.AuthorId == authorId);
                 }
 
                 postVMs = _mapper.Map<List<PostForIndexVM>>(posts);
@@ -129,15 +121,48 @@ namespace BlogManagement.Application.Services
             return postVMs;
         }
 
+        public async Task<Post> GetPostAsync(long id)
+        {
+            try
+            {
+                var post = await _unitOfWork.PostRepository.GetAsync(p => p.Id == id);
+
+                return post;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostAsync));
+                throw;
+            }
+        }
+
+        public async Task<PostVM> GetPostVMAsync(long id)
+        {
+            PostVM postVM;
+
+            try
+            {
+                var post = await _unitOfWork.PostRepository.GetAsync(p => p.Id == id);
+
+                postVM = _mapper.Map<PostVM>(post);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostVMAsync));
+                throw;
+            }
+
+            return postVM;
+        }
+
         public async Task<PostDetailVM> GetPostDetailVMAsync(long id, string userName)
         {
             var postDetailVM = new PostDetailVM();
             try
             {
-                if (id <= 0 || !await _unitOfWork.PostRepository.IsExistsAsync(id))
-                    throw new ArgumentException(Constants.InvalidArgument);
-
                 var post = await _unitOfWork.PostRepository.GetPostDetailsAsync(id);
+
+                if (post is null) return null;
 
                 postDetailVM = _mapper.Map<PostDetailVM>(post);
 
@@ -189,7 +214,7 @@ namespace BlogManagement.Application.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> CreatePostAsync(PostCreateVM request, string userName)
+        public async Task<PostVM> CreatePostAsync(PostCreateVM request, string userName)
         {
             await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
             try
@@ -204,8 +229,10 @@ namespace BlogManagement.Application.Services
                     await _unitOfWork.PostRepository
                         .CreatePostAsync(post, request.Image);
 
-                if (createPostResult)
-                    await _unitOfWork.SaveAsync();
+                if (createPostResult is null)
+                    return null;
+
+                await _unitOfWork.SaveAsync();
 
                 var createCategoryResult =
                     await _categoryPostRepository
@@ -224,11 +251,11 @@ namespace BlogManagement.Application.Services
                         await _postTagRepository.CreateAsync(new PostTag { PostId = post.Id, TagId = tagId });
                 }
 
-                if (createPostResult && createPostTagResult && createCategoryResult)
+                if (createPostResult is not null && createPostTagResult && createCategoryResult)
                 {
                     await _unitOfWork.SaveAsync();
                     await transaction.CommitAsync();
-                    return true;
+                    return _mapper.Map<PostVM>(createPostResult);
                 }
 
             }
@@ -239,22 +266,119 @@ namespace BlogManagement.Application.Services
                 throw;
             }
 
+            return null;
+        }
+
+        public async Task<bool> UpdatePostAsync(long id, PostEditVM request)
+        {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+            try
+            {
+                var post = _mapper.Map<Post>(request);
+
+                var postResult =
+                    await _unitOfWork.PostRepository
+                        .UpdatePostAsync(post, request.Image);
+
+                if (postResult is false)
+                    return false;
+
+                await _unitOfWork.SaveAsync();
+
+                var posts = await _unitOfWork.PostRepository.GetAllPostWithoutPaging(p => p.Id == request.Id,
+                    new List<string>() { "CategoryPosts", "PostTags" });
+
+                var categoryPostResult = false;
+                var postTagResult = false;
+
+                foreach (var postDetail in posts)
+                {
+                    foreach (var categoryPost in postDetail.CategoryPosts)
+                    {
+                        if (categoryPost.CategoryId != request.CategoryId)
+                        {
+                            await _unitOfWork.CategoryPostRepository.DeleteAsync(categoryPost);
+
+                            categoryPostResult =
+                                await _unitOfWork.CategoryPostRepository
+                                    .CreateAsync(new CategoryPost
+                                    {
+                                        CategoryId = request.CategoryId,
+                                        PostId = postDetail.Id
+                                    });
+                        }
+                    }
+
+                    foreach (var postTag in postDetail.PostTags)
+                    {
+                        if (!request.TagIds.Contains(postTag.TagId))
+                            await _unitOfWork.PostTagRepository.DeleteAsync(postTag);
+
+                        for (var index = 0; index < request.TagIds.Count; index++)
+                        {
+                            var tagId = request.TagIds[index];
+
+                            if (tagId == postTag.TagId)
+                            {
+                                postTagResult = true;
+                                continue;
+                            }
+                                
+
+                            postTagResult =
+                                await _postTagRepository.CreateAsync(new PostTag {PostId = post.Id, TagId = tagId});
+
+                            request.TagIds.Remove(tagId);
+                        }
+                    }
+                }
+
+                if (postResult && postTagResult && postTagResult)
+                {
+                    await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdatePostAsync));
+                await transaction.RollbackAsync();
+                throw;
+            }
+
             return false;
         }
 
-        public Task<bool> UpdatePostAsync(long id, PostEditVM request)
+        public async Task<bool> DeletePostAsync(Post post)
         {
-            throw new NotImplementedException();
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+            try
+            {
+                var result = await _unitOfWork.PostRepository.DeleteAsync(post);
+
+                if (result)
+                {
+                    await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                //await _unitOfWork.CategoryPostRepository
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeletePostAsync));
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return false;
         }
 
-        public Task<bool> DeletePostAsync(long id)
+        public async Task<bool> IsPostExistAsync(long id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> IsPostExistAsync(long id)
-        {
-            throw new NotImplementedException();
+            return await _unitOfWork.PostRepository.IsExistsAsync(id);
         }
 
         public async Task<(SelectList categories, SelectList tags, SelectList posts)> GetSelectListsForPostCreationAsync(long? categoryId = null, IEnumerable<long> tagIds = null, long? postId = null)

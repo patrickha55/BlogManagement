@@ -37,6 +37,7 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
 
             CreateMap<Post, PostVM>().ReverseMap();
             CreateMap<Post, PostCreateVM>().ReverseMap();
+            CreateMap<Post, PostEditVM>().ReverseMap();
             CreateMap<Post, PostDetailVM>().ReverseMap();
             CreateMap<Post, PostForAdminIndexVM>().ReverseMap();
             CreateMap<Post, PostForIndexVM>().ReverseMap();

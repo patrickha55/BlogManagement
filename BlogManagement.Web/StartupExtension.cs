@@ -25,18 +25,6 @@ namespace BlogManagement.Web
         /// <param name="services"></param>
         public static void RegisterServices(this IServiceCollection services)
         {
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<ITagService, TagService>();
-            services.AddScoped<IPostService, PostService>();
-            services.AddScoped<IPostRatingService, PostRatingService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IPostCommentService, PostCommentService>();
-
-            services.AddAutoMapper(typeof(MapperConfig));
-
             // Register email sender service
             services.AddTransient<IEmailSender>(o =>
                 new EmailSender(

@@ -92,13 +92,12 @@ namespace BlogManagement.Application.Repositories
             try
             {
                 var result = await Context.Set<TEntity>().AddAsync(entity);
-                
+
                 return result.State is EntityState.Added;
             }
             catch (Exception e)
             {
                 Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateAsync));
-                await transaction.RollbackAsync();
                 throw;
             }
         }
@@ -108,7 +107,7 @@ namespace BlogManagement.Application.Repositories
             try
             {
                 var result = Context.Set<TEntity>().Update(entity);
-                
+
                 return await Task.FromResult(result.State is EntityState.Modified);
             }
             catch (Exception e)
@@ -120,13 +119,11 @@ namespace BlogManagement.Application.Repositories
 
         public async Task<bool> DeleteAsync(TEntity entity)
         {
-            await using var transaction = await Context.Database.BeginTransactionAsync();
 
             try
             {
                 var result = Context.Set<TEntity>().Remove(entity);
 
-                await transaction.CommitAsync();
                 return await Task.FromResult(result.State is EntityState.Deleted);
             }
             catch (Exception e)
@@ -134,6 +131,21 @@ namespace BlogManagement.Application.Repositories
                 Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeleteAsync));
                 throw;
             }
+        }
+
+        public Task DeleteRangeAsync(List<TEntity> entities)
+        {
+            try
+            {
+                Context.Set<TEntity>().RemoveRange(entities);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeleteRangeAsync));
+                throw;
+            }
+
+            return Task.CompletedTask;
         }
 
         public async Task<bool> IsExistsAsync(long id)

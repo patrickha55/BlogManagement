@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using BlogManagement.Common.Models.PostVMs;
 using X.PagedList;
 
 namespace BlogManagement.Application.Repositories
@@ -83,9 +84,6 @@ namespace BlogManagement.Application.Repositories
 
             try
             {
-                if (!await IsExistsAsync(postId))
-                    throw new ArgumentException(Constants.InvalidArgument);
-
                 query = query.Include(p => p.User)
                     .Include(p => p.PostComments)
                     .ThenInclude(pc => pc.User)
@@ -134,7 +132,36 @@ namespace BlogManagement.Application.Repositories
             }
         }
 
-        public async Task<bool> CreatePostAsync(Post post, [CanBeNull] IFormFile formFile)
+        public async Task<IEnumerable<Post>> GetAllPostWithoutPaging(Expression<Func<Post, bool>> expression = null, List<string> includes = null)
+        {
+            IQueryable<Post> query = Context.Posts;
+            try
+            {
+                if (expression is not null)
+                {
+                    query = query.Where(expression);
+                }
+
+                if (includes is not null)
+                {
+                    foreach (var include in includes)
+                    {
+                        query = query.Include(include);
+                    }
+                }
+
+                return await query.AsNoTracking()
+                    .Select(p => new Post { Id = p.Id, CategoryPosts = p.CategoryPosts, PostTags = p.PostTags })
+                    .ToListAsync();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllPostWithoutPaging));
+                throw;
+            }
+        }
+
+        public async Task<Post> CreatePostAsync(Post post, [CanBeNull] IFormFile formFile)
         {
             try
             {
@@ -146,7 +173,7 @@ namespace BlogManagement.Application.Repositories
                 var result = await Context.Posts.AddAsync(post);
 
                 if (result.State is EntityState.Added)
-                    return true;
+                    return post;
             }
             catch (DirectoryNotFoundException e)
             {
@@ -164,7 +191,37 @@ namespace BlogManagement.Application.Repositories
                 throw;
             }
 
-            return false;
+            return null;
+        }
+
+        public async Task<bool> UpdatePostAsync(Post post, IFormFile formFile)
+        {
+            try
+            {
+                Context.Entry(post).State = EntityState.Modified;
+
+                if (formFile is not null)
+                {
+                    post.ImageUrl = $@"images/{await HandleImageUpload(formFile)}";
+                }
+                
+                return true;
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.InvalidDirectory, nameof(CreatePostAsync));
+                throw;
+            }
+            catch (FileNotFoundException e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.FileNotFound, nameof(CreatePostAsync));
+                throw;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostAsync));
+                throw;
+            }
         }
 
         private static async Task<string> HandleImageUpload(IFormFile formFile)

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using BlogManagement.Application.Contracts.Repositories;
+using BlogManagement.Data.Entities;
 
 namespace BlogManagement.Application
 {
@@ -28,6 +29,8 @@ namespace BlogManagement.Application
         private IPostMetaRepository _postMetaRepository;
         private IPostCommentRepository _postCommentRepository;
         private IUserRepository _userRepository;
+        private IRepository<CategoryPost> _categoryPostRepository;
+        private IRepository<PostTag> _postTagRepository;
 
         #endregion
 
@@ -39,6 +42,8 @@ namespace BlogManagement.Application
         private readonly ILogger<PostMetaRepository> _postMetaLogger;
         private readonly ILogger<PostCommentRepository> _postCommentLogger;
         private readonly ILogger<UserRepository> _userRepositoryLogger;
+        private readonly ILogger<Repository<CategoryPost>> _categoryPostLogger;
+        private readonly ILogger<Repository<PostTag>> _postTagLogger;
 
         #endregion
 
@@ -49,13 +54,17 @@ namespace BlogManagement.Application
             ILogger<PostMetaRepository> postMetaLogger,
             ILogger<TagRepository> tagLogger,
             ILogger<PostCommentRepository> postCommentLogger,
-            ILogger<UserRepository> userRepositoryLogger)
+            ILogger<UserRepository> userRepositoryLogger,
+            ILogger<Repository<CategoryPost>> categoryPostLogger,
+            ILogger<Repository<PostTag>> postTagLogger)
         {
             Context = context;
             _postLogger = postLogger;
             _tagLogger = tagLogger;
             _postCommentLogger = postCommentLogger;
             _userRepositoryLogger = userRepositoryLogger;
+            _categoryPostLogger = categoryPostLogger;
+            _postTagLogger = postTagLogger;
             _categoryLogger = categoryLogger;
             _postMetaLogger = postMetaLogger;
         }
@@ -78,6 +87,12 @@ namespace BlogManagement.Application
 
         public IUserRepository UserRepository =>
             _userRepository ??= new UserRepository(Context, _userRepositoryLogger);
+
+        public IRepository<CategoryPost> CategoryPostRepository =>
+            _categoryPostRepository ??= new Repository<CategoryPost>(Context, _categoryPostLogger);
+
+        public IRepository<PostTag> PostTagRepository
+            => _postTagRepository ??= new Repository<PostTag>(Context, _postTagLogger);
 
         public ICategoryRepository CategoryRepository =>
             _categoryRepository ??= new CategoryRepository(Context, _categoryLogger);

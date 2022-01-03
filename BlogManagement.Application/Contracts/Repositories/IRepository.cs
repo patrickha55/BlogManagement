@@ -36,25 +36,31 @@ namespace BlogManagement.Application.Contracts.Repositories
         /// This method is for creating a new entity. 
         /// </summary>
         /// <param name="entity">Generic class</param>
-        /// <returns></returns>
+        /// <returns>Return true if success, else false</returns>
         Task<bool> CreateAsync(TEntity entity);
         /// <summary>
         /// This method is for updating an existing entity.
         /// </summary>
         /// <param name="entity">Generic class</param>
-        /// <returns></returns>
+        /// <returns>Return true if success, else false</returns>
         Task<bool> UpdateAsync(TEntity entity);
         /// <summary>
         /// This method is for deleting an existing entity.
         /// </summary>
         /// <param name="entity">Generic class</param>
-        /// <returns></returns>
+        /// <returns>Return true if success, else false</returns>
         Task<bool> DeleteAsync(TEntity entity);
+        /// <summary>
+        /// This method deletes a list of entities.
+        /// </summary>
+        /// <param name="entities">List of entities</param>
+        /// <returns>Return true if success, else false</returns>
+        Task DeleteRangeAsync(List<TEntity> entities);
         /// <summary>
         /// This method checks if an entity existed in the database.
         /// </summary>
         /// <param name="id">Id of an entity</param>
-        /// <returns>Exist: return true else return false</returns>
+        /// <returns>Return true if success, else false</returns>
         Task<bool> IsExistsAsync(long id);
     }
 }
