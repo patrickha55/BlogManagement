@@ -4,9 +4,13 @@ using BlogManagement.Data.Configuration.MapperConfigs;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net.Http;
+using BlogManagement.Application.ApiClient;
+using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
+using MyApp.Repository.ApiClient;
 
 namespace BlogManagement.Web
 {
@@ -28,6 +32,15 @@ namespace BlogManagement.Web
                     25,
                     "no-reply@andreamooreblogspace.com")
             );
+
+            services.AddSingleton<ITokenRepository, ITokenRepository>();
+
+            services.AddSingleton<IWebApiExecuter>(
+                sp => new WebApiExecuter(
+                    new HttpClient(),
+                    "https://localhost:44392",
+                sp.GetRequiredService<ITokenRepository>())
+                );
         }
 
         /// <summary>

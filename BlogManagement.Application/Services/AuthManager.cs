@@ -16,18 +16,27 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlogManagement.Application.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AuthManager : IAuthManager
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
-        private ILogger<AuthManager> _logger;
+        private readonly ILogger<AuthManager> _logger;
+        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private User _user;
 
-        public AuthManager(UserManager<User> userManager, IConfiguration configuration, ILogger<AuthManager> logger)
+        public AuthManager(
+            UserManager<User> userManager, 
+            IConfiguration configuration,
+            ILogger<AuthManager> logger,
+            JwtSecurityTokenHandler jwtSecurityTokenHandler)
         {
             _userManager = userManager;
             _configuration = configuration;
             _logger = logger;
+            _jwtSecurityTokenHandler = jwtSecurityTokenHandler;
         }
 
         public async Task<bool> ValidateUserAsync(UserLoginDTO request)
@@ -69,16 +78,41 @@ namespace BlogManagement.Application.Services
             }
         }
 
+        public Task<bool> VerifyToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return Task.FromResult(false);
+
+            SecurityToken securityToken;
+
+            try
+            {
+                _jwtSecurityTokenHandler.ValidateToken(
+                    token.Replace("\"", string.Empty), new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetKey())),
+                        ValidateLifetime = true,
+                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ClockSkew = TimeSpan.Zero
+                    },
+                    out securityToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(VerifyToken));
+                throw;
+            }
+
+            return Task.FromResult(securityToken is not null);
+        }
+
         private SigningCredentials GetSigningCredentials()
         {
             try
             {
-                var key = Environment.GetEnvironmentVariable("KEY", EnvironmentVariableTarget.Machine);
-                if (key == null)
-                    throw new NullReferenceException(
-                        $"Environment variable KEY is null in {nameof(GetSigningCredentials)}.");
-
-                var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+                var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetKey()));
 
                 return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
             }
@@ -87,6 +121,17 @@ namespace BlogManagement.Application.Services
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetSigningCredentials));
                 throw;
             }
+        }
+
+        private string GetKey()
+        {
+            var key = Environment.GetEnvironmentVariable("KEY", EnvironmentVariableTarget.Machine);
+
+            if (key == null)
+                throw new NullReferenceException(
+                    $"Environment variable KEY is null in {nameof(GetSigningCredentials)}.");
+
+            return key;
         }
 
         private async Task<List<Claim>> GetClaimsAsync()
