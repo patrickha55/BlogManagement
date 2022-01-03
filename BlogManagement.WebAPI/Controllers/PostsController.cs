@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using Microsoft.AspNetCore.Http;

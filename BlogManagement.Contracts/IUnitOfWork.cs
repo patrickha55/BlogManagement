@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using BlogManagement.Application.Contracts.Repositories;
+﻿using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts
+namespace BlogManagement.Contracts
 {
     /// <summary>
     /// This class acts as a central place to communicate with all of the repositories in the application.
@@ -30,6 +28,7 @@ namespace BlogManagement.Application.Contracts
         IUserRepository UserRepository { get; }
         IRepository<CategoryPost> CategoryPostRepository { get; }
         IRepository<PostTag> PostTagRepository { get; }
+        IRepository<PostRating> PostRatingRepository { get; }
 
         #endregion
 

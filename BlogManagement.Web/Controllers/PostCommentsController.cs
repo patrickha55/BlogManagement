@@ -1,5 +1,4 @@
-﻿using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using BlogManagement.Application.Contracts;
 
 namespace BlogManagement.Web.Controllers
 {

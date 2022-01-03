@@ -1,14 +1,11 @@
-﻿using BlogManagement.Common.Models;
+﻿using System.Linq.Expressions;
+using BlogManagement.Common.Models;
 using BlogManagement.Data.Entities;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using X.PagedList;
 
-namespace BlogManagement.Application.Contracts.Repositories
+namespace BlogManagement.Contracts.Repositories
 {
     /// <summary>
     /// Post repository that implement a generic repository
@@ -33,7 +30,7 @@ namespace BlogManagement.Application.Contracts.Repositories
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
-        Task<Post> GetPostDetailsAsync(long postId);
+        Task<Post?> GetPostDetailsAsync(long postId);
         /// <summary>
         /// 
         /// </summary>

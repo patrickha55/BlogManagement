@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BlogManagement.Common.Models.AuthorVMs;
+﻿using BlogManagement.Common.Models.AuthorVMs;
 
-namespace BlogManagement.Application.Contracts.Services
+namespace BlogManagement.Contracts.Services
 {
     public interface IUserService
     {

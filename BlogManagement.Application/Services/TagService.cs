@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.TagVMs;
@@ -9,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 
 namespace BlogManagement.Application.Services
 {

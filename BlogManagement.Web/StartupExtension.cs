@@ -1,8 +1,4 @@
 ﻿using BlogManagement.Application;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Application.Repositories;
 using BlogManagement.Application.Services;
 using BlogManagement.Data.Configuration.MapperConfigs;
 using Microsoft.AspNetCore.Identity.UI.Services;

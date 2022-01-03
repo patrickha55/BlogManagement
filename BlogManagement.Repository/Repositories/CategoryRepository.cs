@@ -1,15 +1,11 @@
-﻿using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace BlogManagement.Application.Repositories
+namespace BlogManagement.Repository.Repositories
 {
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {

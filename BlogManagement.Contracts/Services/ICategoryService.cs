@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BlogManagement.Common.Models.CategoryVMs;
+﻿using BlogManagement.Common.Models.CategoryVMs;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BlogManagement.Application.Contracts.Services
+namespace BlogManagement.Contracts.Services
 {
     public interface ICategoryService
     {

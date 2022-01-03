@@ -1,6 +1,4 @@
-﻿using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Common.Models.PostRatingVMs;
 using BlogManagement.Common.Models.PostVMs;

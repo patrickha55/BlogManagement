@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostRatingVMs;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -15,39 +14,53 @@ namespace BlogManagement.Application.Services
     public class PostRatingService : IPostRatingService
     {
         private readonly ILogger<PostRatingService> _logger;
-        private readonly IRepository<PostRating> _postRatingRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
 
-        public PostRatingService(IRepository<PostRating> postRatingRepository, ILogger<PostRatingService> logger, IMapper mapper, UserManager<User> userManager, IUnitOfWork unitOfWork)
+        public PostRatingService(
+            ILogger<PostRatingService> logger,
+            IMapper mapper,
+            UserManager<User> userManager,
+            IUnitOfWork unitOfWork)
         {
-            _postRatingRepository = postRatingRepository;
             _logger = logger;
             _mapper = mapper;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> RateAPostAsync(PostRatingVM request, string userName)
+        public async Task<PostRatingVM> GetPostRatingVMAsync(long id)
         {
             try
             {
-                if (request is null || request.Rating is < 0 or > 5)
-                    throw new ArgumentException(Constants.InvalidArgument);
+                var postRating = await _unitOfWork.PostRatingRepository.GetAsync(pr => pr.Id == id);
 
+                return _mapper.Map<PostRatingVM>(postRating);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostRatingVMAsync));
+                throw;
+            }
+        }
+
+        public async Task<PostRatingVM> RateAPostAsync(PostRatingCreateVM request)
+        {
+            try
+            {
                 var postRating = _mapper.Map<PostRating>(request);
 
-                var user = await _userManager.FindByNameAsync(userName);
+                var user = await _userManager.FindByNameAsync(request.UserName);
 
                 postRating.UserId = user.Id;
 
-                var result = await _postRatingRepository.CreateAsync(postRating);
+                var result = await _unitOfWork.PostRatingRepository.CreateAsync(postRating);
 
                 if (result)
                 {
                     await _unitOfWork.SaveAsync();
-                    return true;
+                    return _mapper.Map<PostRatingVM>(postRating);
                 }
             }
             catch (Exception e)
@@ -56,7 +69,7 @@ namespace BlogManagement.Application.Services
                 throw;
             }
 
-            return false;
+            return null;
         }
     }
 }

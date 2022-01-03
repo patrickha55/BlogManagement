@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostMetaVMs;
 using BlogManagement.Data.Entities;

@@ -1,13 +1,14 @@
 ﻿using System;
 using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Models.PostCommentVMs;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using BlogManagement.Common.Common;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
+using JetBrains.Annotations;
 
 namespace BlogManagement.Application.Services
 {
@@ -24,11 +25,44 @@ namespace BlogManagement.Application.Services
             _logger = logger;
         }
 
-        public async Task<bool> CreatePostCommentAsync(PostCommentCreateVM request, string userName)
+        public async Task<PostCommentVM> GetPostCommentVMAsync(long id)
         {
             try
             {
-                var user = await _unitOfWork.UserRepository.GetAsync(u => u.UserName == userName);
+                var post = await _unitOfWork.PostCommentRepository.GetAsync(pc => pc.Id == id);
+
+                return _mapper.Map<PostCommentVM>(post);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostCommentsForSelectListAsync));
+                throw;
+            }
+        }
+
+        public async Task<SelectList> GetPostCommentsForSelectListAsync(long? parentId = null)
+        {
+            try
+            {
+                var postComments =
+                    await _unitOfWork.PostCommentRepository.GetAllIdAndNameWithoutPagingAsync();
+
+                return new SelectList(postComments, "Id", "Title", parentId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostCommentsForSelectListAsync));
+                throw;
+            }
+        }
+
+        public async Task<PostCommentVM> CreatePostCommentAsync(PostCommentCreateVM request)
+        {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var user = await _unitOfWork.UserRepository.GetAsync(u => u.UserName == request.UserName);
 
                 var postComment = _mapper.Map<PostComment>(request);
 
@@ -40,25 +74,19 @@ namespace BlogManagement.Application.Services
                 if (result)
                 {
                     await _unitOfWork.SaveAsync();
-                    return true;
+                    await transaction.CommitAsync();
+                    return _mapper.Map<PostCommentVM>(postComment);
                 }
 
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostCommentAsync));
+                await transaction.RollbackAsync();
                 throw;
             }
 
-            return false;
-        }
-
-        public async Task<SelectList> GetPostCommentsForSelectListAsync(long? parentId = null)
-        {
-            var postComments =
-                await _unitOfWork.PostCommentRepository.GetAllIdAndNameWithoutPagingAsync();
-
-            return new SelectList(postComments, "Id", "Title", parentId);
+            return null;
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using BlogManagement.Common.Models.TagVMs;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace BlogManagement.Application.Contracts.Services
+namespace BlogManagement.Contracts.Services
 {
     public interface ITagService
     {

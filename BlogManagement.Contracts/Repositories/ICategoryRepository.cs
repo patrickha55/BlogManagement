@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BlogManagement.Data.Entities;
+﻿using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts.Repositories
+namespace BlogManagement.Contracts.Repositories
 {
     /// <summary>
     /// Category repository that implement a generic repository

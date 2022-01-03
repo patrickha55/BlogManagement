@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;

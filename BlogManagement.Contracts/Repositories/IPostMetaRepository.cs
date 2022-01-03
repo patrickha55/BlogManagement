@@ -1,6 +1,6 @@
 ﻿using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts.Repositories
+namespace BlogManagement.Contracts.Repositories
 {
     /// <summary>
     /// Post meta repository that implement a generic repository

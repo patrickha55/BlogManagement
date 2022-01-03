@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts.Repositories
+namespace BlogManagement.Contracts.Repositories
 {
     /// <summary>
     /// 

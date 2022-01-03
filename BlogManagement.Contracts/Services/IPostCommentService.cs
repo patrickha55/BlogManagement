@@ -1,12 +1,12 @@
 ﻿using BlogManagement.Common.Models.PostCommentVMs;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
 
-namespace BlogManagement.Application.Contracts.Services
+namespace BlogManagement.Contracts.Services
 {
     public interface IPostCommentService
     {
-        Task<bool> CreatePostCommentAsync(PostCommentCreateVM request, string userName);
+        Task<PostCommentVM?> GetPostCommentVMAsync(long id);
         Task<SelectList> GetPostCommentsForSelectListAsync(long? parentId = null);
+        Task<PostCommentVM?> CreatePostCommentAsync(PostCommentCreateVM request);
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using BlogManagement.Common.Models;
 using X.PagedList;
 
-namespace BlogManagement.Application.Contracts.Repositories
+namespace BlogManagement.Contracts.Repositories
 {
     /// <summary>
     /// This class is a generic repository allows interacting with any properties in the DbContext.

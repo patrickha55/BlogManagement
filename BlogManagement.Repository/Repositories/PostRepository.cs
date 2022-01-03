@@ -1,22 +1,16 @@
-﻿using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
+using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using BlogManagement.Common.Models.PostVMs;
 using X.PagedList;
 
-namespace BlogManagement.Application.Repositories
+namespace BlogManagement.Repository.Repositories
 {
     public class PostRepository : Repository<Post>, IPostRepository
     {
@@ -31,9 +25,8 @@ namespace BlogManagement.Application.Repositories
         {
             try
             {
-                var posts = await Context.Posts
-                    .Where(p => p.AuthorId == authorId)
-                    .ToListAsync();
+                var posts = await PagedListExtensions.ToListAsync(Context.Posts
+                        .Where(p => p.AuthorId == authorId));
 
                 if (posts is null)
                     throw new ArgumentException(Constants.InvalidArgument);
@@ -204,7 +197,7 @@ namespace BlogManagement.Application.Repositories
                 {
                     post.ImageUrl = $@"images/{await HandleImageUpload(formFile)}";
                 }
-                
+
                 return true;
             }
             catch (DirectoryNotFoundException e)
@@ -227,7 +220,7 @@ namespace BlogManagement.Application.Repositories
         private static async Task<string> HandleImageUpload(IFormFile formFile)
         {
             var uploadTime = DateTime.Now.ToString("MMddyyyHHmmss");
-            var imgName = uploadTime + "_" + Path.GetFileName(formFile.FileName);
+            var imgName = uploadTime + "_" + Path.GetFileName((string?)formFile.FileName);
             var imgPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", imgName);
 
             await using var fileStream = new FileStream(imgPath, FileMode.Create);

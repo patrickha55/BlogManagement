@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Services;
+using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.AuthorVMs;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Common.Common;
-using BlogManagement.Common.Models;
 
 namespace BlogManagement.Application.Services
 {

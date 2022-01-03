@@ -1,17 +1,13 @@
-﻿using BlogManagement.Application.Contracts.Repositories;
+﻿using System.Linq.Expressions;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
+using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using X.PagedList;
 
-namespace BlogManagement.Application.Repositories
+namespace BlogManagement.Repository.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {

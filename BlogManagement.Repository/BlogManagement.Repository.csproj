@@ -2,14 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.1" />
-    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\BlogManagement.Common\BlogManagement.Common.csproj" />
     <ProjectReference Include="..\BlogManagement.Contracts\BlogManagement.Contracts.csproj" />
     <ProjectReference Include="..\BlogManagement.Data\BlogManagement.Data.csproj" />
   </ItemGroup>

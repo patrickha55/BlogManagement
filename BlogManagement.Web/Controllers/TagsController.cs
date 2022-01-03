@@ -1,5 +1,4 @@
-﻿using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.TagVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

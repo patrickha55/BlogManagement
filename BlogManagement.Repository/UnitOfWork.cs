@@ -1,13 +1,11 @@
-﻿using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Repositories;
+﻿using BlogManagement.Contracts;
+using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
-using BlogManagement.Application.Contracts.Repositories;
 using BlogManagement.Data.Entities;
+using BlogManagement.Repository.Repositories;
+using Microsoft.Extensions.Logging;
 
-namespace BlogManagement.Application
+namespace BlogManagement.Repository
 {
     /// <summary>
     /// This class acts as a central place to communicate with all of the repositories in the application and
@@ -31,6 +29,7 @@ namespace BlogManagement.Application
         private IUserRepository _userRepository;
         private IRepository<CategoryPost> _categoryPostRepository;
         private IRepository<PostTag> _postTagRepository;
+        private IRepository<PostRating> _postRatingRepository;
 
         #endregion
 
@@ -44,6 +43,7 @@ namespace BlogManagement.Application
         private readonly ILogger<UserRepository> _userRepositoryLogger;
         private readonly ILogger<Repository<CategoryPost>> _categoryPostLogger;
         private readonly ILogger<Repository<PostTag>> _postTagLogger;
+        private readonly ILogger<Repository<PostRating>> _postRatingLogger;
 
         #endregion
 
@@ -56,7 +56,8 @@ namespace BlogManagement.Application
             ILogger<PostCommentRepository> postCommentLogger,
             ILogger<UserRepository> userRepositoryLogger,
             ILogger<Repository<CategoryPost>> categoryPostLogger,
-            ILogger<Repository<PostTag>> postTagLogger)
+            ILogger<Repository<PostTag>> postTagLogger, 
+            ILogger<Repository<PostRating>> postRatingLogger)
         {
             Context = context;
             _postLogger = postLogger;
@@ -65,6 +66,7 @@ namespace BlogManagement.Application
             _userRepositoryLogger = userRepositoryLogger;
             _categoryPostLogger = categoryPostLogger;
             _postTagLogger = postTagLogger;
+            _postRatingLogger = postRatingLogger;
             _categoryLogger = categoryLogger;
             _postMetaLogger = postMetaLogger;
         }
@@ -94,6 +96,9 @@ namespace BlogManagement.Application
         public IRepository<PostTag> PostTagRepository
             => _postTagRepository ??= new Repository<PostTag>(Context, _postTagLogger);
 
+        public IRepository<PostRating> PostRatingRepository =>
+            _postRatingRepository ??= new Repository<PostRating>(Context, _postRatingLogger);
+
         public ICategoryRepository CategoryRepository =>
             _categoryRepository ??= new CategoryRepository(Context, _categoryLogger);
 
@@ -105,9 +110,6 @@ namespace BlogManagement.Application
             GC.SuppressFinalize(this);
         }
 
-        public async Task SaveAsync()
-        {
-            await Context.SaveChangesAsync();
-        }
+        public async Task SaveAsync() => await Context.SaveChangesAsync();
     }
 }

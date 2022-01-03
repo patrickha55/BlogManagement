@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using BlogManagement.Application.Contracts;
-using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Application.Contracts.Services;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
@@ -14,6 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Repositories;
+using BlogManagement.Contracts.Services;
 using X.PagedList;
 using Constants = BlogManagement.Common.Common.Constants;
 

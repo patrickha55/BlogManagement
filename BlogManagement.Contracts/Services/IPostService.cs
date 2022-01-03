@@ -1,12 +1,10 @@
-﻿using BlogManagement.Common.Models.PostVMs;
+﻿using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Data.Entities;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BlogManagement.Common.Models;
-using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Application.Contracts.Services
+namespace BlogManagement.Contracts.Services
 {
     public interface IPostService
     {

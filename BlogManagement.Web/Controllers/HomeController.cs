@@ -1,5 +1,4 @@
-﻿using BlogManagement.Application.Contracts.Services;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostVMs;
 using Microsoft.AspNetCore.Mvc;

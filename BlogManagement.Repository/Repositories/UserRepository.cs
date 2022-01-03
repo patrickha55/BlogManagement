@@ -1,16 +1,12 @@
-﻿using BlogManagement.Application.Contracts.Repositories;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace BlogManagement.Application.Repositories
+namespace BlogManagement.Repository.Repositories
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
@@ -22,16 +18,14 @@ namespace BlogManagement.Application.Repositories
 
         public async Task<User> FindUserDetailAsync(Expression<Func<User, bool>> expression)
         {
-            var user = new User();
-
             try
             {
-                return await Context.Users
+                return (await Context.Users
                     .AsNoTracking()
                     .Include(u => u.PostComments)
                     .Include(u => u.PostUserRatings)
                     .Include(u => u.Posts)
-                    .SingleOrDefaultAsync(expression);
+                    .SingleOrDefaultAsync(expression))!;
             }
             catch (Exception e)
             {
@@ -42,8 +36,6 @@ namespace BlogManagement.Application.Repositories
 
         public async Task<List<User>> FindUsersAsync(Expression<Func<User, bool>> expression)
         {
-            var user = new User();
-
             try
             {
                 return await Context.Users
