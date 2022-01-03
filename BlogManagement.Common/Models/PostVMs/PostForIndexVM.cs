@@ -14,10 +14,11 @@ namespace BlogManagement.Common.Models.PostVMs
         /// <summary>
         /// 
         /// </summary>
-        public AuthorVM Author { get; set; }
+        public AuthorVM User { get; set; }
         [Display(Name = "Parent post Title")]
         public string ParentTitle { get; set; }
         public string Summary { get; set; }
+        public double Rating { get; set; }
         public List<PostCommentVM> PostComments { get; set; } = new();
         public List<CategoryVM> Categories { get; set; } = new();
     }

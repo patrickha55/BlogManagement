@@ -1,0 +1,11 @@
+﻿using BlogManagement.Data.Entities;
+
+namespace BlogManagement.Contracts.Repositories
+{
+    /// <summary>
+    /// Post meta repository that implement a generic repository
+    /// </summary>
+    public interface IPostMetaRepository : IRepository<PostMeta>
+    {
+    }
+}

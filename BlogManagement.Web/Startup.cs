@@ -27,9 +27,7 @@ namespace BlogManagement.Web
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddRoles<IdentityRole<long>>()
-                .AddEntityFrameworkStores<BlogManagementContext>();
+            services.ConfigureIdentity();
 
             services.RegisterServices();
 

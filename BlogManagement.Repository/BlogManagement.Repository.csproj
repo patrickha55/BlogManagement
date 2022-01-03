@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlogManagement.Common\BlogManagement.Common.csproj" />
+    <ProjectReference Include="..\BlogManagement.Contracts\BlogManagement.Contracts.csproj" />
+    <ProjectReference Include="..\BlogManagement.Data\BlogManagement.Data.csproj" />
+  </ItemGroup>
+
+</Project>

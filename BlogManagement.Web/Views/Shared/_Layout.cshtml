@@ -1,4 +1,10 @@
 ﻿@using BlogManagement.Common.Common
+
+@inject BlogManagement.Application.Contracts.IUnitOfWork _unitOfWork
+
+@{
+    var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,10 +83,33 @@
                                 </div>
                             </li>
                         }
-                        <li><a href="fashion.html">Fashion</a></li>
-                        <li><a href="travel.html">Travel</a></li>
+                        <li>
+                            <div class="dropright">
+                                <a class="" asp-controller="Posts" asp-action="Index">
+                                    <span class="icon-library_books mr-lg-2"></span>Categories
+                                </a>
+                                <span class="dropdown-toggle dropdown-toggle-split"
+                                      data-toggle="dropdown"
+                                      aria-haspopup="true"
+                                      aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropright</span>
+                                </span>
+                                <div class="dropdown-menu border-0 py-0">
+                                    <ul>
+                                        <li>
+                                            @foreach (var category in categories)
+                                            {
+                                                <a href="#" class="nav-link mt-0 pt-0">
+                                                    @category.Title
+                                                </a>
+                                            }
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
                         <li><a asp-controller="Home" asp-action="About">About</a></li>
-                        <li><a asp-controller="Home" asp-action="Contact" >Contact</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                     </ul>
                 </nav>
 

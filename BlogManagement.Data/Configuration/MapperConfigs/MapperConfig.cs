@@ -11,7 +11,7 @@ using BlogManagement.Data.Entities;
 namespace BlogManagement.Data.Configuration.MapperConfigs
 {
     /// <summary>
-    /// 
+    /// Configuration for AutoMapper.
     /// </summary>
     public class MapperConfig : Profile
     {
@@ -37,6 +37,7 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
 
             CreateMap<Post, PostVM>().ReverseMap();
             CreateMap<Post, PostCreateVM>().ReverseMap();
+            CreateMap<Post, PostEditVM>().ReverseMap();
             CreateMap<Post, PostDetailVM>().ReverseMap();
             CreateMap<Post, PostForAdminIndexVM>().ReverseMap();
             CreateMap<Post, PostForIndexVM>().ReverseMap();
@@ -62,6 +63,8 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region PostRatingVMs mapper configs
 
             CreateMap<PostRating, PostRatingVM>().ReverseMap();
+            CreateMap<PostRating, PostRatingCreateVM>().ReverseMap();
+            CreateMap<PostRating, PostRatingDetailVM>().ReverseMap();
 
             #endregion
 

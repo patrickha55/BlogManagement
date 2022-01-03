@@ -1,5 +1,4 @@
-﻿@using BlogManagement.Common.Common
-@model BlogManagement.Common.Models.AuthorVMs.AuthorDetailVM
+﻿@model BlogManagement.Common.Models.AuthorVMs.AuthorDetailVM
 
 @{
     ViewData["Title"] = "User Profile";
@@ -15,7 +14,14 @@ else
 {
     @if (TempData.Any())
     {
-        <partial name="User/Partials/_StatusPartial" model="@TempData["Status"]"/>
+        @if (TempData[Constants.Success] is not null)
+        {
+            @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Success])
+        }
+        else if (TempData[Constants.Error] is not null)
+        {
+            @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Error])
+        }
     }
 
         <section class="content-header">
@@ -138,7 +144,7 @@ else
                                             </dl>
                                         </div>
                                     </div>
-                                    <!-- /.post -->
+                                <!-- /.post -->
                             </div>
                                 <!-- /.tab-pane -->
                             <div class="tab-pane" id="settings">

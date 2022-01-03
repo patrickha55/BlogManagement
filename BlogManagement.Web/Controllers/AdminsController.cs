@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using BlogManagement.Application.Contracts;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Data.Entities;
@@ -17,21 +16,15 @@ namespace BlogManagement.Web.Controllers
     [Authorize(Roles = Roles.Administrator)]
     public class AdminsController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly ILogger<AdminsController> _logger;
-        private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
 
         public AdminsController(
-            ILogger<AdminsController> logger, 
-            UserManager<User> userManager,
-            IMapper mapper, 
-            IUnitOfWork unitOfWork)
+            ILogger<AdminsController> logger,
+            IUserService userService)
         {
             _logger = logger;
-            _userManager = userManager;
-            this._mapper = mapper;
-            _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -40,16 +33,16 @@ namespace BlogManagement.Web.Controllers
         }
 
         [Route("Admins/UsersManagement")]
-        public async Task<IActionResult> UserIndex()
+        public async Task<IActionResult> UserIndex(int pageNumber = 1, int pageSize = 10)
         {
             var userVMs = new List<AuthorAdminIndexVM>();
             try
             {
-                var users = await _userManager.Users.ToListAsync();
-                userVMs = _mapper.Map<List<AuthorAdminIndexVM>>(users);
+                userVMs = await _userService.GetAuthorAdminIndexVM(pageNumber, pageSize);
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UserIndex));
             }
 
@@ -60,24 +53,14 @@ namespace BlogManagement.Web.Controllers
         public async Task<IActionResult> UserDetails(long id)
         {
             var userVM = new AuthorDetailVM();
+
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                var user = await _unitOfWork.UserRepository.FindUserDetailAsync(u => u.Id == id);
-
-                if (user == null)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                userVM = _mapper.Map<AuthorDetailVM>(user);
-            }
-            catch (ArgumentException e)
-            {
-                _logger.LogError(e, "{0} {1}", Constants.InvalidArgument, nameof(UserDetails));
+                userVM = await _userService.FindAuthorDetailVMAsync(id);
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UserDetails));
             }
 
@@ -88,32 +71,21 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                var user = await _unitOfWork.UserRepository.GetAsync(u => u.Id == id);
-
-                if (user == null)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
-                user.IsEnabled = request.IsEnabled;
-                user.IsPublic = request.IsPublic;
-
-                var result = await _unitOfWork.UserRepository.UpdateAsync(user);
+                var result = await _userService.EditUserStatusesAsync(id, request);
 
                 if (result)
                 {
-                    await _unitOfWork.SaveAsync();
-                    TempData["Status"] = "User statuses updated successfully!";
+                    TempData[Constants.Success] = Constants.SuccessMessage;
                     return RedirectToAction(nameof(UserDetails), new { id });
                 }
             }
             catch (Exception e)
             {
+                TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UserDetails));
             }
 
-            TempData["Status"] = "User statuses updated failed!";
+            TempData[Constants.Error] = Constants.ErrorMessage;
             return RedirectToAction(nameof(UserDetails), new { id });
         }
 

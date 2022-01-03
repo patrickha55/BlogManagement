@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BlogManagement.Common.Models.CategoryVMs
 {
@@ -17,10 +16,8 @@ namespace BlogManagement.Common.Models.CategoryVMs
 #nullable enable
         public string? Content { get; set; }
 
-        [Display(Name="Parent Category (Not required)")]
-        public long? ParentId { get; set; } 
-
-        public IEnumerable<CategoryVM>? Categories { get; set; }
+        [Display(Name = "Parent Category (Not required)")]
+        public long? ParentId { get; set; }
 #nullable disable
     }
 }

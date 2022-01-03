@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BlogManagement.Data.Configuration.EntityConfiguration
 {
+    /// <summary>
+    /// This class stores Category entity's configuration for Fluent API.
+    /// Contains:
+    ///     + Entity configurations.
+    ///     + Property configurations.
+    ///     + Relationship configurations.
+    /// </summary>
     public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
-        /// <summary>
-        /// This class stores Category entity's configuration for Fluent API.
-        /// Contains:
-        ///     + Entity configurations.
-        ///     + Property configurations.
-        ///     + Relationship configurations.
-        /// </summary>
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             #region Entity configuration.

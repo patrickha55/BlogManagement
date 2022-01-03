@@ -27,6 +27,9 @@ namespace BlogManagement.WebAPI
             });
 
             services.ConfigureApplicationContext(Configuration);
+            services.RegisterServices();
+            services.ConfigureCors();
+            services.ConfigureIdentity();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -5,6 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BlogManagement.Data.Configuration.EntityConfiguration
 {
+    /// <summary>
+    /// This class stores IdentityRole entity's configuration for Fluent API.
+    /// Contains:
+    ///     + Property configurations.
+    ///     + Data seeding.
+    /// </summary>
     public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole<long>>
     {
         public void Configure(EntityTypeBuilder<IdentityRole<long>> builder)
