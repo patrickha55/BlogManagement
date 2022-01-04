@@ -1,8 +1,9 @@
-﻿using BlogManagement.Common.Models;
+﻿using BlogManagement.Common.DTOs.PostDTOs;
+using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Data.Entities;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Contracts.Services
 {
@@ -81,8 +82,7 @@ namespace BlogManagement.Contracts.Services
         /// <param name="tagIds"></param>
         /// <param name="postId"></param>
         /// <returns></returns>
-        Task<(SelectList categories, SelectList tags, SelectList posts)> GetSelectListsForPostCreationAsync(
-            long? categoryId = null, [CanBeNull] IEnumerable<long> tagIds = null, long? postId = null);
+        Task<PostRelatedListOfObjectsDTO> GetSelectListsForPostCreationAsync();
         /// <summary>
         /// This method increase a post view count by one.
         /// </summary>

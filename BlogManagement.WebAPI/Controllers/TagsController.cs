@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlogManagement.WebAPI.Filters;
 using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -50,8 +51,28 @@ namespace BlogManagement.WebAPI.Controllers
             return Ok(tags.Any() ? tags : "There is no tags at the moment.");
         }
 
+        [HttpGet("tags-id-title")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<TagVM>>> GetAllIdAndTitleWithoutPagingAsync()
+        {
+            IEnumerable<TagVM> tagVMs = null;
+
+            try
+            {
+                tagVMs =
+                    await _tagService.GetAllIdAndNameWithoutPagingAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllIdAndTitleWithoutPagingAsync));
+            }
+
+            return Ok(tagVMs is not null ? tagVMs : "There is no tags at the moment.");
+        }
+
         // GET api/<CategoriesController>/5
         [HttpGet("{id:long}")]
+        [JwtTokenAuthFilter]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TagVM>> Get(long id)
         {
@@ -75,6 +96,7 @@ namespace BlogManagement.WebAPI.Controllers
             return BadRequest();
         }
 
+        [JwtTokenAuthFilter]
         [HttpGet("tag-for-edit/{id:long}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TagEditVM>> GetTagEditVMAsync(long id)
@@ -101,6 +123,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // POST api/<CategoriesController>
         [HttpPost]
+        [JwtTokenAuthFilter]
         public async Task<ActionResult> Post([FromBody] TagCreateVM request)
         {
             try
@@ -123,6 +146,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // PUT api/<CategoriesController>/5
         [HttpPut("{id:long}")]
+        [JwtTokenAuthFilter]
         public async Task<ActionResult> Put(long id, [FromBody] TagEditVM request)
         {
             try
@@ -146,6 +170,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // DELETE api/<CategoriesController>/5
         [HttpDelete("{id:long}")]
+        [JwtTokenAuthFilter]
         public async Task<ActionResult> Delete(long id)
         {
             try

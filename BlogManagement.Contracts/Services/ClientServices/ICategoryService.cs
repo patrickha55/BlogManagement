@@ -11,5 +11,6 @@ namespace BlogManagement.Contracts.Services.ClientServices
         Task<bool> UpdateCategoryAsync(string token, long id, CategoryEditVM request);
         Task<bool> DeleteCategoryAsync(string token, long id);
         Task<IEnumerable<CategoryVM>> GetCategoriesForSelectListAsync(string token, long? parentId = null);
+        Task<IEnumerable<CategoryVM>> GetAllIdAndNameWithoutPagingAsync();
     }
 }

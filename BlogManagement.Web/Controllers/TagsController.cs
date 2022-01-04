@@ -1,14 +1,13 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Contracts.Services.ClientServices;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Contracts.Services.ClientServices;
-using Microsoft.AspNetCore.Http;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -125,7 +124,7 @@ namespace BlogManagement.Web.Controllers
                     var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
                     await _tagService.UpdateTagAsync(token, id, request);
 
-                    
+
                     TempData[Constants.Success] = Constants.SuccessMessage;
                     return RedirectToAction(nameof(Index));
                 }

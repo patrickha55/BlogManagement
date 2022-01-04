@@ -2,13 +2,13 @@
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Contracts;
-using BlogManagement.Contracts.Services;
 
 namespace BlogManagement.Application.Services
 {
@@ -49,6 +49,26 @@ namespace BlogManagement.Application.Services
             return tagVMs;
         }
 
+        public async Task<IEnumerable<TagVM>> GetAllIdAndNameWithoutPagingAsync()
+        {
+            var tagVMs = new List<TagVM>();
+
+            try
+            {
+                var tags =
+                    await _unitOfWork.TagRepository.GetAllTagIdsAndTitles();
+
+                tagVMs = _mapper.Map<List<TagVM>>(tags);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllIdAndNameWithoutPagingAsync));
+                throw;
+            }
+
+            return tagVMs;
+        }
+
         public async Task<TagVM> GetTagVMAsync(long id)
         {
             TagVM tagVM;
@@ -75,7 +95,7 @@ namespace BlogManagement.Application.Services
             try
             {
                 var tag = await _unitOfWork.TagRepository.GetAsync(t => t.Id == id);
-                
+
                 tagVM = _mapper.Map<TagEditVM>(tag);
             }
             catch (Exception e)
@@ -128,7 +148,7 @@ namespace BlogManagement.Application.Services
                 if (result)
                 {
                     await _unitOfWork.SaveAsync();
-                    await transaction.RollbackAsync();
+                    await transaction.CommitAsync();
                     return true;
                 }
             }

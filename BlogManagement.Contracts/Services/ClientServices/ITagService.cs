@@ -10,5 +10,6 @@ namespace BlogManagement.Contracts.Services.ClientServices
         Task<bool> CreateTagAsync(string token, TagCreateVM request);
         Task UpdateTagAsync(string token, long id, TagEditVM request);
         Task DeleteTagAsync(string token, long id);
+        Task<IEnumerable<TagVM>> GetAllIdAndNameWithoutPagingAsync();
     }
 }

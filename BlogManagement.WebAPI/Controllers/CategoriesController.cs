@@ -71,6 +71,25 @@ namespace BlogManagement.WebAPI.Controllers
             return Ok(categoryVMs is not null ? categoryVMs : "There is no categories at the moment.");
         }
 
+        [HttpGet("categories-id-name")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<CategoryVM>>> GetAllIdAndNameWithoutPagingAsync()
+        {
+            IEnumerable<CategoryVM> categoryVMs = null;
+
+            try
+            {
+                categoryVMs =
+                    await _categoryService.GetAllIdAndNameWithoutPagingAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoriesForSelectListAsync));
+            }
+
+            return Ok(categoryVMs is not null ? categoryVMs : "There is no categories at the moment.");
+        }
+
         // GET api/<CategoriesController>/5
         [HttpGet("{id:long}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

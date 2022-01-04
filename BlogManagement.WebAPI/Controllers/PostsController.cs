@@ -9,6 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlogManagement.Common.DTOs.PostDTOs;
+using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.WebAPI.Filters;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -50,6 +54,47 @@ namespace BlogManagement.WebAPI.Controllers
 
             return Ok(postVMs.Any() ? postVMs : "There is no post at the moment.");
         }
+        
+        [HttpGet("posts-admins")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<PostForAdminIndexVM>>> GetPostsForAdminIndex([FromQuery] PagingRequest pagingRequest)
+        {
+            var postVMs = new List<PostForAdminIndexVM>();
+
+            try
+            {
+                pagingRequest ??= new PagingRequest();
+
+                postVMs = await _postService.GetPostForAdminIndexVMsAsync(pagingRequest.PageNumber, pagingRequest.PageSize);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostsOfAnAuthor));
+            }
+
+            return Ok(postVMs.Any() ? postVMs : "There is no post at the moment.");
+        }
+
+        [JwtTokenAuthFilter]
+        [HttpGet("select-lists-for-posts-creation")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async
+            Task<ActionResult<PostRelatedListOfObjectsDTO>>
+            GetSelectListsForPostCreationAsync()
+        {
+            PostRelatedListOfObjectsDTO postRelatedList = new();
+
+            try
+            {
+                postRelatedList = await _postService.GetSelectListsForPostCreationAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostsOfAnAuthor));
+            }
+
+            return Ok(postRelatedList);
+        }
 
         // GET: api/<PostsController>/
         [HttpGet("posts-of-an-author/{id:long}")]
@@ -71,6 +116,7 @@ namespace BlogManagement.WebAPI.Controllers
 
             return Ok(postVMs.Any() ? postVMs : "There is no post at the moment.");
         }
+
 
         // GET api/<PostsController>/5
         [HttpGet("detail/{id:long}")]
@@ -126,6 +172,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // POST api/<PostsController>
         [HttpPost]
+        [JwtTokenAuthFilter]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PostVM>> Post([FromQuery] string userName, [FromForm] PostCreateVM request)
@@ -148,6 +195,7 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         // PUT api/<PostsController>/5
+        [JwtTokenAuthFilter]
         [HttpPut("{id:long}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -176,6 +224,7 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         // DELETE api/<PostsController>/5
+        [JwtTokenAuthFilter]
         [HttpDelete("{id:long}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

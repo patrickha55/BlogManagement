@@ -8,17 +8,23 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Common.Models.PostRatingVMs;
+using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Contracts.Services.ClientServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Web.Controllers
 {
     public class PostsController : Controller
     {
         private readonly ILogger<PostsController> _logger;
-        private readonly Contracts.Services.ClientServices.IPostService _postService;
+        private readonly IPostService _postService;
 
         public PostsController(
             ILogger<PostsController> logger,
-            Contracts.Services.ClientServices.IPostService postService)
+            IPostService postService)
         {
             _logger = logger;
             _postService = postService;
@@ -44,7 +50,7 @@ namespace BlogManagement.Web.Controllers
             return View(postVMs);
         }
 
-        /*[Authorize(Roles = Roles.Administrator)]
+        [Authorize(Roles = Roles.Administrator)]
         // GET: PostsController
         public async Task<IActionResult> AdminIndex(int pageNumber = 1, int pageSize = 10)
         {
@@ -52,7 +58,7 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                postVMs = await _postService.GetPostForAdminIndexVMsAsync(pageNumber, pageSize);
+                postVMs = await _postService.GetPostForAdminIndexVMsAsync(new PagingRequest(pageNumber, pageSize));
             }
             catch (Exception e)
             {
@@ -62,7 +68,7 @@ namespace BlogManagement.Web.Controllers
             }
 
             return View(postVMs);
-        }*/
+        }
 
         // GET: PostsController/Details/5
         public async Task<ActionResult> Details(long id)
@@ -83,15 +89,23 @@ namespace BlogManagement.Web.Controllers
             return View("~/Views/Home/Index.cshtml");
         }
 
-        /*// GET: PostsController/Create
+        // GET: PostsController/Create
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
         public async Task<ActionResult> Create()
         {
-            var (categories, tags, posts) = await _postService.GetSelectListsForPostCreationAsync();
+            try
+            {
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                var postRelatedList = await _postService.GetSelectListsForPostCreationAsync(token);
 
-            ViewBag.Categories = categories;
-            ViewBag.Tags = tags;
-            ViewBag.Posts = posts;
+                ViewBag.Categories = new SelectList(postRelatedList.CategoryDTOs, nameof(CategoryVM.Id), nameof(CategoryVM.Title));
+                ViewBag.Tags = new SelectList(postRelatedList.TagDTOs, nameof(TagVM.Id), nameof(TagVM.Title));
+                ViewBag.Posts = new SelectList(postRelatedList.PostDTOs, nameof(PostVM.Id), nameof(PostVM.Title));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
+            }
 
             return View();
         }
@@ -102,19 +116,19 @@ namespace BlogManagement.Web.Controllers
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
         public async Task<ActionResult> Create(PostCreateVM request)
         {
+            var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _postService.CreatePostAsync(request, User.Identity?.Name);
+                    var result = await _postService.CreatePostAsync(token, request, User.Identity?.Name);
 
-                    if (result is not null)
+                    if (result)
                     {
                         TempData[Constants.Success] = Constants.SuccessMessage;
                         return RedirectToAction(nameof(Index));
                     }
                 }
-
             }
             catch (Exception e)
             {
@@ -122,15 +136,16 @@ namespace BlogManagement.Web.Controllers
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
             }
 
-            var (categories, tags, posts) =
-                await _postService.GetSelectListsForPostCreationAsync(
-                request.CategoryId,
-                request.TagIds,
-                request.ParentId);
+            var postRelatedList = await _postService.GetSelectListsForPostCreationAsync(token);
 
-            ViewBag.Categories = categories;
-            ViewBag.Tags = tags;
-            ViewBag.Posts = posts;
+            ViewBag.Categories = 
+                new SelectList(postRelatedList.CategoryDTOs, nameof(CategoryVM.Id), nameof(CategoryVM.Title), request.CategoryId);
+
+            ViewBag.Tags = 
+                new SelectList(postRelatedList.TagDTOs, nameof(TagVM.Id), nameof(TagVM.Title), request.TagIds);
+
+            ViewBag.Posts = 
+                new SelectList(postRelatedList.PostDTOs, nameof(PostVM.Id), nameof(PostVM.Title), request.ParentId);
 
             return View(request);
         }
@@ -173,7 +188,7 @@ namespace BlogManagement.Web.Controllers
             }
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RateAPost([Bind("PostId, Rating")] PostRatingCreateVM request)

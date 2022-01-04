@@ -19,11 +19,10 @@ namespace BlogManagement.Application.Services.ClientServices
 
         public TagService(
             ILogger<TagService> logger,
-            JsonSerializerOptions options,
             IHttpClientFactory clientFactory)
         {
             _logger = logger;
-            _options = options;
+            _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             _clientFactory = clientFactory;
         }
 
@@ -50,6 +49,35 @@ namespace BlogManagement.Application.Services.ClientServices
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetTagVMsAsync));
+                throw;
+            }
+
+            return tagVMs;
+        }
+
+        public async Task<IEnumerable<TagVM>> GetAllIdAndNameWithoutPagingAsync()
+        {
+            IEnumerable<TagVM> tagVMs;
+
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "tags/tags-id-title");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
+                    tagVMs = await JsonSerializer.DeserializeAsync<IEnumerable<TagVM>>(reponseStream, _options);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllIdAndNameWithoutPagingAsync));
                 throw;
             }
 

@@ -180,6 +180,7 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
                 using var httpResponse = await client.DeleteAsync($"categories/{id}");
 
                 httpResponse.EnsureSuccessStatusCode();
@@ -204,6 +205,7 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
                 var response = await client.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
@@ -219,6 +221,35 @@ namespace BlogManagement.Application.Services.ClientServices
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoryVMAsync));
+                throw;
+            }
+
+            return categoryVMs;
+        }
+
+        public async Task<IEnumerable<CategoryVM>> GetAllIdAndNameWithoutPagingAsync()
+        {
+            IEnumerable<CategoryVM> categoryVMs;
+
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "categories/categories-id-name");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
+                    categoryVMs = await JsonSerializer.DeserializeAsync<IEnumerable<CategoryVM>>(reponseStream, _options);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllIdAndNameWithoutPagingAsync));
                 throw;
             }
 

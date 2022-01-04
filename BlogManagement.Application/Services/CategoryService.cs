@@ -5,7 +5,6 @@ using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Contracts;
 using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -205,6 +204,26 @@ namespace BlogManagement.Application.Services
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(IsCategoryExist));
                 throw;
             }
+        }
+
+        public async Task<IEnumerable<CategoryVM>> GetAllIdAndNameWithoutPagingAsync()
+        {
+            var categoryVMs = new List<CategoryVM>();
+
+            try
+            {
+                var categories =
+                    await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+
+                categoryVMs = _mapper.Map<List<CategoryVM>>(categories);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllIdAndNameWithoutPagingAsync));
+                throw;
+            }
+
+            return categoryVMs;
         }
     }
 }

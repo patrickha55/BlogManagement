@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Data.Entities;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,7 +26,7 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10);
+        Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest);
         /// <summary>
         /// 
         /// </summary>
@@ -53,14 +51,14 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<PostEditVM> GetPostEditVMsAsync(long id);
+        Task<PostEditVM> GetPostEditVMsAsync(string token, long id);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="request"></param>
         /// <param name="userName"></param>
         /// <returns></returns>
-        Task<PostVM> CreatePostAsync(PostCreateVM request, string userName);
+        Task<bool> CreatePostAsync(string token, PostCreateVM request, string userName);
 
         /// <summary>
         /// This method updates an existing post.
@@ -68,13 +66,13 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="id"></param>
         /// <param name="request">Post to update against</param>
         /// <returns>Return true if success, else return false</returns>
-        Task<bool> UpdatePostAsync(long id, PostEditVM request);
+        Task<bool> UpdatePostAsync(string token, long id, PostEditVM request);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="postVM"></param>
         /// <returns></returns>
-        Task<bool> DeletePostAsync(Post post);
+        Task<bool> DeletePostAsync(string token, long id);
         /// <summary>
         /// 
         /// </summary>
@@ -88,12 +86,6 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="tagIds"></param>
         /// <param name="postId"></param>
         /// <returns></returns>
-        Task<(SelectList categories, SelectList tags, SelectList posts)> GetSelectListsForPostCreationAsync(
-            long? categoryId = null, [CanBeNull] IEnumerable<long> tagIds = null, long? postId = null);
-        /// <summary>
-        /// This method increase a post view count by one.
-        /// </summary>
-        /// <param name="post">A Post to increase view</param>
-        Task UpdatePostViewCountAsync(Post post);
+        Task<PostRelatedListOfObjectsDTO> GetSelectListsForPostCreationAsync(string token);
     }
 }

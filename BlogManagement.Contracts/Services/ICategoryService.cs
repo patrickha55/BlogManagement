@@ -14,5 +14,6 @@ namespace BlogManagement.Contracts.Services
         Task<IEnumerable<CategoryVM>> GetCategoriesForSelectListAsync(long? parentId = null);
 
         Task<bool> IsCategoryExist(long id);
+        Task<IEnumerable<CategoryVM>> GetAllIdAndNameWithoutPagingAsync();
     }
 }

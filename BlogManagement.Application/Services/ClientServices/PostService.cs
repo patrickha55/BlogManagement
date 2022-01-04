@@ -1,16 +1,19 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Contracts.Services.ClientServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using BlogManagement.Common.DTOs.PostDTOs;
 
 namespace BlogManagement.Application.Services.ClientServices
 {
@@ -70,16 +73,35 @@ namespace BlogManagement.Application.Services.ClientServices
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostsForIndexVMsAsync));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostsOfAnAuthorAsync));
                 throw;
             }
 
             return null;
         }
 
-        public Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"posts-admins?PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
+                    return await JsonSerializer.DeserializeAsync<List<PostForAdminIndexVM>>(reponseStream, _options);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostForAdminIndexVMsAsync));
+                throw;
+            }
+
+            return null;
         }
 
         public Task<Post> GetPostAsync(long id)
@@ -108,31 +130,92 @@ namespace BlogManagement.Application.Services.ClientServices
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostsForIndexVMsAsync));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostDetailVMAsync));
                 throw;
             }
 
             return null;
         }
 
-        public Task<PostEditVM> GetPostEditVMsAsync(long id)
+        public Task<PostEditVM> GetPostEditVMsAsync(string token, long id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PostVM> CreatePostAsync(PostCreateVM request, string userName)
+        public async Task<bool> CreatePostAsync(string token, PostCreateVM request, string userName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+                var postJson = new StringContent(
+                    JsonSerializer.Serialize(request, _options),
+                    encoding: Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var httpResponse = await client.PostAsync($"posts?userName={userName}", postJson);
+
+                httpResponse.EnsureSuccessStatusCode();
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostAsync));
+                throw;
+            }
         }
 
-        public Task<bool> UpdatePostAsync(long id, PostEditVM request)
+        public async Task<bool> UpdatePostAsync(string token, long id, PostEditVM request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+                var postJson = new StringContent(
+                    JsonSerializer.Serialize(request, _options),
+                    encoding: Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var httpResponse = await client.PutAsync($"posts/{id}", postJson);
+
+                httpResponse.EnsureSuccessStatusCode();
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdatePostAsync));
+                throw;
+            }
         }
 
-        public Task<bool> DeletePostAsync(Post post)
+        public async Task<bool> DeletePostAsync(string token, long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
+                using var httpResponse = await client.DeleteAsync($"posts/{id}");
+
+                httpResponse.EnsureSuccessStatusCode();
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeletePostAsync));
+                throw;
+            }
         }
 
         public Task<bool> IsPostExistAsync(long id)
@@ -140,14 +223,29 @@ namespace BlogManagement.Application.Services.ClientServices
             throw new NotImplementedException();
         }
 
-        public Task<(SelectList categories, SelectList tags, SelectList posts)> GetSelectListsForPostCreationAsync(long? categoryId = null, IEnumerable<long> tagIds = null, long? postId = null)
+        public async Task<PostRelatedListOfObjectsDTO> GetSelectListsForPostCreationAsync(string token)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "posts/select-lists-for-posts-creation");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+                var response = await client.SendAsync(request);
 
-        public Task UpdatePostViewCountAsync(Post post)
-        {
-            throw new NotImplementedException();
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
+                    return await JsonSerializer.DeserializeAsync<PostRelatedListOfObjectsDTO>(reponseStream, _options);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostsForIndexVMsAsync));
+                throw;
+            }
+
+            return null;
         }
     }
 }

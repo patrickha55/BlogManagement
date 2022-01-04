@@ -1,8 +1,9 @@
-﻿@inject BlogManagement.Contracts.IUnitOfWork _unitOfWork
+﻿@inject BlogManagement.Contracts.Services.ClientServices.ICategoryService CategoryService
+@inject BlogManagement.Contracts.Services.ClientServices.ITagService TagService
 
 @{
-    var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
-    var tags = await _unitOfWork.TagRepository.GetAllTagIdsAndTitles();
+    var categories = await CategoryService.GetAllIdAndNameWithoutPagingAsync();
+    var tags = await TagService.GetAllIdAndNameWithoutPagingAsync();
 }
 
 <div class="col-xl-3 sidebar ftco-animate bg-light pt-5">
