@@ -40,12 +40,12 @@ namespace BlogManagement.Web
 
             //services.AddScoped<ITokenRepository, TokenRepository>();
 
-            services.AddSingleton<IWebApiExecuter>(
+            /*services.AddSingleton<IWebApiExecuter>(
                 sp => new WebApiExecuter(
                     new HttpClient(),
                     "https://localhost:44392/api/",
                     new Logger<WebApiExecuter>(new LoggerFactory()))
-                );
+                );*/
 
             services.AddHttpClient(Constants.HttpClientName, c => { c.BaseAddress = new Uri("https://localhost:44392/api/"); });
 

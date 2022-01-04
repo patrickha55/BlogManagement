@@ -58,7 +58,7 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="request"></param>
         /// <param name="userName"></param>
         /// <returns></returns>
-        Task<bool> CreatePostAsync(string token, PostCreateVM request, string userName);
+        Task<bool> CreatePostAsync(string token, PostCreateVM request);
 
         /// <summary>
         /// This method updates an existing post.

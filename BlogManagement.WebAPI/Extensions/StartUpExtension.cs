@@ -112,7 +112,7 @@ namespace BlogManagement.WebAPI.Extensions
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogManagement.WebAPI", Version = "v1" });
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
-                    Name = "tokenheader",
+                    Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",

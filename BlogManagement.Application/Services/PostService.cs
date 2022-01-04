@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
@@ -8,13 +9,11 @@ using BlogManagement.Contracts.Repositories;
 using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Common.DTOs.PostDTOs;
 using X.PagedList;
 using Constants = BlogManagement.Common.Common.Constants;
 

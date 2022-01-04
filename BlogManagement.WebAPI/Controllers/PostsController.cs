@@ -1,7 +1,9 @@
 ﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Contracts.Services;
+using BlogManagement.WebAPI.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,10 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Common.DTOs.PostDTOs;
-using BlogManagement.Common.Models.CategoryVMs;
-using BlogManagement.Common.Models.TagVMs;
-using BlogManagement.WebAPI.Filters;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -54,7 +52,7 @@ namespace BlogManagement.WebAPI.Controllers
 
             return Ok(postVMs.Any() ? postVMs : "There is no post at the moment.");
         }
-        
+
         [HttpGet("posts-admins")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<PostForAdminIndexVM>>> GetPostsForAdminIndex([FromQuery] PagingRequest pagingRequest)
@@ -175,13 +173,13 @@ namespace BlogManagement.WebAPI.Controllers
         [JwtTokenAuthFilter]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PostVM>> Post([FromQuery] string userName, [FromForm] PostCreateVM request)
+        public async Task<ActionResult<PostVM>> Post([FromForm] PostCreateVM request)
         {
             try
             {
-                if (userName is null || request is null) return BadRequest();
+                if (request?.UserName is null) return BadRequest();
 
-                var postVM = await _postService.CreatePostAsync(request, userName);
+                var postVM = await _postService.CreatePostAsync(request, request.UserName);
 
                 if (postVM is not null)
                     return CreatedAtAction(nameof(Get), new { id = postVM.Id }, postVM);

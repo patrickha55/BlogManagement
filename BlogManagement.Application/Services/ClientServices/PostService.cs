@@ -1,19 +1,18 @@
 ﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
-using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Contracts.Services.ClientServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using BlogManagement.Common.DTOs.PostDTOs;
 
 namespace BlogManagement.Application.Services.ClientServices
 {
@@ -142,7 +141,7 @@ namespace BlogManagement.Application.Services.ClientServices
             throw new NotImplementedException();
         }
 
-        public async Task<bool> CreatePostAsync(string token, PostCreateVM request, string userName)
+        public async Task<bool> CreatePostAsync(string token, PostCreateVM request)
         {
             try
             {
@@ -150,13 +149,10 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue(token);
-                var postJson = new StringContent(
-                    JsonSerializer.Serialize(request, _options),
-                    encoding: Encoding.UTF8,
-                    "application/json"
-                );
 
-                using var httpResponse = await client.PostAsync($"posts?userName={userName}", postJson);
+                var content = CreateMultipartFormDataContent(request);
+
+                var httpResponse = await client.PostAsync("Posts", content);
 
                 httpResponse.EnsureSuccessStatusCode();
 
@@ -168,6 +164,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 throw;
             }
         }
+
 
         public async Task<bool> UpdatePostAsync(string token, long id, PostEditVM request)
         {
@@ -246,6 +243,40 @@ namespace BlogManagement.Application.Services.ClientServices
             }
 
             return null;
+        }
+        /// <summary>
+        /// This method turns a model into a multipart form data content.
+        /// </summary>
+        /// <param name="request">Model to convert</param>
+        /// <returns>MultipartFormDataContent</returns>
+        private MultipartFormDataContent CreateMultipartFormDataContent(PostCreateVM request)
+        {
+            byte[] data;
+
+            using (var binaryReader = new BinaryReader(request.Image.OpenReadStream()))
+            {
+                data = binaryReader.ReadBytes((int)request.Image.OpenReadStream().Length);
+            }
+
+            ByteArrayContent bytes = new ByteArrayContent(data);
+
+            using var content = new MultipartFormDataContent();
+
+            content.Add(bytes, nameof(request.Image), request.Image.FileName);
+            content.Add(new StringContent(request.UserName), nameof(request.UserName));
+            content.Add(new StringContent(request.Title), nameof(request.Title));
+            content.Add(new StringContent(request.MetaTitle), nameof(request.MetaTitle));
+            content.Add(new StringContent(request.Content), nameof(request.Content));
+            content.Add(new StringContent(request.Slug), nameof(request.Slug));
+            content.Add(new StringContent(request.Summary), nameof(request.Summary));
+            content.Add(new StringContent(request.CategoryId.ToString()), nameof(request.CategoryId));
+            content.Add(new StringContent(request.ParentId.ToString()), nameof(request.ParentId));
+            foreach (var tagId in request.TagIds)
+            {
+                content.Add(new StringContent(tagId.ToString()), nameof(request.TagIds));
+            }
+
+            return content;
         }
     }
 }

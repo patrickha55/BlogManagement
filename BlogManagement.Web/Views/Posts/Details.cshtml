@@ -61,7 +61,7 @@
                     </div>
 
                     <img style="width: 100%; max-height: 400px;"
-                     src="~/@Model.Item1.ImageUrl" alt="@Model.Item1.Title" class="img-fluid rounded">
+                     src=@($"https://localhost:44392/{Model.Item1.ImageUrl}") alt="@Model.Item1.Title" class="img-fluid rounded">
 
                     <div id="content" data-content="@Model.Item1.Content" class="my-4 w-100 lh-1"></div>
 

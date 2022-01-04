@@ -121,7 +121,8 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _postService.CreatePostAsync(token, request, User.Identity?.Name);
+                    request.UserName = User.Identity?.Name;
+                    var result = await _postService.CreatePostAsync(token, request);
 
                     if (result)
                     {
