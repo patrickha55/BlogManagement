@@ -1,12 +1,21 @@
-﻿using BlogManagement.Application;
+﻿using BlogManagement.Application.ApiClient;
 using BlogManagement.Application.Services;
-using BlogManagement.Data.Configuration.MapperConfigs;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+using BlogManagement.Common.Common;
+using BlogManagement.Contracts.ApiClient;
+using BlogManagement.Contracts.Services.ClientServices;
 using BlogManagement.Data;
+using BlogManagement.Data.Configuration.MapperConfigs;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Net.Http;
+using CategoryService = BlogManagement.Application.Services.ClientServices.CategoryService;
+using PostService = BlogManagement.Application.Services.ClientServices.PostService;
+using TagService = BlogManagement.Application.Services.ClientServices.TagService;
+using UserService = BlogManagement.Application.Services.ClientServices.UserService;
 
 namespace BlogManagement.Web
 {
@@ -28,6 +37,24 @@ namespace BlogManagement.Web
                     25,
                     "no-reply@andreamooreblogspace.com")
             );
+
+            //services.AddScoped<ITokenRepository, TokenRepository>();
+
+            services.AddSingleton<IWebApiExecuter>(
+                sp => new WebApiExecuter(
+                    new HttpClient(),
+                    "https://localhost:44392/api/",
+                    new Logger<WebApiExecuter>(new LoggerFactory()))
+                );
+
+            services.AddHttpClient(Constants.HttpClientName, c => { c.BaseAddress = new Uri("https://localhost:44392/api/"); });
+
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ITagService, TagService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPostService, PostService>();
+
+            services.AddAutoMapper(typeof(MapperConfig));
         }
 
         /// <summary>

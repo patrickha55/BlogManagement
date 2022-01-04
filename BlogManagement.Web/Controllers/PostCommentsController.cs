@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -59,9 +61,9 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _postCommentService.CreatePostCommentAsync(request, User.Identity?.Name);
+                    var result = await _postCommentService.CreatePostCommentAsync(request);
 
-                    if (result)
+                    if (result is not null)
                     {
                         TempData[Constants.Success] = Constants.SuccessMessage;
                         return RedirectToRoute($"Posts/{request.PostId}");

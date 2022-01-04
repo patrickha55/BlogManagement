@@ -11,8 +11,9 @@ namespace BlogManagement.Contracts.Services
         Task<bool> CreateCategoryAsync(CategoryCreateVM request);
         Task<bool> UpdateCategoryAsync(long id, CategoryEditVM request);
         Task<bool> DeleteCategoryAsync(CategoryVM categoryVM);
-        Task<SelectList> GetCategoriesForSelectListAsync(long? parentId = null);
+        Task<IEnumerable<CategoryVM>> GetCategoriesForSelectListAsync(long? parentId = null);
 
         Task<bool> IsCategoryExist(long id);
+        Task<IEnumerable<CategoryVM>> GetAllIdAndNameWithoutPagingAsync();
     }
 }

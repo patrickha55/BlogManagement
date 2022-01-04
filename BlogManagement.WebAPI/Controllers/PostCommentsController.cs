@@ -1,6 +1,7 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Contracts.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,7 +22,10 @@ namespace BlogManagement.WebAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet("id:long")]
+        [HttpGet("{id:long}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PostCommentVM>> GetAsync(long id)
         {
             try
@@ -45,6 +49,8 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PostCommentVM>> CreateAsync(PostCommentCreateVM request)
         {
             try

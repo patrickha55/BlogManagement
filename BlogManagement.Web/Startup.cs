@@ -1,3 +1,4 @@
+using System;
 using BlogManagement.Data;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Builder;
@@ -22,6 +23,14 @@ namespace BlogManagement.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.IOTimeout = TimeSpan.FromMinutes(60);
+            });
+
             services.AddDbContext<BlogManagementContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BlogManagementDB")));
 
@@ -32,6 +41,7 @@ namespace BlogManagement.Web
             services.RegisterServices();
 
             services.AddControllersWithViews();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +65,8 @@ namespace BlogManagement.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

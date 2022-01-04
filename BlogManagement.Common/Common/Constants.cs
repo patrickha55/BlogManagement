@@ -30,6 +30,7 @@
         public const string ChildPosts = "ChildPosts";
         public const string PostRatings = "PostRatings";
         public const string DefaultImage = "images/default-user.png";
+        public const string HttpClientName = "blogManagement";
 
         #endregion
     }

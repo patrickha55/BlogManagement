@@ -1543,7 +1543,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlogManagement.Application\BlogManagement.Application.csproj" />
+    <ProjectReference Include="..\BlogManagement.Contracts\BlogManagement.Contracts.csproj" />
     <ProjectReference Include="..\BlogManagement.Data\BlogManagement.Data.csproj" />
+    <ProjectReference Include="..\BlogManagement.Repository\BlogManagement.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

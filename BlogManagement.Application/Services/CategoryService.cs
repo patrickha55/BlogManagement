@@ -5,7 +5,6 @@ using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Contracts;
 using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -35,11 +34,7 @@ namespace BlogManagement.Application.Services
 
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 var includes = new List<string> { "ParentCategory" };
 
@@ -190,12 +185,12 @@ namespace BlogManagement.Application.Services
             return false;
         }
 
-        public async Task<SelectList> GetCategoriesForSelectListAsync(long? parentId = null)
+        public async Task<IEnumerable<CategoryVM>> GetCategoriesForSelectListAsync(long? parentId = null)
         {
             var categories =
                 await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
 
-            return new SelectList(categories, "Id", "Title", parentId);
+            return _mapper.Map<IEnumerable<CategoryVM>>(categories);
         }
 
         public async Task<bool> IsCategoryExist(long id)
@@ -209,6 +204,26 @@ namespace BlogManagement.Application.Services
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(IsCategoryExist));
                 throw;
             }
+        }
+
+        public async Task<IEnumerable<CategoryVM>> GetAllIdAndNameWithoutPagingAsync()
+        {
+            var categoryVMs = new List<CategoryVM>();
+
+            try
+            {
+                var categories =
+                    await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+
+                categoryVMs = _mapper.Map<List<CategoryVM>>(categories);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAllIdAndNameWithoutPagingAsync));
+                throw;
+            }
+
+            return categoryVMs;
         }
     }
 }

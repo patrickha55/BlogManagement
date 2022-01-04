@@ -1,9 +1,7 @@
-﻿@using BlogManagement.Common.Common
-
-@inject BlogManagement.Application.Contracts.IUnitOfWork _unitOfWork
+﻿@inject BlogManagement.Contracts.Services.ClientServices.ICategoryService _categoryService
 
 @{
-    var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
+    var categories = await _categoryService.GetCategoryVMsAsync(1, 20);
 }
 <!DOCTYPE html>
 <html lang="en">

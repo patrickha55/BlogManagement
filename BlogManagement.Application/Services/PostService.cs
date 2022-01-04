@@ -3,6 +3,9 @@ using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Repositories;
+using BlogManagement.Contracts.Services;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,9 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Contracts;
-using BlogManagement.Contracts.Repositories;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Common.DTOs.PostDTOs;
 using X.PagedList;
 using Constants = BlogManagement.Common.Common.Constants;
 
@@ -98,11 +99,7 @@ namespace BlogManagement.Application.Services
 
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 var includes = new List<string> { Constants.ChildPosts, Constants.PostRatings };
 
@@ -323,10 +320,10 @@ namespace BlogManagement.Application.Services
                                 postTagResult = true;
                                 continue;
                             }
-                                
+
 
                             postTagResult =
-                                await _postTagRepository.CreateAsync(new PostTag {PostId = post.Id, TagId = tagId});
+                                await _postTagRepository.CreateAsync(new PostTag { PostId = post.Id, TagId = tagId });
 
                             request.TagIds.Remove(tagId);
                         }
@@ -381,18 +378,19 @@ namespace BlogManagement.Application.Services
             return await _unitOfWork.PostRepository.IsExistsAsync(id);
         }
 
-        public async Task<(SelectList categories, SelectList tags, SelectList posts)> GetSelectListsForPostCreationAsync(long? categoryId = null, IEnumerable<long> tagIds = null, long? postId = null)
+        public async Task<PostRelatedListOfObjectsDTO> GetSelectListsForPostCreationAsync()
         {
             var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
             var tags = await _unitOfWork.TagRepository.GetAllTagIdsAndTitles();
             var posts = await _unitOfWork.PostRepository.GetAllPostIdsAndTitles();
 
             return
-            (
-                new SelectList(categories, "Id", "Title", categoryId),
-                new SelectList(tags, "Id", "Title", tagIds),
-                new SelectList(posts, "Id", "Title", postId)
-            );
+            new PostRelatedListOfObjectsDTO
+            {
+                CategoryDTOs = _mapper.Map<IEnumerable<CategoryVM>>(categories),
+                TagDTOs = _mapper.Map<IEnumerable<TagVM>>(tags),
+                PostDTOs = _mapper.Map<IEnumerable<PostVM>>(posts)
+            };
         }
 
         public async Task UpdatePostViewCountAsync(Post post)

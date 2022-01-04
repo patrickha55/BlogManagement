@@ -5,6 +5,17 @@
     /// </summary>
     public class PagingRequest
     {
+        public PagingRequest()
+        {
+            
+        }
+
+        public PagingRequest(int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }
+
         private const int MaxPageSize = 20;
         public int PageNumber { get; set; } = 1;
         private int _pageSize = 10;
