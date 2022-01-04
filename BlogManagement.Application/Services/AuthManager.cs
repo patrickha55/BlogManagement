@@ -24,19 +24,16 @@ namespace BlogManagement.Application.Services
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthManager> _logger;
-        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
         private User _user;
 
         public AuthManager(
             UserManager<User> userManager, 
             IConfiguration configuration,
-            ILogger<AuthManager> logger,
-            JwtSecurityTokenHandler jwtSecurityTokenHandler)
+            ILogger<AuthManager> logger)
         {
             _userManager = userManager;
             _configuration = configuration;
             _logger = logger;
-            _jwtSecurityTokenHandler = jwtSecurityTokenHandler;
         }
 
         public async Task<bool> ValidateUserAsync(UserLoginDTO request)
@@ -78,24 +75,27 @@ namespace BlogManagement.Application.Services
             }
         }
 
-        public Task<bool> VerifyToken(string token)
+        public bool VerifyToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
-                return Task.FromResult(false);
+                return false;
 
             SecurityToken securityToken;
 
             try
             {
-                _jwtSecurityTokenHandler.ValidateToken(
+                var jwtSettings = _configuration.GetSection("Jwt");
+
+                new JwtSecurityTokenHandler().ValidateToken(
                     token.Replace("\"", string.Empty), new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetKey())),
                         ValidateLifetime = true,
-                        ValidateAudience = false,
                         ValidateIssuer = true,
-                        ClockSkew = TimeSpan.Zero
+                        ValidateAudience = false,
+                        ClockSkew = TimeSpan.Zero,
+                        ValidIssuer = jwtSettings.GetSection("Issuer").Value,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetKey()))
                     },
                     out securityToken);
             }
@@ -105,7 +105,7 @@ namespace BlogManagement.Application.Services
                 throw;
             }
 
-            return Task.FromResult(securityToken is not null);
+            return securityToken is not null;
         }
 
         private SigningCredentials GetSigningCredentials()

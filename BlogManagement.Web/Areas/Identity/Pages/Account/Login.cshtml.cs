@@ -11,6 +11,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.UserDTOs;
+using BlogManagement.Contracts.Services.ClientServices;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogManagement.Web.Areas.Identity.Pages.Account
 {
@@ -21,14 +26,17 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly BlogManagementContext _context;
-
+        private readonly IMapper _mapper;
+        private readonly IUserService _userService;
         public LoginModel(SignInManager<User> signInManager,
             ILogger<LoginModel> logger,
             UserManager<User> userManager,
-            BlogManagementContext context)
+            BlogManagementContext context, IMapper mapper, IUserService userService)
         {
             _userManager = userManager;
             _context = context;
+            _mapper = mapper;
+            _userService = userService;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -86,12 +94,20 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 
+                var userLoginDto = new UserLoginDTO
+                { UserName = Input.UserName, Password = Input.Password, RememberMe = Input.RememberMe };
+
+                var token = await _userService.LoginAsync(userLoginDto);
+
+                HttpContext.Session.SetString(nameof(Token.JwtToken), token.JwtToken);
+
                 var user = await _userManager.FindByNameAsync(Input.UserName);
 
                 user.LastLogin = DateTime.Now;
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
+
 
 
                 if (!user.IsEnabled)

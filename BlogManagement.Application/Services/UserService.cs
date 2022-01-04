@@ -40,7 +40,7 @@ namespace BlogManagement.Application.Services
             {
                 var userVMs = new List<AuthorAdminIndexVM>();
 
-                var pagingRequest = new PagingRequest { PageNumber = pageNumber, PageSize = pageSize };
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 var users = await _unitOfWork.UserRepository.GetAllAsync(pagingRequest);
 

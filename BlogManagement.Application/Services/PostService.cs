@@ -98,11 +98,7 @@ namespace BlogManagement.Application.Services
 
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 var includes = new List<string> { Constants.ChildPosts, Constants.PostRatings };
 

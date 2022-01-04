@@ -35,11 +35,7 @@ namespace BlogManagement.Application.Services
 
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 var includes = new List<string> { "ParentCategory" };
 
@@ -190,12 +186,12 @@ namespace BlogManagement.Application.Services
             return false;
         }
 
-        public async Task<SelectList> GetCategoriesForSelectListAsync(long? parentId = null)
+        public async Task<IEnumerable<CategoryVM>> GetCategoriesForSelectListAsync(long? parentId = null)
         {
             var categories =
                 await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
 
-            return new SelectList(categories, "Id", "Title", parentId);
+            return _mapper.Map<IEnumerable<CategoryVM>>(categories);
         }
 
         public async Task<bool> IsCategoryExist(long id)

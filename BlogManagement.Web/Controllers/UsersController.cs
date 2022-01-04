@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using BlogManagement.Common.Common;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models.AuthorVMs;
 
 namespace BlogManagement.Web.Controllers
 {

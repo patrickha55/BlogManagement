@@ -2,13 +2,14 @@
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Contracts.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using BlogManagement.WebAPI.Filters;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -51,9 +52,29 @@ namespace BlogManagement.WebAPI.Controllers
             return Ok(categories.Any() ? categories : "There is no categories at the moment.");
         }
 
+        [HttpGet("categories-select-list")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<CategoryVM>>> GetCategoriesForSelectListAsync([FromQuery] long? parentId = null)
+        {
+            IEnumerable<CategoryVM> categoryVMs = null;
+
+            try
+            {
+                categoryVMs =
+                    await _categoryService.GetCategoriesForSelectListAsync(parentId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoriesForSelectListAsync));
+            }
+
+            return Ok(categoryVMs is not null ? categoryVMs : "There is no categories at the moment.");
+        }
+
         // GET api/<CategoriesController>/5
         [HttpGet("{id:long}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [JwtTokenAuthFilter]
         public async Task<ActionResult<CategoryVM>> Get(long id)
         {
             try
@@ -76,8 +97,34 @@ namespace BlogManagement.WebAPI.Controllers
             return BadRequest();
         }
 
+        [JwtTokenAuthFilter]
+        [HttpGet("category-for-edit/{id:long}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<CategoryEditVM>> GetCategoryEditVMAsync(long id)
+        {
+            try
+            {
+                if (id <= 0)
+                    return BadRequest(Constants.InvalidArgument);
+
+                var categoryVM = await _categoryService.GetCategoryEditVMsAsync(id);
+
+                if (categoryVM is null)
+                    return NotFound(Constants.NotFoundResponse);
+
+                return Ok(categoryVM);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoryEditVMAsync));
+            }
+
+            return BadRequest();
+        }
+
         // POST api/<CategoriesController>
         [HttpPost]
+        [JwtTokenAuthFilter]
         public async Task<ActionResult> Post([FromBody] CategoryCreateVM request)
         {
             try
@@ -99,12 +146,15 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         // PUT api/<CategoriesController>/5
-        [HttpPut()]
-        public async Task<ActionResult> Put([FromBody] CategoryEditVM request)
+        [JwtTokenAuthFilter]
+        [HttpPut("{id:long}")]
+        public async Task<ActionResult> Put(long id, [FromBody] CategoryEditVM request)
         {
             try
             {
                 if (request is null) return BadRequest(Constants.PleaseFillIn);
+
+                if (id != request.Id) return BadRequest(Constants.ErrorForUser);
 
                 var result = await _categoryService.UpdateCategoryAsync(request.Id, request);
 
@@ -120,6 +170,7 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         // DELETE api/<CategoriesController>/5
+        [JwtTokenAuthFilter]
         [HttpDelete("{id:long}")]
         public async Task<ActionResult> Delete(long id)
         {

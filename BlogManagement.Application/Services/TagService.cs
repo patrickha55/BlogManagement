@@ -34,11 +34,7 @@ namespace BlogManagement.Application.Services
 
             try
             {
-                var pagingRequest = new PagingRequest
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 var tags = await _unitOfWork.TagRepository.GetAllAsync(pagingRequest);
 

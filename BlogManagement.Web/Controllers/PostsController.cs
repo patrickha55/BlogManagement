@@ -1,10 +1,8 @@
 ﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostCommentVMs;
-using BlogManagement.Common.Models.PostRatingVMs;
 using BlogManagement.Common.Models.PostVMs;
-using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,16 +14,14 @@ namespace BlogManagement.Web.Controllers
     public class PostsController : Controller
     {
         private readonly ILogger<PostsController> _logger;
-        private readonly IPostService _postService;
-        private readonly IPostRatingService _postRatingService;
+        private readonly Contracts.Services.ClientServices.IPostService _postService;
 
         public PostsController(
             ILogger<PostsController> logger,
-            IPostService postService, IPostRatingService postRatingService)
+            Contracts.Services.ClientServices.IPostService postService)
         {
             _logger = logger;
             _postService = postService;
-            _postRatingService = postRatingService;
         }
 
 
@@ -37,7 +33,7 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                postVMs = await _postService.GetPostsForIndexVMsAsync(User.Identity?.Name, pageNumber, pageSize);
+                postVMs = await _postService.GetPostsOfAnAuthorAsync(new PagingRequest(pageNumber, pageSize), User.Identity?.Name);
             }
             catch (Exception e)
             {
@@ -48,7 +44,7 @@ namespace BlogManagement.Web.Controllers
             return View(postVMs);
         }
 
-        [Authorize(Roles = Roles.Administrator)]
+        /*[Authorize(Roles = Roles.Administrator)]
         // GET: PostsController
         public async Task<IActionResult> AdminIndex(int pageNumber = 1, int pageSize = 10)
         {
@@ -66,7 +62,7 @@ namespace BlogManagement.Web.Controllers
             }
 
             return View(postVMs);
-        }
+        }*/
 
         // GET: PostsController/Details/5
         public async Task<ActionResult> Details(long id)
@@ -87,7 +83,7 @@ namespace BlogManagement.Web.Controllers
             return View("~/Views/Home/Index.cshtml");
         }
 
-        // GET: PostsController/Create
+        /*// GET: PostsController/Create
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
         public async Task<ActionResult> Create()
         {
@@ -112,7 +108,7 @@ namespace BlogManagement.Web.Controllers
                 {
                     var result = await _postService.CreatePostAsync(request, User.Identity?.Name);
 
-                    if (result)
+                    if (result is not null)
                     {
                         TempData[Constants.Success] = Constants.SuccessMessage;
                         return RedirectToAction(nameof(Index));
@@ -180,13 +176,13 @@ namespace BlogManagement.Web.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RateAPost([Bind("PostId, Rating")] PostRatingVM request)
+        public async Task<IActionResult> RateAPost([Bind("PostId, Rating")] PostRatingCreateVM request)
         {
             try
             {
-                var result = await _postRatingService.RateAPostAsync(request, User.Identity?.Name);
+                var result = await _postRatingService.RateAPostAsync(request);
 
-                if (result)
+                if (result is not null)
                 {
                     TempData[Constants.Success] = Constants.RatingSuccessMessage;
                     return RedirectToAction(nameof(Details), new { id = request.PostId });
@@ -201,6 +197,6 @@ namespace BlogManagement.Web.Controllers
             TempData[Constants.Error] = Constants.ErrorMessage;
 
             return RedirectToAction(nameof(Details), new { id = request.PostId });
-        }
+        }*/
     }
 }

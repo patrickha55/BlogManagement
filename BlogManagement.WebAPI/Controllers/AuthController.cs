@@ -68,7 +68,7 @@ namespace BlogManagement.WebAPI.Controllers
                 if (!await _authManager.ValidateUserAsync(userLoginDTO))
                     return Unauthorized();
 
-                return Accepted(new { Token = await _authManager.CreateTokenAsync() });
+                return Accepted(new Token { JwtToken = await _authManager.CreateTokenAsync() });
             }
             catch (Exception e)
             {

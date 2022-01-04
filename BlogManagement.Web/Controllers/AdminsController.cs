@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.AuthorVMs;
-using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using X.PagedList;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BlogManagement.Contracts.Services;
 
 namespace BlogManagement.Web.Controllers
 {

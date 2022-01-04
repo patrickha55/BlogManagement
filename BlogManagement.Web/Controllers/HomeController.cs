@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using BlogManagement.Contracts.Services.ClientServices;
 using Exception = System.Exception;
 
 namespace BlogManagement.Web.Controllers
@@ -14,16 +15,12 @@ namespace BlogManagement.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IPostService _postService;
-        private readonly IUserService _userService;
 
         public HomeController(
-            ILogger<HomeController> logger,
-            IPostService postService,
-            IUserService userService)
+            ILogger<HomeController> logger, IPostService postService)
         {
             _logger = logger;
             _postService = postService;
-            _userService = userService;
         }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
@@ -32,7 +29,7 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                postForIndexVMs = await _postService.GetPostsForIndexVMsAsync(null ,pageNumber, pageSize);
+                postForIndexVMs = await _postService.GetPostsForIndexVMsAsync(new PagingRequest(pageNumber, pageSize));
             }
             catch (Exception e)
             {
@@ -64,7 +61,7 @@ namespace BlogManagement.Web.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SearchAnything(string keyword)
         {
@@ -79,6 +76,6 @@ namespace BlogManagement.Web.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
+        }*/
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -6,20 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using AutoMapper;
-using BlogManagement.Common.Common;
-using BlogManagement.Common.DTOs.UserDTOs;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using Constants = BlogManagement.Common.Common.Constants;
 
 namespace BlogManagement.Web.Areas.Identity.Pages.Account
 {
@@ -63,7 +53,7 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             [StringLength(maximumLength: 50, MinimumLength = 1)]
             public string LastName { get; set; }
-            
+
             [Required]
             [Display(Name = "Username")]
             [StringLength(maximumLength: 100, MinimumLength = 1)]
@@ -72,7 +62,7 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Register be become an Author in this blog?")]
             public bool IsAuthor { get; set; }
-            
+
             [Required]
             [Display(Name = "Do you want your account to be public?")]
             public bool IsPublic { get; set; }
@@ -107,7 +97,7 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var userRegisterDTO = new UserRegisterDTO
+                /*var userRegisterDTO = new UserRegisterDTO
                 {
                     FirstName = Input.FirstName,
                     MiddleName = Input.MiddleName,
@@ -119,10 +109,10 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
                     Password = Input.Password
                 };
 
-                // TODO: Add call to http client
+                var (result, user) = await _userService.RegisterAsync(userRegisterDTO);*/
 
-                
-                if (result.Succeeded)
+
+                /*if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -148,7 +138,7 @@ namespace BlogManagement.Web.Areas.Identity.Pages.Account
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
-                }
+                }*/
             }
 
             // If we got this far, something failed, redisplay form

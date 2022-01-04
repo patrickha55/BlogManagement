@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace MyApp.Repository.ApiClient
+﻿namespace BlogManagement.Contracts.ApiClient
 {
     public interface IWebApiExecuter
     {

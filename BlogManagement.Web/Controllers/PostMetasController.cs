@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostMetaVMs;
+using BlogManagement.Contracts;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace BlogManagement.Web.Controllers
 {

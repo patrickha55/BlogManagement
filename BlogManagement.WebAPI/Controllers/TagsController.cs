@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,7 +31,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // GET: api/<CategoriesController>
         [HttpGet]
-        public async Task<ActionResult<List<TagVM>>> Get([FromQuery] PagingRequest pagingRequest)
+        public async Task<IActionResult> Get([FromQuery] PagingRequest pagingRequest)
         {
             var tags = new List<TagVM>();
 
@@ -51,6 +52,7 @@ namespace BlogManagement.WebAPI.Controllers
 
         // GET api/<CategoriesController>/5
         [HttpGet("{id:long}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TagVM>> Get(long id)
         {
             try
@@ -68,6 +70,30 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Get));
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet("tag-for-edit/{id:long}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<TagEditVM>> GetTagEditVMAsync(long id)
+        {
+            try
+            {
+                if (id <= 0)
+                    return BadRequest(Constants.InvalidArgument);
+
+                var tagVM = await _tagService.GetTagEditVMsAsync(id);
+
+                if (tagVM is null)
+                    return NotFound(Constants.NotFoundResponse);
+
+                return Ok(tagVM);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetTagEditVMAsync));
             }
 
             return BadRequest();
@@ -96,12 +122,14 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         // PUT api/<CategoriesController>/5
-        [HttpPut()]
-        public async Task<ActionResult> Put([FromBody] TagEditVM request)
+        [HttpPut("{id:long}")]
+        public async Task<ActionResult> Put(long id, [FromBody] TagEditVM request)
         {
             try
             {
                 if (request is null) return BadRequest(Constants.PleaseFillIn);
+
+                if (id != request.Id) return BadRequest(Constants.ErrorForUser);
 
                 var result = await _tagService.UpdateTagAsync(request.Id, request);
 

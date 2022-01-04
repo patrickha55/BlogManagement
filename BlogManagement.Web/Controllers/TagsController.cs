@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BlogManagement.Contracts.Services.ClientServices;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -30,7 +32,7 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                tagVMs = await _tagService.GetTagVMsAsync();
+                tagVMs = await _tagService.GetTagVMsAsync(pageNumber, pageSize);
             }
             catch (Exception e)
             {
@@ -42,9 +44,23 @@ namespace BlogManagement.Web.Controllers
         }
 
         [HttpGet("{id:long}")]
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
-            return View("~/Views/Admins/Tags/Details.cshtml");
+            TagVM tagVM = null;
+
+            try
+            {
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                tagVM = await _tagService.GetTagVMAsync(token, id);
+
+            }
+            catch (Exception e)
+            {
+                TempData[Constants.Error] = Constants.ErrorMessage;
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Index));
+            }
+
+            return View("~/Views/Admins/Tags/Details.cshtml", tagVM);
         }
 
         [Route("Create")]
@@ -61,7 +77,8 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _tagService.CreateTagAsync(request);
+                    var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                    var result = await _tagService.CreateTagAsync(token, request);
 
                     if (result)
                     {
@@ -85,7 +102,8 @@ namespace BlogManagement.Web.Controllers
             var tagVM = new TagEditVM();
             try
             {
-                tagVM = await _tagService.GetTagEditVMsAsync(id);
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                tagVM = await _tagService.GetTagEditVMsAsync(token, id);
             }
             catch (Exception e)
             {
@@ -104,22 +122,13 @@ namespace BlogManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _tagService.UpdateTagAsync(id, request);
+                    var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                    await _tagService.UpdateTagAsync(token, id, request);
 
-                    if (result)
-                    {
-                        TempData[Constants.Success] = Constants.SuccessMessage;
-                        return RedirectToAction(nameof(Index));
-                    }
+                    
+                    TempData[Constants.Success] = Constants.SuccessMessage;
+                    return RedirectToAction(nameof(Index));
                 }
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                if (!await _tagService.IsTagExist(id))
-                    return NotFound();
-
-                TempData[Constants.Error] = Constants.ErrorMessage;
-                _logger.LogError(e, "{0} {1}", Constants.ObjectAlreadyExists, nameof(Edit));
             }
             catch (Exception e)
             {
@@ -137,9 +146,8 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                var result = await _tagService.DeleteTagAsync(id);
-
-                if (!result) TempData[Constants.Error] = Constants.ErrorMessage;
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                await _tagService.DeleteTagAsync(token, id);
             }
             catch (Exception e)
             {

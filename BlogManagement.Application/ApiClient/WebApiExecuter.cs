@@ -1,11 +1,10 @@
-﻿using System;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Contracts.ApiClient;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using BlogManagement.Common.Common;
-using BlogManagement.Contracts.Repositories;
-using Microsoft.Extensions.Logging;
-using MyApp.Repository.ApiClient;
 
 namespace BlogManagement.Application.ApiClient
 {
@@ -13,14 +12,12 @@ namespace BlogManagement.Application.ApiClient
     {
         private readonly string _baseUrl;
         private readonly HttpClient _httpClient;
-        private readonly ITokenRepository _tokenRepository;
         private readonly ILogger<WebApiExecuter> _logger;
 
-        public WebApiExecuter(HttpClient httpClient, string baseUrl, ITokenRepository tokenRepository, ILogger<WebApiExecuter> logger)
+        public WebApiExecuter(HttpClient httpClient, string baseUrl, ILogger<WebApiExecuter> logger)
         {
             _httpClient = httpClient;
             _baseUrl = baseUrl;
-            _tokenRepository = tokenRepository;
             _logger = logger;
 
             httpClient.DefaultRequestHeaders.Clear();
@@ -32,7 +29,7 @@ namespace BlogManagement.Application.ApiClient
         {
             try
             {
-                await AddTokenHeader();
+                //await AddTokenHeader();
 
                 return await _httpClient.GetFromJsonAsync<T>(GetUrl(uri));
             }
@@ -48,7 +45,7 @@ namespace BlogManagement.Application.ApiClient
             HttpResponseMessage response;
             try
             {
-                await AddTokenHeader();
+                //await AddTokenHeader();
 
                 response = await _httpClient.PostAsJsonAsync(GetUrl(uri), obj);
 
@@ -72,7 +69,7 @@ namespace BlogManagement.Application.ApiClient
         {
             try
             {
-                await AddTokenHeader();
+                //await AddTokenHeader();
 
                 var response = await _httpClient.PutAsJsonAsync(GetUrl(uri), obj);
 
@@ -88,7 +85,7 @@ namespace BlogManagement.Application.ApiClient
         {
             try
             {
-                await AddTokenHeader();
+                //await AddTokenHeader();
 
                 var response = await _httpClient.DeleteAsync(GetUrl(uri));
                 await HandleError(response);
@@ -103,14 +100,14 @@ namespace BlogManagement.Application.ApiClient
         /// <summary>
         /// This method add the JWT token in the session in a header of a request.
         /// </summary>
-        private async Task AddTokenHeader()
+        /*private async Task AddTokenHeader()
         {
             if (_tokenRepository != null && !string.IsNullOrWhiteSpace(await _tokenRepository.GetToken()))
             {
                 _httpClient.DefaultRequestHeaders.Remove("TokenHeader");
                 _httpClient.DefaultRequestHeaders.Add("TokenHeader", await _tokenRepository.GetToken());
             }
-        }
+        }*/
 
         private string GetUrl(string uri)
         {

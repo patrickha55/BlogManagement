@@ -1,12 +1,14 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.CategoryVMs;
+using BlogManagement.Contracts.Services.ClientServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -16,6 +18,7 @@ namespace BlogManagement.Web.Controllers
     {
         private readonly ILogger<CategoriesController> _logger;
         private readonly ICategoryService _categoryService;
+
 
         public CategoriesController(
             ILogger<CategoriesController> logger,
@@ -42,15 +45,18 @@ namespace BlogManagement.Web.Controllers
         }
 
         [HttpGet("{id:long}")]
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
-            return View("~/Views/Admins/Categories/Details.cshtml");
+            var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+            var categoryVM = await _categoryService.GetCategoryVMAsync(token, id);
+            return View("~/Views/Admins/Categories/Details.cshtml", categoryVM);
         }
 
         [Route("Create")]
         public async Task<IActionResult> Create()
         {
-            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync();
+            var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+            ViewBag.CategoryName = new SelectList(await _categoryService.GetCategoriesForSelectListAsync(token), "Id", "Title");
 
             return View("~/Views/Admins/Categories/Create.cshtml");
         }
@@ -59,11 +65,12 @@ namespace BlogManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryCreateVM request)
         {
+            var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoryService.CreateCategoryAsync(request);
+                    var result = await _categoryService.CreateCategoryAsync(token, request);
 
                     if (result)
                     {
@@ -78,7 +85,7 @@ namespace BlogManagement.Web.Controllers
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
             }
 
-            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(request.ParentId);
+            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(token, request.ParentId);
 
             return View("~/Views/Admins/Categories/Create.cshtml", request);
         }
@@ -90,9 +97,10 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                categoryVM = await _categoryService.GetCategoryEditVMsAsync(id);
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                categoryVM = await _categoryService.GetCategoryEditVMsAsync(token, id);
 
-                ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(categoryVM.ParentId);
+                ViewBag.CategoryName = new SelectList(await _categoryService.GetCategoriesForSelectListAsync(token), "Id", "Title", categoryVM.ParentId);
             }
             catch (Exception e)
             {
@@ -106,11 +114,12 @@ namespace BlogManagement.Web.Controllers
         [HttpPost("Edit/{id:long}")]
         public async Task<IActionResult> Edit(long id, CategoryEditVM request)
         {
+            var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoryService.UpdateCategoryAsync(id, request);
+                    var result = await _categoryService.UpdateCategoryAsync(token, id, request);
 
                     if (result)
                     {
@@ -119,21 +128,13 @@ namespace BlogManagement.Web.Controllers
                     }
                 }
             }
-            catch (DbUpdateConcurrencyException e)
-            {
-                if (!await _categoryService.IsCategoryExist(id))
-                    return NotFound();
-
-                TempData[Constants.Error] = Constants.ErrorMessage;
-                _logger.LogInformation(e, "{0} {1}", Constants.ObjectAlreadyExists, nameof(Edit));
-            }
             catch (Exception e)
             {
                 TempData[Constants.Error] = Constants.ErrorMessage;
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Edit));
             }
 
-            ViewBag.CategoryName = await _categoryService.GetCategoriesForSelectListAsync(request.ParentId);
+            ViewBag.CategoryName = new SelectList(await _categoryService.GetCategoriesForSelectListAsync(token), "Id", "Title", request.ParentId);
 
             return View("~/Views/Admins/Categories/Edit.cshtml", request);
         }
@@ -143,7 +144,21 @@ namespace BlogManagement.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                var result = await _categoryService.DeleteCategoryAsync(token, id);
+
+                if (!result) TempData[Constants.Error] = Constants.ErrorMessage;
+            }
+            catch (Exception e)
+            {
+                TempData[Constants.Error] = Constants.ErrorMessage;
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Delete));
+            }
+
+            TempData[Constants.Success] = Constants.SuccessMessage;
+            return RedirectToAction(nameof(Index));
         }
     }
 }

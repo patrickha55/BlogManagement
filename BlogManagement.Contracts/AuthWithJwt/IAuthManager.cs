@@ -25,6 +25,6 @@ namespace BlogManagement.Contracts.AuthWithJwt
         /// </summary>
         /// <param name="token">Token to check</param>
         /// <returns>Return true if the token is valid, else return false</returns>
-        Task<bool> VerifyToken(string token);
+        bool VerifyToken(string token);
     }
 }

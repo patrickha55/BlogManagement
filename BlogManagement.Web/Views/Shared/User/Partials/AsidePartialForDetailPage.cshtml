@@ -1,4 +1,4 @@
-﻿@inject BlogManagement.Application.Contracts.IUnitOfWork _unitOfWork
+﻿@inject BlogManagement.Contracts.IUnitOfWork _unitOfWork
 
 @{
     var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();

@@ -1,10 +1,8 @@
-﻿@inject BlogManagement.Application.Contracts.IUnitOfWork _unitOfWork
+﻿@inject BlogManagement.Contracts.Services.ClientServices.ICategoryService _categoryService
 
 @{
-    var categories = await _unitOfWork.CategoryRepository.GetAllIdAndNameWithoutPagingAsync();
-    var tags = await _unitOfWork.TagRepository.GetAllTagIdsAndTitles();
+    var categories = await _categoryService.GetCategoryVMsAsync();
 }
-
 <div class="col-xl-3 sidebar ftco-animate bg-light pt-5">
     <div class="sidebar-box pt-md-4">
         <form asp-controller="Home" asp-action="SearchAnything"
@@ -66,10 +64,10 @@
     <div class="sidebar-box ftco-animate">
         <h3 class="sidebar-heading">Tag Cloud</h3>
         <ul class="tagcloud">
-            @foreach (var tag in tags)
+            @*@foreach (var tag in tags)
             {
                 <a asp-controller="Posts" class="tag-cloud-link">@tag.Title</a>
-            }
+            }*@
         </ul>
     </div>
 
