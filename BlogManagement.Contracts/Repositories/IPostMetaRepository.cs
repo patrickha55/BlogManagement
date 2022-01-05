@@ -1,4 +1,6 @@
-﻿using BlogManagement.Data.Entities;
+﻿using System.Linq.Expressions;
+using BlogManagement.Common.Models.PostMetaVMs;
+using BlogManagement.Data.Entities;
 
 namespace BlogManagement.Contracts.Repositories
 {
@@ -7,5 +9,7 @@ namespace BlogManagement.Contracts.Repositories
     /// </summary>
     public interface IPostMetaRepository : IRepository<PostMeta>
     {
+        Task<IEnumerable<PostMeta>>
+            GetPostMetasWithoutPagingAsync(Expression<Func<PostMeta, bool>> expression = null);
     }
 }

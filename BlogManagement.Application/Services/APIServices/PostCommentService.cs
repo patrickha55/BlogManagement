@@ -1,16 +1,15 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
+using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostCommentVMs;
+using BlogManagement.Contracts;
+using BlogManagement.Contracts.Services.APIServices;
+using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using BlogManagement.Common.Common;
-using BlogManagement.Contracts;
-using BlogManagement.Contracts.Services;
-using BlogManagement.Data.Entities;
-using JetBrains.Annotations;
 
-namespace BlogManagement.Application.Services
+namespace BlogManagement.Application.Services.APIServices
 {
     public class PostCommentService : IPostCommentService
     {

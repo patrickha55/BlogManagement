@@ -57,7 +57,9 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             #region PostMetaVMs mapper configs
 
             CreateMap<PostMeta, PostMetaVM>().ReverseMap();
+            CreateMap<PostMeta, PostMetaCreateVM>().ReverseMap();
             CreateMap<PostMeta, PostMetaDetailVM>().ReverseMap();
+            CreateMap<PostMeta, PostMetaEditVM>().ReverseMap();
 
             #endregion
 

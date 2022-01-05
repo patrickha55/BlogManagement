@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
@@ -6,18 +10,14 @@ using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Contracts;
 using BlogManagement.Contracts.Repositories;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using X.PagedList;
 using Constants = BlogManagement.Common.Common.Constants;
 
-namespace BlogManagement.Application.Services
+namespace BlogManagement.Application.Services.APIServices
 {
     public class PostService : IPostService
     {

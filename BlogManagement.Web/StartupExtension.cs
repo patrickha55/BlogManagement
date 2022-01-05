@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
+using BlogManagement.Application.Services.ClientServices;
 using CategoryService = BlogManagement.Application.Services.ClientServices.CategoryService;
 using PostService = BlogManagement.Application.Services.ClientServices.PostService;
 using TagService = BlogManagement.Application.Services.ClientServices.TagService;
@@ -37,15 +38,6 @@ namespace BlogManagement.Web
                     25,
                     "no-reply@andreamooreblogspace.com")
             );
-
-            //services.AddScoped<ITokenRepository, TokenRepository>();
-
-            /*services.AddSingleton<IWebApiExecuter>(
-                sp => new WebApiExecuter(
-                    new HttpClient(),
-                    "https://localhost:44392/api/",
-                    new Logger<WebApiExecuter>(new LoggerFactory()))
-                );*/
 
             services.AddHttpClient(Constants.HttpClientName, c => { c.BaseAddress = new Uri("https://localhost:44392/api/"); });
 

@@ -1,11 +1,9 @@
 ﻿using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
-using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Data.Entities;
 
-namespace BlogManagement.Contracts.Services
+namespace BlogManagement.Contracts.Services.APIServices
 {
     public interface IPostService
     {

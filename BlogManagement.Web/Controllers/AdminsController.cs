@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 
 namespace BlogManagement.Web.Controllers
 {

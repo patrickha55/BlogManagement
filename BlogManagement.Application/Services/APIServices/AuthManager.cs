@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BlogManagement.Application.Services
+namespace BlogManagement.Application.Services.APIServices
 {
     /// <summary>
     /// 

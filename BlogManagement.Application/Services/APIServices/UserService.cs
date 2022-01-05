@@ -1,19 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.DTOs.UserDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Contracts;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace BlogManagement.Application.Services
+namespace BlogManagement.Application.Services.APIServices
 {
     public class UserService : IUserService
     {

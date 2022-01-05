@@ -3,7 +3,7 @@ using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace BlogManagement.Contracts.Services
+namespace BlogManagement.Contracts.Services.APIServices
 {
     public interface IUserService
     {

@@ -1,16 +1,16 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Contracts;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data.Entities;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace BlogManagement.Application.Services
+namespace BlogManagement.Application.Services.APIServices
 {
     public class TagService : ITagService
     {

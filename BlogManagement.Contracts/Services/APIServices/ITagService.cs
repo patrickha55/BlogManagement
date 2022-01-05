@@ -1,6 +1,6 @@
 ﻿using BlogManagement.Common.Models.TagVMs;
 
-namespace BlogManagement.Contracts.Services
+namespace BlogManagement.Contracts.Services.APIServices
 {
     public interface ITagService
     {

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostRatingVMs;
 using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

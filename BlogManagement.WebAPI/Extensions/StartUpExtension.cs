@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
 using BlogManagement.Application.Services;
+using BlogManagement.Application.Services.APIServices;
 using BlogManagement.Contracts;
 using BlogManagement.Contracts.AuthWithJwt;
 using BlogManagement.Contracts.Repositories;
 using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data;
 using BlogManagement.Data.Configuration.MapperConfigs;
 using BlogManagement.Data.Entities;

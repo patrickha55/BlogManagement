@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using BlogManagement.Contracts.Services.APIServices;
 
 namespace BlogManagement.WebAPI.Controllers
 {
@@ -33,7 +34,6 @@ namespace BlogManagement.WebAPI.Controllers
         [Route("register")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
         public async Task<ActionResult<(IdentityResult, User)>> RegisterAsync([FromBody] UserRegisterDTO userRegisterDTO)
         {
             try
@@ -58,6 +58,8 @@ namespace BlogManagement.WebAPI.Controllers
 
         [HttpPost]
         [Route("login")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> LoginAsync([FromBody] UserLoginDTO userLoginDTO)
         {
             if (userLoginDTO is null)

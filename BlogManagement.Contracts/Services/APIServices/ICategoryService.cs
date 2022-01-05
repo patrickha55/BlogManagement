@@ -1,7 +1,6 @@
 ﻿using BlogManagement.Common.Models.CategoryVMs;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BlogManagement.Contracts.Services
+namespace BlogManagement.Contracts.Services.APIServices
 {
     public interface ICategoryService
     {

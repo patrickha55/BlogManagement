@@ -1,7 +1,7 @@
 ﻿using BlogManagement.Common.Models.PostCommentVMs;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BlogManagement.Contracts.Services
+namespace BlogManagement.Contracts.Services.APIServices
 {
     public interface IPostCommentService
     {

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace BlogManagement.Application.Services
+namespace BlogManagement.Application.Services.ClientServices
 {
     /// <summary>
     /// This class implement IEmailSender interface to handle the email sending logic.
