@@ -49,6 +49,7 @@ namespace BlogManagement.WebAPI.Extensions
             services.AddScoped<IPostRatingService, PostRatingService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPostCommentService, PostCommentService>();
+            services.AddScoped<IPostMetaService, PostMetaService>();
 
             services.AddScoped<IAuthManager, AuthManager>();
 

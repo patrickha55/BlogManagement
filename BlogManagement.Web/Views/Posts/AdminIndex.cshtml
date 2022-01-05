@@ -7,7 +7,13 @@
 
 <h1>Posts overview</h1>
 
-<div class="row">
+@if (Model is null)
+{
+    @Html.PartialAsync("User/Partials/_InfoPartial")
+}
+else
+{
+    <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
@@ -80,7 +86,7 @@
                                     @item.ChildPosts.Count()
                                 </td>
                                 <td>
-                                    @(item.PostRatings.Any() ? item.PostRatings.Average(p => p.Rating) : "N/A")
+                                    @(item.PostRatings.Any() ? Math.Round(item.PostRatings.Average(p => p.Rating), 1) : "N/A")
                                 </td>
                                 <td>
                                     @(item.Published == 0 ? "Unpublished" : "Published")
@@ -106,3 +112,4 @@
         <!-- /.card -->
     </div>
 </div>
+}

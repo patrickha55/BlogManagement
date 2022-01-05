@@ -59,13 +59,7 @@ namespace BlogManagement.Application.Services.APIServices
         {
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
                 var user = await _unitOfWork.UserRepository.FindUserDetailAsync(u => u.Id == id);
-
-                if (user is null)
-                    throw new ArgumentException(Constants.InvalidArgument);
 
                 var userVM = _mapper.Map<AuthorDetailVM>(user);
 
@@ -101,13 +95,10 @@ namespace BlogManagement.Application.Services.APIServices
         {
             try
             {
-                if (id <= 0)
-                    throw new ArgumentException(Constants.InvalidArgument);
-
                 var user = await _unitOfWork.UserRepository.GetAsync(u => u.Id == id);
 
                 if (user == null)
-                    throw new ArgumentException(Constants.InvalidArgument);
+                    return false;
 
                 user.IsEnabled = request.IsEnabled;
                 user.IsPublic = request.IsPublic;

@@ -5,6 +5,9 @@ using BlogManagement.Data.Entities;
 
 namespace BlogManagement.Contracts.Services.APIServices
 {
+    /// <summary>
+    /// Interface for storing Post related services for Web API
+    /// </summary>
     public interface IPostService
     {
         /// <summary>
@@ -14,25 +17,29 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="authorId">User's ID</param>
         /// <returns>List of PostForIndexVMs</returns>
         Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest, long? authorId = null);
+
         /// <summary>
-        /// 
+        /// This method gets all posts for displaying on admin post index view.
         /// </summary>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
+        /// <param name="pageNumber">Page number of the current list</param>
+        /// <param name="pageSize">Size of the page</param>
+        /// <returns>List of PostForAdminIndexVM objects</returns>
         Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10);
+
         /// <summary>
-        /// 
+        /// This method gets a post base on its id.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID of a post</param>
+        /// <returns>A Post object</returns>
         Task<Post> GetPostAsync(long id);
+
         /// <summary>
-        /// 
+        /// This method gets a post view model base on its id.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID of a post</param>
+        /// <returns>A PostVM object</returns>
         Task<PostVM> GetPostVMAsync(long id);
+
         /// <summary>
         /// This method gets a post along with its related information (author, categories, tags, comment, rating,...)
         /// </summary>
@@ -40,18 +47,20 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="userName">Username of the current logged in user to check if this person has rated the post</param>
         /// <returns>Return PostDetailVM object</returns>
         Task<PostDetailVM> GetPostDetailVMAsync(long id, string userName);
+
         /// <summary>
-        /// 
+        /// This method gets a post view model base on its id.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID of a post</param>
+        /// <returns>A PostEditVM object</returns>
         Task<PostEditVM> GetPostEditVMsAsync(long id);
+
         /// <summary>
-        /// 
+        /// This method creates a new post for an author
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="userName"></param>
-        /// <returns></returns>
+        /// <param name="request">Post info to create</param>
+        /// <param name="userName">Username of the author</param>
+        /// <returns>A PostVM object</returns>
         Task<PostVM> CreatePostAsync(PostCreateVM request, string userName);
 
         /// <summary>
@@ -61,26 +70,34 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="request">Post to update against</param>
         /// <returns>Return true if success, else return false</returns>
         Task<bool> UpdatePostAsync(long id, PostEditVM request);
+
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="postVM"></param>
-        /// <returns></returns>
-        Task<bool> DeletePostAsync(Post post);
-        /// <summary>
-        /// 
+        /// This method change the publishing status of a post
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<bool> IsPostExistAsync(long id);
+        Task<bool> PublishPostAsync(long id);
+
         /// <summary>
-        /// 
+        /// This method deletes an existing post
         /// </summary>
-        /// <param name="categoryId"></param>
-        /// <param name="tagIds"></param>
-        /// <param name="postId"></param>
-        /// <returns></returns>
+        /// <param name="post">Post to delete</param>
+        /// <returns>Returns true if success, else returns false</returns>
+        Task<bool> DeletePostAsync(Post post);
+
+        /// <summary>
+        /// This method checks if a post exists in the Data store
+        /// </summary>
+        /// <param name="id">ID of a post to check</param>
+        /// <returns>Returns true if success, else returns false</returns>
+        Task<bool> IsPostExistAsync(long id);
+
+        /// <summary>
+        /// This method gets a post related list of objects for post creating or editing
+        /// </summary>
+        /// <returns>A PostRelatedListOfObjectsDTO</returns>
         Task<PostRelatedListOfObjectsDTO> GetSelectListsForPostCreationAsync();
+
         /// <summary>
         /// This method increase a post view count by one.
         /// </summary>

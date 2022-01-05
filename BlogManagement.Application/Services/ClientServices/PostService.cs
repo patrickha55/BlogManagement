@@ -84,7 +84,7 @@ namespace BlogManagement.Application.Services.ClientServices
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get,
-                    $"posts-admins?PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                    $"posts/posts-admins?PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
                 var client = _clientFactory.CreateClient(Constants.HttpClientName);
                 var response = await client.SendAsync(request);
 

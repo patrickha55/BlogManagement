@@ -147,9 +147,7 @@ namespace BlogManagement.Application.Services.APIServices
 
                 var roles = await _userManager.GetRolesAsync(_user);
 
-                claims.AddRange(
-                    roles.Select(r => new Claim(ClaimTypes.Role, r))
-                );
+                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
                 return claims;
             }

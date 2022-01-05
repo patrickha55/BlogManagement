@@ -1,19 +1,18 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Contracts.Services.ClientServices;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models.CategoryVMs;
-using BlogManagement.Common.Models.PostRatingVMs;
-using BlogManagement.Common.Models.TagVMs;
-using BlogManagement.Contracts.Services.ClientServices;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -139,13 +138,13 @@ namespace BlogManagement.Web.Controllers
 
             var postRelatedList = await _postService.GetSelectListsForPostCreationAsync(token);
 
-            ViewBag.Categories = 
+            ViewBag.Categories =
                 new SelectList(postRelatedList.CategoryDTOs, nameof(CategoryVM.Id), nameof(CategoryVM.Title), request.CategoryId);
 
-            ViewBag.Tags = 
+            ViewBag.Tags =
                 new SelectList(postRelatedList.TagDTOs, nameof(TagVM.Id), nameof(TagVM.Title), request.TagIds);
 
-            ViewBag.Posts = 
+            ViewBag.Posts =
                 new SelectList(postRelatedList.PostDTOs, nameof(PostVM.Id), nameof(PostVM.Title), request.ParentId);
 
             return View(request);

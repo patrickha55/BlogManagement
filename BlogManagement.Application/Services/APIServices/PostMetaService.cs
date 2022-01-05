@@ -14,7 +14,7 @@ using X.PagedList;
 
 namespace BlogManagement.Application.Services.APIServices
 {
-    public class PostMetaService : IPostMetasService
+    public class PostMetaService : IPostMetaService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<PostMetaService> _logger;
@@ -49,34 +49,155 @@ namespace BlogManagement.Application.Services.APIServices
             }
         }
 
-        public Task<IEnumerable<PostMetaVM>> GetPostMetaVMsWithoutPagingAsync(Expression<Func<Post, bool>> expression = null)
+        public async Task<IEnumerable<PostMetaVM>> GetPostMetaVMsWithoutPagingAsync(Expression<Func<PostMeta, bool>> expression = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var postMetas =
+                    await _unitOfWork.PostMetaRepository
+                        .GetPostMetasWithoutPagingAsync(expression);
+
+                var postMetaVMs = _mapper.Map<IEnumerable<PostMetaVM>>(postMetas);
+
+                return postMetaVMs;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostMetaVMsWithoutPagingAsync));
+                throw;
+            }
         }
 
-        public Task<PostMetaVM> GetPostMetaVMAsync(long id)
+        public async Task<PostMeta> GetPostMetaAsync(long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _unitOfWork.PostMetaRepository
+                        .GetAsync(p => p.Id == id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostMetaAsync));
+                throw;
+            }
         }
 
-        public Task<PostMetaEditVM> GetPostMetaEditVMsAsync(long id)
+        public async Task<PostMetaVM> GetPostMetaVMAsync(long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var postMeta =
+                    await _unitOfWork.PostMetaRepository
+                        .GetAsync(p => p.Id == id);
+
+                var postMetaVM = _mapper.Map<PostMetaVM>(postMeta);
+
+                return postMetaVM;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostMetaVMAsync));
+                throw;
+            }
         }
 
-        public Task<bool> CreatePostMetaVMAsync(PostMetaCreateVM request)
+        public async Task<PostMetaEditVM> GetPostMetaEditVMsAsync(long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var postMeta =
+                    await _unitOfWork.PostMetaRepository
+                        .GetAsync(p => p.Id == id);
+
+                var postMetaVM = _mapper.Map<PostMetaEditVM>(postMeta);
+
+                return postMetaVM;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostMetaEditVMsAsync));
+                throw;
+            }
         }
 
-        public Task<bool> UpdatePostMetaAsync(long id, PostMetaEditVM request)
+        public async Task<PostMetaVM> CreatePostMetaVMAsync(PostMetaCreateVM request)
         {
-            throw new NotImplementedException();
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+            try
+            {
+                var postMeta = _mapper.Map<PostMeta>(request);
+
+                var result = await _unitOfWork.PostMetaRepository.CreateAsync(postMeta);
+
+                if (result)
+                {
+                    await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
+                    return _mapper.Map<PostMetaVM>(postMeta);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreatePostMetaVMAsync));
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return null;
         }
 
-        public Task<bool> DeletePostMetaAsync(long id)
+        public async Task<bool> UpdatePostMetaAsync(long id, PostMetaEditVM request)
         {
-            throw new NotImplementedException();
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+            try
+            {
+                if (id != request.Id)
+                    throw new ArgumentException(Constants.InvalidArgument);
+
+                var postMeta = _mapper.Map<PostMeta>(request);
+
+                var result = await _unitOfWork.PostMetaRepository.UpdateAsync(postMeta);
+
+                if (result)
+                {
+                    await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdatePostMetaAsync));
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeletePostMetaAsync(PostMeta postMeta)
+        {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+            try
+            {
+
+                var result = await _unitOfWork.PostMetaRepository.DeleteAsync(postMeta);
+
+                if (result)
+                {
+                    await _unitOfWork.SaveAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(DeletePostMetaAsync));
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return false;
         }
     }
 }

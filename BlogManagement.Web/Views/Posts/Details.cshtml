@@ -53,7 +53,8 @@
                                 }
                             </div>
                             <div class="ml-5 meta">
-                                <span><i class="icon-star2 pr-2"></i>@Model.Item1.Rating</span>
+                                <span><i class="icon-star2 pr-2"></i>@(Model.Item1.Rating is not null ? Math.Round(Model.Item1.Rating.Value, 1) : "N/A")
+                                </span>
                                 <span><i class="icon-eye px-2"></i>@Model.Item1.TotalViewed</span>
                                 <span><i class="icon-comment px-2"></i>@Model.Item1.PostComments.Count()</span>
                             </div>
