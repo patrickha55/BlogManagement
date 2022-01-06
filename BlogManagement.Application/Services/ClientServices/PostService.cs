@@ -79,6 +79,29 @@ namespace BlogManagement.Application.Services.ClientServices
             return null;
         }
 
+        public async Task<List<PostForIndexVM>> FindPostsAsync(string keyword, PagingRequest pagingRequest = null)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"posts/specific-posts?KeyWord={keyword}&PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var responseStream = await response.Content.ReadAsStreamAsync();
+                    return await JsonSerializer.DeserializeAsync<List<PostForIndexVM>>(responseStream, _options);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(FindPostsAsync));
+                throw;
+            }
+
+            return null;
+        }
+
         public async Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest)
         {
             try

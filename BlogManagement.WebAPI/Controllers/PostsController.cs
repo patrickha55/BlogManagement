@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
@@ -74,6 +75,31 @@ namespace BlogManagement.WebAPI.Controllers
 
             return Ok(postVMs.Any() ? postVMs : "There is no post at the moment.");
         }
+
+        [HttpGet("specific-posts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<PostForIndexVM>>> FindPostsAsync([FromQuery] SearchRequest request)
+        {
+            var postVMs = new List<PostForIndexVM>();
+
+            try
+            {
+                if (request?.Keyword is null)
+                    return BadRequest(Constants.InvalidArgument);
+
+                var pagingRequest = new PagingRequest(request.PageNumber, request.PageSize);
+
+                postVMs = await _postService.FindPostsAsync(pagingRequest, request.Keyword);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(FindPostsAsync));
+
+            }
+
+            return Ok(postVMs.Any() ? postVMs : "There is no post at the moment.");
+        }
+        
 
         [JwtTokenAuthFilter]
         [HttpGet("select-lists-for-posts-creation")]

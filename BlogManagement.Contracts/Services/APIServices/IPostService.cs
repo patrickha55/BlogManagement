@@ -28,6 +28,14 @@ namespace BlogManagement.Contracts.Services.APIServices
         Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10);
 
         /// <summary>
+        /// This method searches for posts with a matching title, meta title, summary keyword.
+        /// </summary>
+        /// <param name="pagingRequest">For paging</param>
+        /// <param name="keyword">Keyword for searching</param>
+        /// <returns>List of PostForIndexVM</returns>
+        Task<List<PostForIndexVM>> FindPostsAsync(PagingRequest pagingRequest, string keyword);
+
+        /// <summary>
         /// This method gets a post base on its id.
         /// </summary>
         /// <param name="id">ID of a post</param>

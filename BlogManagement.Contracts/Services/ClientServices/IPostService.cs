@@ -19,8 +19,20 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="authorId">User's ID</param>
         /// <returns>List of PostForIndexVMs</returns>
         Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pagingRequest"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         Task<List<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="pagingRequest"></param>
+        /// <returns></returns>
+        Task<List<PostForIndexVM>> FindPostsAsync(string keyword, PagingRequest pagingRequest = null);
         /// <summary>
         /// 
         /// </summary>

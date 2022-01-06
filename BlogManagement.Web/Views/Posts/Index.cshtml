@@ -45,7 +45,7 @@
                                     <div class="meta-wrap d-md-flex align-items-center">
                                         <div class="half order-md-last text-md-right">
                                             <p class="meta">
-                                                <span><i class="icon-star"></i>@post.Rating</span>
+                                                <span><i class="icon-star"></i>@Math.Round((decimal) post.Rating, 1)</span>
                                                 <span><i class="icon-eye"></i>@post.TotalViewed</span>
                                                 <span><i class="icon-comment"></i>@post.PostComments.Count()</span>
                                             </p>

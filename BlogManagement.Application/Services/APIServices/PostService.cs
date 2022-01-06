@@ -54,7 +54,8 @@ namespace BlogManagement.Application.Services.APIServices
 
                 if (authorId is null)
                 {
-                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest);
+                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest,p =>
+                        p.Published == (byte)PostStatus.Published);
                 }
                 else
                 {
@@ -116,6 +117,55 @@ namespace BlogManagement.Application.Services.APIServices
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostForAdminIndexVMsAsync));
+                throw;
+            }
+
+            return postVMs;
+        }
+
+        public async Task<List<PostForIndexVM>> FindPostsAsync(PagingRequest pagingRequest, string keyword)
+        {
+            List<PostForIndexVM> postVMs;
+
+            try
+            {
+                var posts = 
+                    await _unitOfWork.PostRepository
+                        .GetPostsForIndexAsync(
+                            pagingRequest,
+                            p => 
+                                (p.Title.Contains(keyword) || 
+                                 p.MetaTitle.Contains(keyword) ||
+                                 p.Summary.Contains(keyword)) &&
+                                p.Published == (byte)PostStatus.Published);
+
+
+                postVMs = _mapper.Map<List<PostForIndexVM>>(posts);
+
+                foreach (var postVM in postVMs)
+                {
+                    foreach (var post in posts)
+                    {
+                        if (postVM.Id != post.Id)
+                            continue;
+
+                        postVM.Categories =
+                            _mapper.Map<List<CategoryVM>>(
+                                post.CategoryPosts
+                                    .Select(c => c.Category)
+                            );
+
+                        if (post.PostRatings.Any())
+                        {
+                            postVM.Rating = post.PostRatings
+                                .Average(pr => pr.Rating);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(FindPostsAsync));
                 throw;
             }
 

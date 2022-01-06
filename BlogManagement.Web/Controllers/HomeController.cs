@@ -1,12 +1,12 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Contracts.Services.ClientServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using BlogManagement.Contracts.Services.ClientServices;
 using Exception = System.Exception;
 
 namespace BlogManagement.Web.Controllers
@@ -72,6 +72,7 @@ namespace BlogManagement.Web.Controllers
                 var pagingRequest = new PagingRequest(pageNumber, pageSize);
 
                 ViewData["Users"] = await _userService.FindAuthorVMsAsync(keyword, pagingRequest);
+                ViewData["Posts"] = await _postService.FindPostsAsync(keyword, pagingRequest);
                 return View("~/Views/Home/SearchAnything.cshtml");
             }
             catch (Exception e)

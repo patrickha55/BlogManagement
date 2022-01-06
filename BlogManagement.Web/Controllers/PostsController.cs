@@ -31,14 +31,13 @@ namespace BlogManagement.Web.Controllers
 
 
         // GET: PostsController
-        [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public async Task<ActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult> Index(int pageNumber = 1, int pageSize = 10, string userName = null)
         {
             var postVMs = new List<PostForIndexVM>();
 
             try
             {
-                postVMs = await _postService.GetPostsOfAnAuthorAsync(new PagingRequest(pageNumber, pageSize), User.Identity?.Name);
+                postVMs = await _postService.GetPostsOfAnAuthorAsync(new PagingRequest(pageNumber, pageSize), userName is null ? User.Identity?.Name : userName);
             }
             catch (Exception e)
             {
