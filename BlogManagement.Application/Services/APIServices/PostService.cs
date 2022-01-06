@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlogManagement.Common.Common;
 using X.PagedList;
 using Constants = BlogManagement.Common.Common.Constants;
 
@@ -345,6 +346,41 @@ namespace BlogManagement.Application.Services.APIServices
             }
 
             return false;
+        }
+
+        public async Task<bool> PublishPostAsync(long id, PostStatus status)
+        {
+            await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
+            try
+            {
+                var post = await _unitOfWork.PostRepository.GetAsync(p => p.Id == id);
+
+                if (post is null)
+                    throw new ArgumentException(Constants.NotFoundResponse);
+
+                post.Published = status switch
+                {
+                    PostStatus.Published => (byte) PostStatus.Published,
+                    PostStatus.Unpublished => (byte) PostStatus.Unpublished,
+                    PostStatus.Block => (byte) PostStatus.Block,
+                    _ => post.Published
+                };
+
+                var postResult = await _unitOfWork.PostRepository.UpdateAsync(post);
+
+                if (postResult is false)
+                    return false;
+
+                await _unitOfWork.SaveAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdatePostAsync));
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<bool> DeletePostAsync(Post post)

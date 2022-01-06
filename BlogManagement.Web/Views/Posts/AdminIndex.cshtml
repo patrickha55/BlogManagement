@@ -88,8 +88,19 @@ else
                                 <td>
                                     @(item.PostRatings.Any() ? Math.Round(item.PostRatings.Average(p => p.Rating), 1) : "N/A")
                                 </td>
-                                <td>
-                                    @(item.Published == 0 ? "Unpublished" : "Published")
+                                <td style="display: flex; align-items: center; justify-content: space-between;">
+                                    @switch (item.Published)
+                                    {
+                                        case (byte) PostStatus.Unpublished:
+                                            <span class="text-light">@PostStatus.Unpublished.ToString() </span><i class="fas fa-eye-slash text-light"></i>
+                                            break;
+                                        case (byte) PostStatus.Published:
+                                            <span class="text-success">@PostStatus.Published.ToString() </span> <i class="fas fa-check-circle text-success"></i>
+                                            break;
+                                        default:
+                                            <span class="text-danger">@PostStatus.Block.ToString()</span> <i class="fas fa-ban text-danger"></i>
+                                            break;
+                                    }
                                 </td>
                                 <td>
                                     @(item.PublishedAt is null ? "N/A" : item.PublishedAt.Value.ToShortDateString())
@@ -99,7 +110,7 @@ else
                                 </td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="AdminPostDetails" asp-route-id="@item.Id">Details</a> |
                                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                                 </td>
                             </tr>

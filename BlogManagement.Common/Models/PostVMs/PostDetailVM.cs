@@ -25,6 +25,9 @@ namespace BlogManagement.Common.Models.PostVMs
 
         public string Slug { get; set; }
         public string Content { get; set; }
+        [Range(1, maximum: 2)]
+        [Display(Name = "Status of Publish")]
+        public byte Published { get; set; }
 #nullable enable
         [Display(Name = "Date Published")]
         public DateTime? PublishedAt { get; set; }
@@ -33,6 +36,9 @@ namespace BlogManagement.Common.Models.PostVMs
 #nullable disable
 
         #endregion
+
+        #region Relationship properties
+
         /// <summary>
         /// 
         /// </summary>
@@ -57,5 +63,7 @@ namespace BlogManagement.Common.Models.PostVMs
         /// 
         /// </summary>
         public List<PostRatingDetailVM> PostRatings { get; set; } = new();
+        
+        #endregion
     }
 }

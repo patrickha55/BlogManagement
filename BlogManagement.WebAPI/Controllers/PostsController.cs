@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using BlogManagement.Contracts.Services.APIServices;
 
@@ -217,6 +218,36 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Put));
+            }
+
+            return BadRequest(Constants.ErrorForUser);
+        }
+
+        [JwtTokenAuthFilter]
+        [HttpPut("post-status/{id:long}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> PutPublishStatus(long id, [FromBody] PostStatus status)
+        {
+            try
+            {
+                if (id <= 0)
+                    return BadRequest(Constants.InvalidArgument);
+
+                var result = await _postService.PublishPostAsync(id, status);
+
+                if (result)
+                    return NoContent();
+            }
+            catch (ArgumentException e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(PutPublishStatus));
+                return BadRequest(Constants.NotFoundResponse);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(PutPublishStatus));
             }
 
             return BadRequest(Constants.ErrorForUser);

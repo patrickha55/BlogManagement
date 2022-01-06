@@ -1,4 +1,5 @@
-﻿using BlogManagement.Common.DTOs.PostDTOs;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
@@ -63,10 +64,20 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <summary>
         /// This method updates an existing post.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="token">Jwt token for authentication in API</param>
+        /// <param name="id">Id of a post</param>
         /// <param name="request">Post to update against</param>
         /// <returns>Return true if success, else return false</returns>
         Task<bool> UpdatePostAsync(string token, long id, PostEditVM request);
+
+        /// <summary>
+        /// This method updates publishing status of a post
+        /// </summary>
+        /// <param name="token">Jwt token for authentication in API</param>
+        /// <param name="id">Id of a post</param>
+        /// <param name="status">Status enum of a post</param>
+        /// <returns>Return true if success, else return false</returns>
+        Task<bool> PublishPostAsync(string token, long id, PostStatus status);
         /// <summary>
         /// 
         /// </summary>

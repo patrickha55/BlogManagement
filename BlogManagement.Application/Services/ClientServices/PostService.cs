@@ -193,6 +193,34 @@ namespace BlogManagement.Application.Services.ClientServices
             }
         }
 
+        public async Task<bool> PublishPostAsync(string token, long id, PostStatus status)
+        {
+            try
+            {
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
+                var statusJson = new StringContent(
+                    JsonSerializer.Serialize(status, _options),
+                    encoding: Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var httpResponse = await client.PutAsync($"posts/post-status/{id}", statusJson);
+
+                httpResponse.EnsureSuccessStatusCode();
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(PublishPostAsync));
+                throw;
+            }
+        }
+
         public async Task<bool> DeletePostAsync(string token, long id)
         {
             try

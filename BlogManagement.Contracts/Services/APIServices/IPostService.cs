@@ -1,4 +1,5 @@
-﻿using BlogManagement.Common.DTOs.PostDTOs;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.PostVMs;
 using BlogManagement.Data.Entities;
@@ -74,9 +75,10 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <summary>
         /// This method change the publishing status of a post
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        Task<bool> PublishPostAsync(long id);
+        /// <param name="id">Id of a post</param>
+        /// <param name="status">Status to update</param>
+        /// <returns>Returns true if success, else returns false</returns>
+        Task<bool> PublishPostAsync(long id, PostStatus status);
 
         /// <summary>
         /// This method deletes an existing post

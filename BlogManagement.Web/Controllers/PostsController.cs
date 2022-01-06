@@ -69,8 +69,27 @@ namespace BlogManagement.Web.Controllers
             return View(postVMs);
         }
 
+        [Authorize(Roles = Roles.Administrator)]
+        public async Task<IActionResult> AdminPostDetails(long id)
+        {
+            try
+            {
+                var postDetailVM = await _postService.GetPostDetailVMAsync(id, null);
+
+                return View(postDetailVM);
+            }
+            catch (Exception e)
+            {
+                TempData[Constants.Error] = Constants.ErrorMessage;
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(AdminPostDetails));
+            }
+
+            TempData[Constants.Error] = Constants.ErrorMessage;
+            return RedirectToAction(nameof(AdminIndex));
+        }
+
         // GET: PostsController/Details/5
-        public async Task<ActionResult> Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             try
             {
@@ -90,7 +109,7 @@ namespace BlogManagement.Web.Controllers
 
         // GET: PostsController/Create
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public async Task<ActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             try
             {
@@ -113,7 +132,7 @@ namespace BlogManagement.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public async Task<ActionResult> Create(PostCreateVM request)
+        public async Task<IActionResult> Create(PostCreateVM request)
         {
             var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
             try
@@ -170,6 +189,36 @@ namespace BlogManagement.Web.Controllers
             {
                 throw new NotImplementedException();
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
+        public async Task<IActionResult> EditPostStatusAsync(long id, PostStatus status)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                    
+                    var result = await _postService.PublishPostAsync(token, id, status);
+
+                    if (result)
+                    {
+                        TempData[Constants.Success] = Constants.SuccessMessage;
+                        return RedirectToAction(nameof(AdminIndex));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TempData[Constants.Error] = Constants.ErrorMessage;
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
+            }
+
+            TempData[Constants.Error] = Constants.ErrorMessage;
+            return RedirectToAction(nameof(AdminIndex));
         }
 
         // POST: PostsController/Delete/5
