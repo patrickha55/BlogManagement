@@ -193,7 +193,7 @@ namespace BlogManagement.Application.Services.ClientServices
             }
         }
 
-        public async Task<bool> PublishPostAsync(string token, long id, PostStatus status)
+        public async Task<bool> PublishPostAsync(string token, long id, PostDetailVM request)
         {
             try
             {
@@ -202,13 +202,13 @@ namespace BlogManagement.Application.Services.ClientServices
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue(token);
 
-                var statusJson = new StringContent(
-                    JsonSerializer.Serialize(status, _options),
+                var requestJson = new StringContent(
+                    JsonSerializer.Serialize(request, _options),
                     encoding: Encoding.UTF8,
                     "application/json"
                 );
 
-                using var httpResponse = await client.PutAsync($"posts/post-status/{id}", statusJson);
+                using var httpResponse = await client.PutAsync($"posts/post-status/{id}", requestJson);
 
                 httpResponse.EnsureSuccessStatusCode();
 

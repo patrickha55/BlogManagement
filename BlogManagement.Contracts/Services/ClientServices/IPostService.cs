@@ -77,7 +77,7 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="id">Id of a post</param>
         /// <param name="status">Status enum of a post</param>
         /// <returns>Return true if success, else return false</returns>
-        Task<bool> PublishPostAsync(string token, long id, PostStatus status);
+        Task<bool> PublishPostAsync(string token, long id, PostDetailVM request);
         /// <summary>
         /// 
         /// </summary>

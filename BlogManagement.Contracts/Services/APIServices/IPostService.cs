@@ -78,7 +78,7 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="id">Id of a post</param>
         /// <param name="status">Status to update</param>
         /// <returns>Returns true if success, else returns false</returns>
-        Task<bool> PublishPostAsync(long id, PostStatus status);
+        Task<bool> PublishPostAsync(long id, byte status);
 
         /// <summary>
         /// This method deletes an existing post

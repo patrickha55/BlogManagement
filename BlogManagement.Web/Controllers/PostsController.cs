@@ -194,7 +194,7 @@ namespace BlogManagement.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Roles.Administrator)]
-        public async Task<IActionResult> EditPostStatusAsync(long id, PostStatus status)
+        public async Task<IActionResult> EditPostStatusAsync(long id, PostDetailVM request)
         {
             try
             {
@@ -202,7 +202,7 @@ namespace BlogManagement.Web.Controllers
                 {
                     var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
                     
-                    var result = await _postService.PublishPostAsync(token, id, status);
+                    var result = await _postService.PublishPostAsync(token, id, request);
 
                     if (result)
                     {

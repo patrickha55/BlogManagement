@@ -58,7 +58,11 @@ namespace BlogManagement.Application.Services.APIServices
                 }
                 else
                 {
-                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest, p => p.AuthorId == authorId);
+                    posts =
+                        await _unitOfWork.PostRepository
+                        .GetPostsForIndexAsync(pagingRequest, 
+                        p => p.AuthorId == authorId &&
+                             p.Published == (byte) PostStatus.Published);
                 }
 
                 postVMs = _mapper.Map<List<PostForIndexVM>>(posts);
@@ -139,7 +143,11 @@ namespace BlogManagement.Application.Services.APIServices
 
             try
             {
-                var post = await _unitOfWork.PostRepository.GetAsync(p => p.Id == id);
+                var post = 
+                    await _unitOfWork.PostRepository
+                        .GetAsync(p =>
+                            p.Id == id &&
+                            p.Published == (byte)PostStatus.Published);
 
                 postVM = _mapper.Map<PostVM>(post);
             }
@@ -348,7 +356,7 @@ namespace BlogManagement.Application.Services.APIServices
             return false;
         }
 
-        public async Task<bool> PublishPostAsync(long id, PostStatus status)
+        public async Task<bool> PublishPostAsync(long id, byte status)
         {
             await using var transaction = await _unitOfWork.Context.Database.BeginTransactionAsync();
             try
@@ -360,9 +368,9 @@ namespace BlogManagement.Application.Services.APIServices
 
                 post.Published = status switch
                 {
-                    PostStatus.Published => (byte) PostStatus.Published,
-                    PostStatus.Unpublished => (byte) PostStatus.Unpublished,
-                    PostStatus.Block => (byte) PostStatus.Block,
+                    (byte) PostStatus.Published => (byte) PostStatus.Published,
+                    (byte)PostStatus.Unpublished => (byte) PostStatus.Unpublished,
+                    (byte)PostStatus.Block => (byte) PostStatus.Block,
                     _ => post.Published
                 };
 

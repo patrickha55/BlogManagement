@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using AutoMapper;
 using BlogManagement.Common.Common;
@@ -12,6 +13,7 @@ using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using X.PagedList;
 
 namespace BlogManagement.Application.Services.APIServices
 {
@@ -72,7 +74,7 @@ namespace BlogManagement.Application.Services.APIServices
             }
         }
 
-        public async Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword)
+        public async Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword, PagingRequest pagingRequest)
         {
             try
             {
@@ -80,9 +82,9 @@ namespace BlogManagement.Application.Services.APIServices
                     throw new ArgumentNullException(Constants.InvalidArgument);
 
                 var users = await _unitOfWork.UserRepository.FindUsersAsync(u => (
-                    u.UserName.Contains(keyword) || u.FirstName.Contains(keyword) || u.Email.Contains(keyword)) && u.IsPublic == true);
-
-                return _mapper.Map<List<AuthorVM>>(users);
+                    u.UserName.Contains(keyword) || u.FirstName.Contains(keyword) || u.Email.Contains(keyword)) && u.IsPublic == true, pagingRequest);
+                
+                return _mapper.Map<List<AuthorVM>>(users); ;
             }
             catch (Exception e)
             {

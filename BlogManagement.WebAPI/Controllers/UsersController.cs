@@ -49,11 +49,16 @@ namespace BlogManagement.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorVM>>> FindAuthorVMsAsync([FromQuery] string keyword)
+        public async Task<ActionResult<IEnumerable<AuthorVM>>> FindAuthorVMsAsync([FromQuery] SearchRequest request)
         {
             try
             {
-                var authors = await _userService.FindAuthorVMsAsync(keyword);
+                if (request?.Keyword is null)
+                    return BadRequest(Constants.InvalidArgument);
+
+                var pagingRequest = new PagingRequest(request.PageNumber, request.PageSize);
+
+                var authors = await _userService.FindAuthorVMsAsync(request.Keyword, pagingRequest);
 
                 if (authors is not null)
                     return Ok(authors);

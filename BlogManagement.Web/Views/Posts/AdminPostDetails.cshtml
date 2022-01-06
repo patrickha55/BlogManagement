@@ -46,7 +46,7 @@ else
                 </div>
             </div>
         </div><!-- /.container-fluid -->
-    </section>
+</section>
 
     <section class="content">
         <div class="container-fluid">
@@ -56,7 +56,7 @@ else
                         <div class="card-body box-profile">
                             <div class="text-center">
                                 <img class="profile-user-img img-fluid img-circle" src="https://localhost:44392/@Model.User.ImageUrl"
-                                    alt="User profile picture">
+                                 alt="User profile picture">
                             </div>
 
                             <h3 class="profile-username text-center">@Model.User.FullName</h3>
@@ -72,16 +72,15 @@ else
                             <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
                         </div>
                         <!-- /.card-body -->
-                    </div>
+                </div>
                     <!-- /.card -->
-
                     <!-- About the post -->
-                    <div class="card card-primary">
+                <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title">About This Post</h3>
                         </div>
                         <!-- /.card-header -->
-                        <div class="card-body">
+                    <div class="card-body">
                             <strong><i class="fas fa-book mr-1"></i>@Html.DisplayNameFor(m => m.Title)</strong>
 
                             <p class="text-muted">
@@ -102,7 +101,7 @@ else
                                 @foreach (var tag in Model.Tags)
                                 {
                                     <span class="tag tag-info p-1 rounded mr-1 text-dark"
-                                          style="width: 10px; height: 10px; border: 1px solid white; background-color: aliceblue">
+                                  style="width: 10px; height: 10px; border: 1px solid white; background-color: aliceblue">
                                         @tag.Title
                                     </span>
                                 }
@@ -127,47 +126,77 @@ else
                             <p class="text-muted">@Model.PostComments.Count</p>
                         </div>
                         <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
                 </div>
+                    <!-- /.card -->
+            </div>
                 <!-- /.col -->
-                <div class="col-md-9">
+            <div class="col-md-9">
                     <div class="card">
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">
-                                <li class="nav-item"><a class="nav-link active" href="#activity"
-                                        data-toggle="tab">Details</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a>
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#activity"
+                                   data-toggle="tab">Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#settings" data-toggle="tab">Settings</a>
                                 </li>
                             </ul>
                         </div><!-- /.card-header -->
-                        <div class="card-body">
+                    <div class="card-body">
                             <div class="tab-content">
                                 <div class="active tab-pane" id="activity">
                                     <img style="width: 100%; max-height: 400px;"
-                                         src=@($"https://localhost:44392/{Model.ImageUrl}") alt="@Model.Title" class="img-fluid rounded">
+                                     src=@($"https://localhost:44392/{Model.ImageUrl}") alt="@Model.Title" class="img-fluid rounded">
 
-                                    <div id="content" data-content="@Model.Content" 
-                                         class="my-4 w-100 lh-1"></div>
+                                    <div id="content" data-content="@Model.Content"
+                                     class="my-4 w-100 lh-1"></div>
                                 </div>
                                 <!-- /.tab-pane -->
 
-                                <div class="tab-pane" id="settings">
-                                    <form class="form-horizontal">
-                                        <input type="hidden" value=""/>
+                            <div class="tab-pane" id="settings">
+                                    <form class="form-horizontal" asp-action="EditPostStatus">
+                                        <input type="hidden" asp-for="Id" />
                                         <div class="form-group row">
-                                            <label for="inputName" class="col-sm-2 col-form-label">@Html.DisplayNameFor(m => m.Published)</label>
+                                            <label asp-for="Published" for="inputName" class="col-sm-2 col-form-label">@Html.DisplayNameFor(m => m.Published)</label>
                                             <div class="col-sm-10">
-                                                <select class="custom-select">
-                                                    <option value="@PostStatus.Unpublished" selected="@(Model.Published == (byte) PostStatus.Unpublished ? "selected" : "")">
-                                                        @PostStatus.Unpublished.ToString()
-                                                    </option>
-                                                    <option value="@PostStatus.Published" selected="@(Model.Published == (byte) PostStatus.Published ? "selected" : "")">
-                                                        @PostStatus.Published.ToString()
-                                                    </option>
-                                                    <option value="@PostStatus.Block" selected="@(Model.Published == (byte) PostStatus.Block ? "selected" : "")">
-                                                        @PostStatus.Block.ToString()
-                                                    </option>
+                                                <select class="custom-select" asp-for="Published">
+                                                    @if (Model.Published == (byte)PostStatus.Unpublished)
+                                                    {
+                                                        <option value="@((byte) PostStatus.Unpublished)" selected>
+                                                            @PostStatus.Unpublished.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Published)">
+                                                            @PostStatus.Published.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Block)">
+                                                            @PostStatus.Block.ToString()
+                                                        </option>
+                                                    }
+                                                    else if (Model.Published == (byte)PostStatus.Published)
+                                                    {
+                                                        <option value="@((byte) PostStatus.Unpublished)">
+                                                            @PostStatus.Unpublished.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Published)" selected>
+                                                            @PostStatus.Published.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Block)">
+                                                            @PostStatus.Block.ToString()
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@((byte) PostStatus.Unpublished)">
+                                                            @PostStatus.Unpublished.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Published)">
+                                                            @PostStatus.Published.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Block)" selected>
+                                                            @PostStatus.Block.ToString()
+                                                        </option>
+                                                    }
                                                 </select>
                                             </div>
                                         </div>
@@ -177,35 +206,35 @@ else
                                     </form>
                                 </div>
                                 <!-- /.tab-pane -->
-                            </div>
+                        </div>
                             <!-- /.tab-content -->
-                        </div><!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
+                    </div><!-- /.card-body -->
                 </div>
-                <!-- /.col -->
+                    <!-- /.card -->
             </div>
+                <!-- /.col -->
+        </div>
         </div>
     </section>
 }
 
 @section Scripts
 {
-    <script>
-        $(document).ready(function() {
-            if (localStorage.getItem('RatedIndex') != null) {
-                localStorage.RatedIndex = -1;
-            }
-
-            $("#content").html(stringToHTML(
-                $('#content').data('content')
-            ));
-        });
-
-        function stringToHTML(str) {
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(str, 'text/html');
-            return doc.body;
+<script>
+    $(document).ready(function() {
+        if (localStorage.getItem('RatedIndex') != null) {
+            localStorage.RatedIndex = -1;
         }
-    </script>
+
+        $("#content").html(stringToHTML(
+            $('#content').data('content')
+        ));
+    });
+
+    function stringToHTML(str) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(str, 'text/html');
+        return doc.body;
+    }
+</script>
 }

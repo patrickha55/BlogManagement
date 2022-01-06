@@ -65,11 +65,13 @@ namespace BlogManagement.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SearchAnything(string keyword)
+        public async Task<IActionResult> SearchAnything(string keyword, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
-                ViewData["Users"] = await _userService.FindAuthorVMsAsync(keyword);
+                var pagingRequest = new PagingRequest(pageNumber, pageSize);
+
+                ViewData["Users"] = await _userService.FindAuthorVMsAsync(keyword, pagingRequest);
                 return View("~/Views/Home/SearchAnything.cshtml");
             }
             catch (Exception e)

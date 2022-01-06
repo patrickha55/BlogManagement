@@ -11,7 +11,7 @@ namespace BlogManagement.Contracts.Services.ClientServices
     {
         Task<List<AuthorAdminIndexVM>> GetAuthorAdminIndexVMAsync(string token, PagingRequest pagingRequest = null);
         Task<AuthorDetailVM> GetAuthorDetailVMAsync(long id);
-        Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword);
+        Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword, PagingRequest pagingRequest = null);
         Task<bool> EditUserStatusesAsync(string token, long id, AuthorDetailVM request);
         Task<(IdentityResult, User)> RegisterAsync(UserRegisterDTO userRegisterDTO);
         Task<Token> LoginAsync(UserLoginDTO userLoginDTO);

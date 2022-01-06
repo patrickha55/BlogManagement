@@ -228,14 +228,14 @@ namespace BlogManagement.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PutPublishStatus(long id, [FromBody] PostStatus status)
+        public async Task<ActionResult> PutPublishStatus(long id, [FromBody] PostDetailVM request)
         {
             try
             {
                 if (id <= 0)
                     return BadRequest(Constants.InvalidArgument);
 
-                var result = await _postService.PublishPostAsync(id, status);
+                var result = await _postService.PublishPostAsync(id, request.Published);
 
                 if (result)
                     return NoContent();

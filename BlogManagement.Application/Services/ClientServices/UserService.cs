@@ -94,13 +94,15 @@ namespace BlogManagement.Application.Services.ClientServices
             return userVM;
         }
 
-        public async Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword)
+        public async Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword, PagingRequest pagingRequest = null)
         {
             List<AuthorVM> userVM;
 
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"users/?keyword={keyword}");
+                pagingRequest ??= new PagingRequest();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"users/?Keyword={keyword}&PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
                 var client = _clientFactory.CreateClient(Constants.HttpClientName);
                 var response = await client.SendAsync(request);
 

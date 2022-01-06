@@ -77,7 +77,9 @@ namespace BlogManagement.Repository.Repositories
 
             try
             {
-                query = query.Include(p => p.User)
+                query = query
+                    .Where(p => p.Id == postId && p.Published == (byte) PostStatus.Published)
+                    .Include(p => p.User)
                     .Include(p => p.PostComments)
                     .ThenInclude(pc => pc.User)
                     .Include(p => p.PostComments)
@@ -91,7 +93,7 @@ namespace BlogManagement.Repository.Repositories
                     .Include(p => p.PostTags)
                     .ThenInclude(pt => pt.Tag);
 
-                return await query.SingleOrDefaultAsync(p => p.Id == postId);
+                return await query.SingleOrDefaultAsync();
             }
             catch (ArgumentException e)
             {
