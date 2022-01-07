@@ -30,7 +30,7 @@ namespace BlogManagement.Web.Controllers
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
-            var categoryVMs = new List<CategoryVM>();
+            Paginated<CategoryVM> categoryVMs = null;
             try
             {
                 categoryVMs = await _categoryService.GetCategoryVMsAsync(pageNumber, pageSize);

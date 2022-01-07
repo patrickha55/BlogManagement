@@ -1,10 +1,11 @@
-﻿using BlogManagement.Common.Models.CategoryVMs;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.Models.CategoryVMs;
 
 namespace BlogManagement.Contracts.Services.APIServices
 {
     public interface ICategoryService
     {
-        Task<List<CategoryVM>> GetCategoryVMsAsync(int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedList<CategoryVM>> GetCategoryVMsAsync(int pageNumber = 1, int pageSize = 10);
         Task<CategoryEditVM> GetCategoryEditVMsAsync(long id);
         Task<CategoryVM> GetCategoryVMAsync(long id);
         Task<bool> CreateCategoryAsync(CategoryCreateVM request);

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BlogManagement.Web.Controllers
@@ -25,9 +24,9 @@ namespace BlogManagement.Web.Controllers
             _tagService = tagService;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2)
         {
-            var tagVMs = new List<TagVM>();
+            Paginated<TagVM> tagVMs = null;
 
             try
             {

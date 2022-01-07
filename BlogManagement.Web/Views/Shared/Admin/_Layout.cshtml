@@ -83,11 +83,21 @@
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
 
-    <script>
+    @*<script>
         $(function() {
-            $(".table").DataTable();
+            $(".table").DataTable({
+                paging: true,
+            });
+
+            $('#next').on( 'click', function () {
+                table.page( 'next' ).draw( 'page' );
+            } );
+ 
+            $('#previous').on( 'click', function () {
+                table.page( 'previous' ).draw( 'page' );
+            } );
         })
-    </script>
+    </script>*@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

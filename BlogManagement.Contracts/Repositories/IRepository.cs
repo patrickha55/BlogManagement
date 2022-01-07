@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using X.PagedList;
 
@@ -17,7 +18,7 @@ namespace BlogManagement.Contracts.Repositories
         /// <param name="request">Paging request model</param>
         /// <param name="includes">List of strings </param>
         /// <returns>A list of objects</returns>
-        Task<IPagedList<TEntity>> GetAllAsync(PagingRequest request, Expression<Func<TEntity, bool>> expression = null, List<string> includes = null);
+        Task<PaginatedList<TEntity>> GetAllAsync(PagingRequest request, Expression<Func<TEntity, bool>> expression = null, List<string> includes = null);
 
         /// <summary>
         /// This get method allows you to get information base on what type of expression you choose and if you want to include any additional data with it.

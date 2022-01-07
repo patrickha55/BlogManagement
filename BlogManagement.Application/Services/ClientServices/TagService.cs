@@ -4,10 +4,14 @@ using BlogManagement.Contracts.Services.ClientServices;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BlogManagement.Application.Services.ClientServices
 {
@@ -26,9 +30,9 @@ namespace BlogManagement.Application.Services.ClientServices
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<TagVM>> GetTagVMsAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<Paginated<TagVM>> GetTagVMsAsync(int pageNumber = 1, int pageSize = 10)
         {
-            List<TagVM> tagVMs;
+            //PaginatedList<TagVM> tagVMs;
 
             try
             {
@@ -38,12 +42,10 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    tagVMs = await JsonSerializer.DeserializeAsync<List<TagVM>>(reponseStream, _options);
-                }
-                else
-                {
-                    return null;
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    var tagVMs = JsonConvert.DeserializeObject<Paginated<TagVM>>(responseString);
+
+                    return tagVMs;
                 }
             }
             catch (Exception e)
@@ -52,7 +54,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 throw;
             }
 
-            return tagVMs;
+            return null;
         }
 
         public async Task<IEnumerable<TagVM>> GetAllIdAndNameWithoutPagingAsync()
@@ -67,8 +69,8 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    tagVMs = await JsonSerializer.DeserializeAsync<IEnumerable<TagVM>>(reponseStream, _options);
+                    await using var responseStream = await response.Content.ReadAsStreamAsync();
+                    tagVMs = await JsonSerializer.DeserializeAsync<IEnumerable<TagVM>>(responseStream, _options);
                 }
                 else
                 {
@@ -99,8 +101,8 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    tagVM = await JsonSerializer.DeserializeAsync<TagVM>(reponseStream, _options);
+                    await using var responseStream = await response.Content.ReadAsStreamAsync();
+                    tagVM = await JsonSerializer.DeserializeAsync<TagVM>(responseStream, _options);
                 }
                 else
                 {
@@ -131,8 +133,8 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    tagEditVM = await JsonSerializer.DeserializeAsync<TagEditVM>(reponseStream, _options);
+                    await using var responseStream = await response.Content.ReadAsStreamAsync();
+                    tagEditVM = await JsonSerializer.DeserializeAsync<TagEditVM>(responseStream, _options);
                 }
                 else
                 {

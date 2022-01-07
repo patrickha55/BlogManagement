@@ -33,23 +33,32 @@ namespace BlogManagement.WebAPI.Controllers
         // GET: api/<CategoriesController>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<CategoryVM>>> Get([FromQuery] PagingRequest pagingRequest)
+        public async Task<ActionResult<Paginated<CategoryVM>>> Get([FromQuery] PagingRequest pagingRequest)
         {
-            var categories = new List<CategoryVM>();
-
             try
             {
                 pagingRequest ??= new PagingRequest();
 
-                categories =
-                    await _categoryService.GetCategoryVMsAsync(pagingRequest.PageNumber, pagingRequest.PageSize);
+                var categories = await _categoryService.GetCategoryVMsAsync(pagingRequest.PageNumber, pagingRequest.PageSize);
+
+                if (categories is not null)
+                {
+                    return Ok(new Paginated<CategoryVM>
+                    {
+                        CurrentPage = categories.CurrentPage,
+                        TotalPages = categories.TotalPages,
+                        PageSize = categories.PageSize,
+                        TotalCount = categories.TotalCount,
+                        Objects = categories
+                    });
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Get));
             }
 
-            return Ok(categories.Any() ? categories : "There is no categories at the moment.");
+            return NotFound(Constants.ItsEmpty);
         }
 
         [HttpGet("categories-select-list")]

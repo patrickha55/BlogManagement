@@ -25,9 +25,9 @@ namespace BlogManagement.Application.Services.ClientServices
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        public async Task<List<CategoryVM>> GetCategoryVMsAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<Paginated<CategoryVM>> GetCategoryVMsAsync(int pageNumber = 1, int pageSize = 10)
         {
-            List<CategoryVM> categoryVM;
+            Paginated<CategoryVM> categoryVMs;
 
             try
             {
@@ -38,7 +38,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    categoryVM = await JsonSerializer.DeserializeAsync<List<CategoryVM>>(reponseStream, _options);
+                    categoryVMs = await JsonSerializer.DeserializeAsync<Paginated<CategoryVM>>(reponseStream, _options);
                 }
                 else
                 {
@@ -51,7 +51,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 throw;
             }
 
-            return categoryVM;
+            return categoryVMs;
         }
 
         public async Task<CategoryEditVM> GetCategoryEditVMsAsync(string token, long id)

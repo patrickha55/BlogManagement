@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.WebAPI.Filters;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,23 +34,33 @@ namespace BlogManagement.WebAPI.Controllers
 
         // GET: api/<CategoriesController>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PagingRequest pagingRequest)
+        public async Task<ActionResult<Paginated<TagVM>>> Get([FromQuery] PagingRequest pagingRequest)
         {
-            var tags = new List<TagVM>();
-
             try
             {
                 pagingRequest ??= new PagingRequest();
 
-                tags =
+                var tags =
                     await _tagService.GetTagVMsAsync(pagingRequest.PageNumber, pagingRequest.PageSize);
+
+                if (tags is not null)
+                {
+                    return Ok(new Paginated<TagVM>
+                    {
+                        CurrentPage = tags.CurrentPage,
+                        TotalPages = tags.TotalPages,
+                        PageSize = tags.PageSize,
+                        TotalCount = tags.TotalCount,
+                        Objects = tags
+                    });
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Get));
             }
 
-            return Ok(tags.Any() ? tags : "There is no tags at the moment.");
+            return NotFound(Constants.ItsEmpty);
         }
 
         [HttpGet("tags-id-title")]

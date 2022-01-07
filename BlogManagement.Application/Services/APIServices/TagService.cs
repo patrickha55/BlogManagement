@@ -28,9 +28,9 @@ namespace BlogManagement.Application.Services.APIServices
             _logger = logger;
         }
 
-        public async Task<List<TagVM>> GetTagVMsAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedList<TagVM>> GetTagVMsAsync(int pageNumber = 1, int pageSize = 10)
         {
-            var tagVMs = new List<TagVM>();
+            PaginatedList<TagVM> tagVMs;
 
             try
             {
@@ -38,7 +38,7 @@ namespace BlogManagement.Application.Services.APIServices
 
                 var tags = await _unitOfWork.TagRepository.GetAllAsync(pagingRequest);
 
-                tagVMs = _mapper.Map<List<TagVM>>(tags);
+                tagVMs = _mapper.Map<PaginatedList<Tag>, PaginatedList<TagVM>>(tags);
             }
             catch (Exception e)
             {

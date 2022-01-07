@@ -28,9 +28,9 @@ namespace BlogManagement.Application.Services.APIServices
             _logger = logger;
         }
 
-        public async Task<List<CategoryVM>> GetCategoryVMsAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedList<CategoryVM>> GetCategoryVMsAsync(int pageNumber = 1, int pageSize = 10)
         {
-            var categoryVMs = new List<CategoryVM>();
+            PaginatedList<CategoryVM> categoryVMs;
 
             try
             {
@@ -42,7 +42,7 @@ namespace BlogManagement.Application.Services.APIServices
                     await _unitOfWork.CategoryRepository
                         .GetAllAsync(pagingRequest, null, includes);
 
-                categoryVMs = _mapper.Map<List<CategoryVM>>(categories);
+                categoryVMs = _mapper.Map<PaginatedList<CategoryVM>>(categories);
             }
             catch (Exception e)
             {

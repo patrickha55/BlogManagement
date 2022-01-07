@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlogManagement.Common.Common;
 using BlogManagement.Common.DTOs.UserDTOs;
 using BlogManagement.Common.Models.AuthorVMs;
 using BlogManagement.Common.Models.CategoryVMs;
@@ -31,6 +32,8 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             CreateMap<Category, CategoryForIndexVM>().ReverseMap();
             CreateMap<Category, CategoryCreateVM>().ReverseMap();
             CreateMap<Category, CategoryEditVM>().ReverseMap();
+
+            
 
             #endregion
 
@@ -85,6 +88,9 @@ namespace BlogManagement.Data.Configuration.MapperConfigs
             CreateMap<User, UserRegisterDTO>().ReverseMap();
 
             #endregion
+
+            CreateMap(typeof(PaginatedList<>), typeof(PaginatedList<>))
+                .ConvertUsing(typeof(PaginatedListConverter<,>));
 
         }
     }
