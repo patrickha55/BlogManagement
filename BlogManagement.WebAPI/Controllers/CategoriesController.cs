@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -56,6 +55,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Get));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return NotFound(Constants.ItsEmpty);
@@ -65,38 +65,40 @@ namespace BlogManagement.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<CategoryVM>>> GetCategoriesForSelectListAsync([FromQuery] long? parentId = null)
         {
-            IEnumerable<CategoryVM> categoryVMs = null;
-
             try
             {
-                categoryVMs =
-                    await _categoryService.GetCategoriesForSelectListAsync(parentId);
+                var categoryVMs = await _categoryService.GetCategoriesForSelectListAsync(parentId);
+
+                if (categoryVMs is null)
+                    return NotFound(Constants.ItsEmpty);
+
+                return Ok(categoryVMs);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoriesForSelectListAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return Ok(categoryVMs is not null ? categoryVMs : "There is no categories at the moment.");
         }
 
         [HttpGet("categories-id-name")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<CategoryVM>>> GetAllIdAndNameWithoutPagingAsync()
         {
-            IEnumerable<CategoryVM> categoryVMs = null;
-
             try
             {
-                categoryVMs =
-                    await _categoryService.GetAllIdAndNameWithoutPagingAsync();
+                var categoryVMs = await _categoryService.GetAllIdAndNameWithoutPagingAsync();
+
+                if (categoryVMs is null)
+                    return NotFound(Constants.ItsEmpty);
+
+                return Ok(categoryVMs);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoriesForSelectListAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return Ok(categoryVMs is not null ? categoryVMs : "There is no categories at the moment.");
         }
 
         // GET api/<CategoriesController>/5
@@ -120,9 +122,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Get));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest();
         }
 
         [JwtTokenAuthFilter]
@@ -145,9 +146,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetCategoryEditVMAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest();
         }
 
         // POST api/<CategoriesController>
@@ -168,6 +168,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Post));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest();
@@ -192,6 +193,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Post));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest();
@@ -219,6 +221,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Delete));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest();

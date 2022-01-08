@@ -43,6 +43,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAuthorAdminIndexVM));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return NotFound(Constants.ItsEmpty);
@@ -66,6 +67,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(FindAuthorVMsAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return NotFound(Constants.NotFoundResponse);
@@ -87,6 +89,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAuthorDetailVMAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return NotFound(Constants.NotFoundResponse);
@@ -109,6 +112,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAuthorDetailVMAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return NotFound(Constants.NotFoundResponse);

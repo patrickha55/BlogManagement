@@ -1,7 +1,7 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.DTOs.UserDTOs;
 using BlogManagement.Contracts.AuthWithJwt;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using BlogManagement.Contracts.Services.APIServices;
 
 namespace BlogManagement.WebAPI.Controllers
 {
@@ -51,6 +50,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(RegisterAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest(Constants.ErrorForUser);
@@ -75,9 +75,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(LoginAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest(Constants.ErrorForUser);
         }
     }
 }

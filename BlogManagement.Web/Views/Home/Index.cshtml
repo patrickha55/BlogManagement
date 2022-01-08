@@ -1,5 +1,4 @@
-﻿@using BlogManagement.Common.Common
-@model List<BlogManagement.Common.Models.PostVMs.PostForIndexVM>
+﻿@model Paginated<BlogManagement.Common.Models.PostVMs.PostForIndexVM>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -25,7 +24,7 @@
         <div class="row d-flex">
             <div class="col-xl-9 py-5 px-md-5">
                 <div class="row pt-md-4">
-                    @foreach (var post in Model)
+                    @foreach (var post in Model.Objects)
                     {
                         <div class="col-md-12">
                             <div class="blog-entry ftco-animate d-md-flex">
@@ -75,13 +74,23 @@
                     <div class="col text-center">
                         <div class="block-27">
                             <ul>
-                                <li><a href="#">&lt;</a></li>
-                                <li class="active"><span>1</span></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#">5</a></li>
-                                <li><a href="#">&gt;</a></li>
+                                <li class="@(Model.HasPrevious ? "" : "d-none")">
+                                    <a asp-controller="Home" asp-action="Index"
+                                       asp-route-pageNumber="@(--Model.CurrentPage)" asp-route-pageSize="@Model.PageSize">&lt;</a>
+                                </li>
+                                @for (var i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="@(i == Model.CurrentPage + 1 ? "active" : "")">
+                                        <a asp-controller="Home" asp-action="Index"
+                                           asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">
+                                            @i
+                                        </a>
+                                    </li>
+                                }
+                                <li class="@(Model.HasNext ? "" : "d-none")">
+                                    <a asp-controller="Home" asp-action="Index"
+                                       asp-route-pageNumber="@(Model.CurrentPage + 2)" asp-route-pageSize="@Model.PageSize">&gt;</a>
+                                </li>
                             </ul>
                         </div>
                     </div>

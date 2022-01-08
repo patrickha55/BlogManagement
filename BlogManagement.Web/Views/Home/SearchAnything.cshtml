@@ -5,7 +5,7 @@
     Layout = "_Layout";
 
     var users = ViewData["Users"] as IEnumerable<AuthorVM>;
-    var posts = ViewData["Posts"] as IEnumerable<PostForIndexVM>;
+    var posts = ViewData["Posts"] as Paginated<PostForIndexVM>;
 }
 <style type="text/css">
     .card:hover {
@@ -55,10 +55,10 @@
                         }
                     </div>
                     <div class="col-12">
-                        @if (posts.Any())
+                        @if (posts is not null)
                         {
                             <h2 class="my-2 border-bottom text-bold">Posts</h2>
-                            @foreach (var post in posts)
+                            @foreach (var post in posts.Objects)
                             {
                                 <div class="card mb-2">
                                     <div class="card-header">

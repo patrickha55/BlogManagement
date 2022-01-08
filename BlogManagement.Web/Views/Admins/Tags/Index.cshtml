@@ -91,7 +91,7 @@ else
                         }
                         <li class="page-item @(Model.HasNext ? "" : "d-none")">
                             <a class="page-link text-light"
-                               asp-action="Index" asp-route-pageNumber="@(++Model.CurrentPage)" asp-route-pageSize="@(Model.PageSize)">
+                               asp-action="Index" asp-route-pageNumber="@(Model.CurrentPage + 2)" asp-route-pageSize="@(Model.PageSize)">
                                 &raquo;
                             </a>
                         </li>

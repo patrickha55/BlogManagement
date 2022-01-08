@@ -33,7 +33,7 @@ namespace BlogManagement.Web.Controllers
         // GET: PostsController
         public async Task<ActionResult> Index(int pageNumber = 1, int pageSize = 10, string userName = null)
         {
-            var postVMs = new List<PostForIndexVM>();
+            Paginated<PostForIndexVM> postVMs = new();
 
             try
             {
@@ -52,7 +52,7 @@ namespace BlogManagement.Web.Controllers
         // GET: PostsController
         public async Task<IActionResult> AdminIndex(int pageNumber = 1, int pageSize = 10)
         {
-            var postVMs = new List<PostForAdminIndexVM>();
+            Paginated<PostForAdminIndexVM> postVMs = null;
 
             try
             {

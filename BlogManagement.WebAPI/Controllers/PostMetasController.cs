@@ -45,9 +45,10 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Get));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
-            return NotFound("There is no post meta at the moment.");
+            return NotFound(Constants.ItsEmpty);
         }
         // GET: api/<PostMetasController>/post-meta-without-paging
         [HttpGet("post-meta-without-paging/{postId:long}")]
@@ -59,14 +60,13 @@ namespace BlogManagement.WebAPI.Controllers
                     await _postMetaService.GetPostMetaVMsWithoutPagingAsync(
                         postId is null ? null : p => p.Id == postId);
 
-                return Ok(postMetaVMs);
+                return postMetaVMs is null ? NotFound(Constants.ItsEmpty) : Ok(postMetaVMs);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostMetaVMWithoutPaging));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return NotFound("There is no post meta at the moment.");
         }
 
         // GET api/<PostMetasController>/5
@@ -82,13 +82,14 @@ namespace BlogManagement.WebAPI.Controllers
 
                 if (postMetaVM is not null)
                     return Ok(postMetaVM);
+
+                return NotFound(Constants.NotFoundResponse);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetPostMetaVMWithoutPaging));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return NotFound(Constants.NotFoundResponse);
         }
 
         // POST api/<PostMetasController>
@@ -110,6 +111,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Post));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest(Constants.ErrorForUser);
@@ -135,6 +137,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Put));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest(Constants.ErrorForUser);
@@ -165,6 +168,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Put));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest(Constants.ErrorForUser);

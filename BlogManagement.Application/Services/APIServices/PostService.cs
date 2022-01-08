@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BlogManagement.Common.Common;
 using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.CategoryVMs;
@@ -14,8 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Common.Common;
-using X.PagedList;
 using Constants = BlogManagement.Common.Common.Constants;
 
 namespace BlogManagement.Application.Services.APIServices
@@ -44,29 +43,29 @@ namespace BlogManagement.Application.Services.APIServices
             _categoryPostRepository = categoryPostRepository;
             _postTagRepository = postTagRepository;
         }
-        public async Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest, long? authorId = null)
+        public async Task<PaginatedList<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest, long? authorId = null)
         {
-            List<PostForIndexVM> postVMs;
+            PaginatedList<PostForIndexVM> postVMs;
 
             try
             {
-                IPagedList<Post> posts;
+                PaginatedList<Post> posts;
 
                 if (authorId is null)
                 {
-                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest,p =>
-                        p.Published == (byte)PostStatus.Published);
+                    posts = await _unitOfWork.PostRepository.GetPostsForIndexAsync(pagingRequest, p =>
+                         p.Published == (byte)PostStatus.Published);
                 }
                 else
                 {
                     posts =
                         await _unitOfWork.PostRepository
-                        .GetPostsForIndexAsync(pagingRequest, 
+                        .GetPostsForIndexAsync(pagingRequest,
                         p => p.AuthorId == authorId &&
-                             p.Published == (byte) PostStatus.Published);
+                             p.Published == (byte)PostStatus.Published);
                 }
 
-                postVMs = _mapper.Map<List<PostForIndexVM>>(posts);
+                postVMs = _mapper.Map<PaginatedList<Post>, PaginatedList<PostForIndexVM>>(posts);
 
                 foreach (var postVM in postVMs)
                 {
@@ -98,9 +97,9 @@ namespace BlogManagement.Application.Services.APIServices
             return postVMs;
         }
 
-        public async Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task<PaginatedList<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10)
         {
-            var postVMs = new List<PostForAdminIndexVM>();
+            PaginatedList<PostForAdminIndexVM> postVMs;
 
             try
             {
@@ -112,7 +111,7 @@ namespace BlogManagement.Application.Services.APIServices
                     await _unitOfWork.PostRepository
                         .GetAllAsync(pagingRequest, null, includes);
 
-                postVMs = _mapper.Map<List<PostForAdminIndexVM>>(posts);
+                postVMs = _mapper.Map<PaginatedList<Post>, PaginatedList<PostForAdminIndexVM>>(posts);
             }
             catch (Exception e)
             {
@@ -123,24 +122,24 @@ namespace BlogManagement.Application.Services.APIServices
             return postVMs;
         }
 
-        public async Task<List<PostForIndexVM>> FindPostsAsync(PagingRequest pagingRequest, string keyword)
+        public async Task<PaginatedList<PostForIndexVM>> FindPostsAsync(PagingRequest pagingRequest, string keyword)
         {
-            List<PostForIndexVM> postVMs;
+            PaginatedList<PostForIndexVM> postVMs;
 
             try
             {
-                var posts = 
+                var posts =
                     await _unitOfWork.PostRepository
                         .GetPostsForIndexAsync(
                             pagingRequest,
-                            p => 
-                                (p.Title.Contains(keyword) || 
+                            p =>
+                                (p.Title.Contains(keyword) ||
                                  p.MetaTitle.Contains(keyword) ||
                                  p.Summary.Contains(keyword)) &&
                                 p.Published == (byte)PostStatus.Published);
 
 
-                postVMs = _mapper.Map<List<PostForIndexVM>>(posts);
+                postVMs = _mapper.Map<PaginatedList<Post>, PaginatedList<PostForIndexVM>>(posts);
 
                 foreach (var postVM in postVMs)
                 {
@@ -193,7 +192,7 @@ namespace BlogManagement.Application.Services.APIServices
 
             try
             {
-                var post = 
+                var post =
                     await _unitOfWork.PostRepository
                         .GetAsync(p =>
                             p.Id == id &&
@@ -212,7 +211,7 @@ namespace BlogManagement.Application.Services.APIServices
 
         public async Task<PostDetailVM> GetPostDetailVMAsync(long id, string userName)
         {
-            var postDetailVM = new PostDetailVM();
+            PostDetailVM postDetailVM;
             try
             {
                 var post = await _unitOfWork.PostRepository.GetPostDetailsAsync(id);
@@ -306,7 +305,7 @@ namespace BlogManagement.Application.Services.APIServices
                         await _postTagRepository.CreateAsync(new PostTag { PostId = post.Id, TagId = tagId });
                 }
 
-                if (createPostResult is not null && createPostTagResult && createCategoryResult)
+                if (createPostTagResult && createCategoryResult)
                 {
                     await _unitOfWork.SaveAsync();
                     await transaction.CommitAsync();
@@ -388,7 +387,7 @@ namespace BlogManagement.Application.Services.APIServices
                     }
                 }
 
-                if (postResult && postTagResult && postTagResult)
+                if (postTagResult && categoryPostResult)
                 {
                     await _unitOfWork.SaveAsync();
                     await transaction.CommitAsync();
@@ -418,9 +417,9 @@ namespace BlogManagement.Application.Services.APIServices
 
                 post.Published = status switch
                 {
-                    (byte) PostStatus.Published => (byte) PostStatus.Published,
-                    (byte)PostStatus.Unpublished => (byte) PostStatus.Unpublished,
-                    (byte)PostStatus.Block => (byte) PostStatus.Block,
+                    (byte)PostStatus.Published => (byte)PostStatus.Published,
+                    (byte)PostStatus.Unpublished => (byte)PostStatus.Unpublished,
+                    (byte)PostStatus.Block => (byte)PostStatus.Block,
                     _ => post.Published
                 };
 

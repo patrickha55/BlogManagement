@@ -31,7 +31,7 @@ namespace BlogManagement.Application.Services.ClientServices
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        public async Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest)
+        public async Task<Paginated<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForIndexVM>>(reponseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForIndexVM>>(reponseStream, _options);
                 }
             }
             catch (Exception e)
@@ -54,7 +54,7 @@ namespace BlogManagement.Application.Services.ClientServices
             return null;
         }
 
-        public async Task<List<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName)
+        public async Task<Paginated<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForIndexVM>>(reponseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForIndexVM>>(reponseStream, _options);
                 }
             }
             catch (Exception e)
@@ -79,7 +79,7 @@ namespace BlogManagement.Application.Services.ClientServices
             return null;
         }
 
-        public async Task<List<PostForIndexVM>> FindPostsAsync(string keyword, PagingRequest pagingRequest = null)
+        public async Task<Paginated<PostForIndexVM>> FindPostsAsync(string keyword, PagingRequest pagingRequest = null)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var responseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForIndexVM>>(responseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForIndexVM>>(responseStream, _options);
                 }
             }
             catch (Exception e)
@@ -102,7 +102,7 @@ namespace BlogManagement.Application.Services.ClientServices
             return null;
         }
 
-        public async Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest)
+        public async Task<Paginated<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForAdminIndexVM>>(reponseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForAdminIndexVM>>(reponseStream, _options);
                 }
             }
             catch (Exception e)

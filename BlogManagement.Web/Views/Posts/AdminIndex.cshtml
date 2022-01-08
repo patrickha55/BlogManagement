@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BlogManagement.Common.Models.PostVMs.PostForAdminIndexVM>
+﻿@model Paginated<BlogManagement.Common.Models.PostVMs.PostForAdminIndexVM>
 
 @{
     ViewData["Title"] = "Post overview";
@@ -37,37 +37,37 @@ else
                     <thead>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.Id)
+                                @Html.DisplayNameFor(model => model.Objects[0].Id)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.AuthorId)
+                                @Html.DisplayNameFor(model => model.Objects[0].AuthorId)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.ParentId)
+                                @Html.DisplayNameFor(model => model.Objects[0].ParentId)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Title)
+                                @Html.DisplayNameFor(model => model.Objects[0].Title)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.ChildPosts)
+                                @Html.DisplayNameFor(model => model.Objects[0].ChildPosts)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.PostRatings)
+                                @Html.DisplayNameFor(model => model.Objects[0].PostRatings)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Published)
+                                @Html.DisplayNameFor(model => model.Objects[0].Published)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.PublishedAt)
+                                @Html.DisplayNameFor(model => model.Objects[0].PublishedAt)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.CreatedAt)
+                                @Html.DisplayNameFor(model => model.Objects[0].CreatedAt)
                             </th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Objects)
                         {
                             <tr>
                                 <td>

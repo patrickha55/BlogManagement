@@ -25,9 +25,9 @@ namespace BlogManagement.Web.Controllers
             _userService = userService;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 1)
         {
-            var postForIndexVMs = new List<PostForIndexVM>();
+            Paginated<PostForIndexVM> postForIndexVMs = null;
 
             try
             {

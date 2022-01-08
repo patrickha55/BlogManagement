@@ -30,19 +30,21 @@ namespace BlogManagement.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PostRatingVM>> GetAsync(long id)
         {
-            PostRatingVM postRatingVM = null;
-
             try
             {
-                postRatingVM = await _postRatingService.GetPostRatingVMAsync(id);
+                if (id <= 0)
+                    return BadRequest(Constants.InvalidArgument);
+
+                var postRatingVM = await _postRatingService.GetPostRatingVMAsync(id);
+
+                return postRatingVM is null ?
+                    NotFound(Constants.NotFoundResponse) : postRatingVM;
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return postRatingVM is null ?
-                NotFound(Constants.NotFoundResponse) : postRatingVM;
         }
 
         [HttpPost]
@@ -63,10 +65,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(PostAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest(Constants.ErrorForUser);
         }
-
     }
 }

@@ -1,17 +1,14 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Common.Models.TagVMs;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
+using BlogManagement.WebAPI.Filters;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using BlogManagement.Contracts.Services.APIServices;
-using BlogManagement.WebAPI.Filters;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

@@ -45,7 +45,7 @@ namespace BlogManagement.Repository.Repositories
             }
         }
 
-        public async Task<IPagedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null)
+        public async Task<PaginatedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null)
         {
             IQueryable<Post> query = Context.Posts;
 
@@ -62,7 +62,7 @@ namespace BlogManagement.Repository.Repositories
                     .Include(p => p.CategoryPosts)
                     .ThenInclude(cp => cp.Category);
 
-                return await query.AsNoTracking().ToPagedListAsync(request.PageNumber, request.PageSize);
+                return await PaginatedList<Post>.ToPaginatedListAsync(query.AsNoTracking() ,request.PageNumber, request.PageSize);
             }
             catch (Exception e)
             {

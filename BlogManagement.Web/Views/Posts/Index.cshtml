@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BlogManagement.Common.Models.PostVMs.PostForIndexVM>
+﻿@model Paginated<BlogManagement.Common.Models.PostVMs.PostForIndexVM>
 
 @{
     ViewData["Title"] = "My Posts";
@@ -25,7 +25,7 @@
         <div class="row d-flex">
             <div class="col-xl-9 px-md-5 py-5">
                 <div class="row pt-md-4">
-                    @foreach (var post in Model)
+                    @foreach (var post in Model.Objects)
                     {
                         <div class="col-md-12">
                             <div class="blog-entry-2 ftco-animate">

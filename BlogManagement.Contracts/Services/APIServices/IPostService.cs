@@ -17,7 +17,7 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="pagingRequest">PagingRequest object for paging</param>
         /// <param name="authorId">User's ID</param>
         /// <returns>List of PostForIndexVMs</returns>
-        Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest, long? authorId = null);
+        Task<PaginatedList<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest, long? authorId = null);
 
         /// <summary>
         /// This method gets all posts for displaying on admin post index view.
@@ -25,7 +25,7 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="pageNumber">Page number of the current list</param>
         /// <param name="pageSize">Size of the page</param>
         /// <returns>List of PostForAdminIndexVM objects</returns>
-        Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10);
+        Task<PaginatedList<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(int pageNumber = 1, int pageSize = 10);
 
         /// <summary>
         /// This method searches for posts with a matching title, meta title, summary keyword.
@@ -33,7 +33,7 @@ namespace BlogManagement.Contracts.Services.APIServices
         /// <param name="pagingRequest">For paging</param>
         /// <param name="keyword">Keyword for searching</param>
         /// <returns>List of PostForIndexVM</returns>
-        Task<List<PostForIndexVM>> FindPostsAsync(PagingRequest pagingRequest, string keyword);
+        Task<PaginatedList<PostForIndexVM>> FindPostsAsync(PagingRequest pagingRequest, string keyword);
 
         /// <summary>
         /// This method gets a post base on its id.
