@@ -1,0 +1,240 @@
+﻿@model BlogManagement.Common.Models.PostVMs.PostDetailVM
+
+@{
+    ViewBag.Title = "Post Details";
+    Layout = "Admin/_Layout";
+}
+
+<style type="text/css">
+    #content > * {
+        padding: 1px;
+        background-color: #343A40;
+        color: white;
+    }
+</style>
+
+@if (Model is null)
+{
+    @await Html.PartialAsync("User/Partials/_InfoPartial", "Post")
+}
+else
+{
+    @if (TempData.Any())
+    {
+        @if (TempData[Constants.Success] is not null)
+        {
+            @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Success])
+        }
+        else if (TempData[Constants.Error] is not null)
+        {
+            @await Html.PartialAsync("User/Partials/_StatusPartial", TempData[Constants.Error])
+        }
+    }
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Post Details</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-controller="Admins" asp-action="Index">Home</a></li>
+                        <li class="breadcrumb-item"><a asp-controller="Posts" asp-action="AdminIndex">Post</a></li>
+                        <li class="breadcrumb-item active">Post Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+</section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle" src="https://localhost:44392/@Model.User.ImageUrl"
+                                 alt="User profile picture">
+                            </div>
+
+                            <h3 class="profile-username text-center">@Model.User.FullName</h3>
+
+                            <p class="text-muted text-center">@Roles.Author</p>
+
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <b>@Html.DisplayNameFor(m => m.User.UserName)</b> <a class="float-right">@Model.User.UserName</a>
+                                </li>
+                            </ul>
+
+                            <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+                        </div>
+                        <!-- /.card-body -->
+                </div>
+                    <!-- /.card -->
+                    <!-- About the post -->
+                <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">About This Post</h3>
+                        </div>
+                        <!-- /.card-header -->
+                    <div class="card-body">
+                            <strong><i class="fas fa-book mr-1"></i>@Html.DisplayNameFor(m => m.Title)</strong>
+
+                            <p class="text-muted">
+                                @Model.Title
+                            </p>
+
+                            <hr>
+
+                            <strong><i class="fas fa-th-large mr-1"></i>@Html.DisplayNameFor(m => m.Categories)</strong>
+
+                            <p class="text-muted">@Model.Categories[0].Title</p>
+
+                            <hr>
+
+                            <strong><i class="fas fa-tags mr-1"></i>@Html.DisplayNameFor(m => m.Tags)</strong>
+
+                            <p class="text-muted mt-1">
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <span class="tag tag-info p-1 rounded mr-1 text-dark"
+                                  style="width: 10px; height: 10px; border: 1px solid white; background-color: aliceblue">
+                                        @tag.Title
+                                    </span>
+                                }
+                            </p>
+
+                            <hr>
+
+                            <strong><i class="far fa-clipboard-list mr-1"></i>@Html.DisplayNameFor(m => m.TotalViewed)</strong>
+
+                            <p class="text-muted">@Model.TotalViewed</p>
+
+                            <hr>
+
+                            <strong><i class="far fa-clipboard-list mr-1"></i>@Html.DisplayNameFor(m => m.Rating)</strong>
+
+                            <p class="text-muted">@(Model.Rating is null ? "N/A" : Model.Rating)</p>
+
+                            <hr>
+
+                            <strong><i class="far fa-clipboard-list mr-1"></i>@Html.DisplayNameFor(m => m.PostComments)</strong>
+
+                            <p class="text-muted">@Model.PostComments.Count</p>
+                        </div>
+                        <!-- /.card-body -->
+                </div>
+                    <!-- /.card -->
+            </div>
+                <!-- /.col -->
+            <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#activity"
+                                   data-toggle="tab">Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#settings" data-toggle="tab">Settings</a>
+                                </li>
+                            </ul>
+                        </div><!-- /.card-header -->
+                    <div class="card-body">
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="activity">
+                                    <img style="width: 100%; max-height: 400px;"
+                                     src=@($"https://localhost:44392/{Model.ImageUrl}") alt="@Model.Title" class="img-fluid rounded">
+
+                                    <div id="content" data-content="@Model.Content"
+                                     class="my-4 w-100 lh-1"></div>
+                                </div>
+                                <!-- /.tab-pane -->
+
+                            <div class="tab-pane" id="settings">
+                                    <form class="form-horizontal" asp-action="EditPostStatus">
+                                        <input type="hidden" asp-for="Id" />
+                                        <div class="form-group row">
+                                            <label asp-for="Published" for="inputName" class="col-sm-2 col-form-label">@Html.DisplayNameFor(m => m.Published)</label>
+                                            <div class="col-sm-10">
+                                                <select class="custom-select" asp-for="Published">
+                                                    @if (Model.Published == (byte)PostStatus.Unpublished)
+                                                    {
+                                                        <option value="@((byte) PostStatus.Unpublished)" selected>
+                                                            @PostStatus.Unpublished.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Published)">
+                                                            @PostStatus.Published.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Block)">
+                                                            @PostStatus.Block.ToString()
+                                                        </option>
+                                                    }
+                                                    else if (Model.Published == (byte)PostStatus.Published)
+                                                    {
+                                                        <option value="@((byte) PostStatus.Unpublished)">
+                                                            @PostStatus.Unpublished.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Published)" selected>
+                                                            @PostStatus.Published.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Block)">
+                                                            @PostStatus.Block.ToString()
+                                                        </option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@((byte) PostStatus.Unpublished)">
+                                                            @PostStatus.Unpublished.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Published)">
+                                                            @PostStatus.Published.ToString()
+                                                        </option>
+                                                        <option value="@((byte) PostStatus.Block)" selected>
+                                                            @PostStatus.Block.ToString()
+                                                        </option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary">Change</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- /.tab-pane -->
+                        </div>
+                            <!-- /.tab-content -->
+                    </div><!-- /.card-body -->
+                </div>
+                    <!-- /.card -->
+            </div>
+                <!-- /.col -->
+        </div>
+        </div>
+    </section>
+}
+
+@section Scripts
+{
+<script>
+    $(document).ready(function() {
+        if (localStorage.getItem('RatedIndex') != null) {
+            localStorage.RatedIndex = -1;
+        }
+
+        $("#content").html(stringToHTML(
+            $('#content').data('content')
+        ));
+    });
+
+    function stringToHTML(str) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(str, 'text/html');
+        return doc.body;
+    }
+</script>
+}

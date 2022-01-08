@@ -1,6 +1,6 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models.PostCommentVMs;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -43,9 +43,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest(Constants.ErrorForUser);
         }
 
         [HttpPost]
@@ -68,9 +67,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(CreateAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest(Constants.ErrorForUser);
         }
 
     }

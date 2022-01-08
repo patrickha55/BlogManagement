@@ -1,10 +1,11 @@
-﻿using BlogManagement.Common.Models.TagVMs;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.Models.TagVMs;
 
 namespace BlogManagement.Contracts.Services.ClientServices
 {
     public interface ITagService
     {
-        Task<List<TagVM>> GetTagVMsAsync(int pageNumber = 1, int pageSize = 10);
+        Task<Paginated<TagVM>> GetTagVMsAsync(int pageNumber = 1, int pageSize = 10);
         Task<TagVM> GetTagVMAsync(string token, long id);
         Task<TagEditVM> GetTagEditVMsAsync(string token, long id);
         Task<bool> CreateTagAsync(string token, TagCreateVM request);

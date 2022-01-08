@@ -12,6 +12,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using BlogManagement.Common.Models;
 
 namespace BlogManagement.Application.Services.ClientServices
 {
@@ -29,35 +30,127 @@ namespace BlogManagement.Application.Services.ClientServices
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        public async Task<List<AuthorAdminIndexVM>> GetAuthorAdminIndexVM(int pageNumber = 1, int pageSize = 10)
+        public async Task<List<AuthorAdminIndexVM>> GetAuthorAdminIndexVMAsync(string token, PagingRequest pagingRequest = null)
         {
             List<AuthorAdminIndexVM> authorVMs;
 
             try
             {
+                pagingRequest ??= new PagingRequest();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"users/users-admin-page?PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var responseStream = await response.Content.ReadAsStreamAsync();
+                    authorVMs = await JsonSerializer.DeserializeAsync<List<AuthorAdminIndexVM>>(responseStream, _options);
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAuthorAdminIndexVM));
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAuthorAdminIndexVMAsync));
                 throw;
             }
 
-            return null;
+            return authorVMs;
         }
 
-        public Task<AuthorDetailVM> FindAuthorDetailVMAsync(long id)
+        public async Task<AuthorDetailVM> GetAuthorDetailVMAsync(long id)
         {
-            throw new NotImplementedException();
+            AuthorDetailVM userVM;
+
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"users/details/{id}");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
+                    userVM = await JsonSerializer.DeserializeAsync<AuthorDetailVM>(reponseStream, _options);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(GetAuthorDetailVMAsync));
+                throw;
+            }
+
+            return userVM;
         }
 
-        public Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword)
+        public async Task<List<AuthorVM>> FindAuthorVMsAsync(string keyword, PagingRequest pagingRequest = null)
         {
-            throw new NotImplementedException();
+            List<AuthorVM> userVM;
+
+            try
+            {
+                pagingRequest ??= new PagingRequest();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"users/?Keyword={keyword}&PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var reponseStream = await response.Content.ReadAsStreamAsync();
+                    userVM = await JsonSerializer.DeserializeAsync<List<AuthorVM>>(reponseStream, _options);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(FindAuthorVMsAsync));
+                throw;
+            }
+
+            return userVM;
         }
 
-        public Task<bool> EditUserStatusesAsync(long id, AuthorDetailVM request)
+        public async Task<bool> EditUserStatusesAsync(string token, long id, AuthorDetailVM request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
+                var userJson = new StringContent(
+                    JsonSerializer.Serialize(request, _options),
+                    encoding: Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var httpResponse = await client.PutAsync($"users/status/{id}", userJson);
+
+                httpResponse.EnsureSuccessStatusCode();
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(EditUserStatusesAsync));
+                throw;
+            }
         }
 
         public async Task<(IdentityResult, User)> RegisterAsync(UserRegisterDTO userRegisterDTO)

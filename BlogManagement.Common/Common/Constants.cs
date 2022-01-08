@@ -21,6 +21,7 @@
         public const string PleaseFillIn = "Please fill in the field.";
         public const string NotFoundResponse = "Can't find the object with the provided argument.";
         public const string ErrorForUser = "Something went wrong.";
+        public const string ItsEmpty = "There is no data at the moment";
 
         #endregion
 

@@ -5,6 +5,8 @@ using BlogManagement.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
+using BlogManagement.Common.Models;
+using X.PagedList;
 
 namespace BlogManagement.Repository.Repositories
 {
@@ -34,7 +36,7 @@ namespace BlogManagement.Repository.Repositories
             }
         }
 
-        public async Task<List<User>> FindUsersAsync(Expression<Func<User, bool>> expression)
+        public async Task<IPagedList<User>> FindUsersAsync(Expression<Func<User, bool>> expression, PagingRequest request)
         {
             try
             {
@@ -48,7 +50,7 @@ namespace BlogManagement.Repository.Repositories
                         ImageUrl = u.ImageUrl,
                         Intro = u.Intro
                     })
-                    .ToListAsync();
+                    .ToPagedListAsync(request.PageNumber, request.PageSize);
             }
             catch (Exception e)
             {

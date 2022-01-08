@@ -1,19 +1,18 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
+using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostCommentVMs;
 using BlogManagement.Common.Models.PostVMs;
+using BlogManagement.Common.Models.TagVMs;
+using BlogManagement.Contracts.Services.ClientServices;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Common.Models.CategoryVMs;
-using BlogManagement.Common.Models.PostRatingVMs;
-using BlogManagement.Common.Models.TagVMs;
-using BlogManagement.Contracts.Services.ClientServices;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -32,14 +31,13 @@ namespace BlogManagement.Web.Controllers
 
 
         // GET: PostsController
-        [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public async Task<ActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult> Index(int pageNumber = 1, int pageSize = 10, string userName = null)
         {
-            var postVMs = new List<PostForIndexVM>();
+            Paginated<PostForIndexVM> postVMs = new();
 
             try
             {
-                postVMs = await _postService.GetPostsOfAnAuthorAsync(new PagingRequest(pageNumber, pageSize), User.Identity?.Name);
+                postVMs = await _postService.GetPostsOfAnAuthorAsync(new PagingRequest(pageNumber, pageSize), userName is null ? User.Identity?.Name : userName);
             }
             catch (Exception e)
             {
@@ -54,7 +52,7 @@ namespace BlogManagement.Web.Controllers
         // GET: PostsController
         public async Task<IActionResult> AdminIndex(int pageNumber = 1, int pageSize = 10)
         {
-            var postVMs = new List<PostForAdminIndexVM>();
+            Paginated<PostForAdminIndexVM> postVMs = null;
 
             try
             {
@@ -70,8 +68,27 @@ namespace BlogManagement.Web.Controllers
             return View(postVMs);
         }
 
+        [Authorize(Roles = Roles.Administrator)]
+        public async Task<IActionResult> AdminPostDetails(long id)
+        {
+            try
+            {
+                var postDetailVM = await _postService.GetPostDetailVMAsync(id, null);
+
+                return View(postDetailVM);
+            }
+            catch (Exception e)
+            {
+                TempData[Constants.Error] = Constants.ErrorMessage;
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(AdminPostDetails));
+            }
+
+            TempData[Constants.Error] = Constants.ErrorMessage;
+            return RedirectToAction(nameof(AdminIndex));
+        }
+
         // GET: PostsController/Details/5
-        public async Task<ActionResult> Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             try
             {
@@ -91,7 +108,7 @@ namespace BlogManagement.Web.Controllers
 
         // GET: PostsController/Create
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public async Task<ActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             try
             {
@@ -114,14 +131,15 @@ namespace BlogManagement.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{Roles.Author}, {Roles.Administrator}")]
-        public async Task<ActionResult> Create(PostCreateVM request)
+        public async Task<IActionResult> Create(PostCreateVM request)
         {
             var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _postService.CreatePostAsync(token, request, User.Identity?.Name);
+                    request.UserName = User.Identity?.Name;
+                    var result = await _postService.CreatePostAsync(token, request);
 
                     if (result)
                     {
@@ -138,13 +156,13 @@ namespace BlogManagement.Web.Controllers
 
             var postRelatedList = await _postService.GetSelectListsForPostCreationAsync(token);
 
-            ViewBag.Categories = 
+            ViewBag.Categories =
                 new SelectList(postRelatedList.CategoryDTOs, nameof(CategoryVM.Id), nameof(CategoryVM.Title), request.CategoryId);
 
-            ViewBag.Tags = 
+            ViewBag.Tags =
                 new SelectList(postRelatedList.TagDTOs, nameof(TagVM.Id), nameof(TagVM.Title), request.TagIds);
 
-            ViewBag.Posts = 
+            ViewBag.Posts =
                 new SelectList(postRelatedList.PostDTOs, nameof(PostVM.Id), nameof(PostVM.Title), request.ParentId);
 
             return View(request);
@@ -170,6 +188,36 @@ namespace BlogManagement.Web.Controllers
             {
                 throw new NotImplementedException();
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
+        public async Task<IActionResult> EditPostStatusAsync(long id, PostDetailVM request)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                    
+                    var result = await _postService.PublishPostAsync(token, id, request);
+
+                    if (result)
+                    {
+                        TempData[Constants.Success] = Constants.SuccessMessage;
+                        return RedirectToAction(nameof(AdminIndex));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TempData[Constants.Error] = Constants.ErrorMessage;
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(Create));
+            }
+
+            TempData[Constants.Error] = Constants.ErrorMessage;
+            return RedirectToAction(nameof(AdminIndex));
         }
 
         // POST: PostsController/Delete/5

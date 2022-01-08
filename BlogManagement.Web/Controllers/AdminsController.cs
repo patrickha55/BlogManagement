@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Common.Models;
+using BlogManagement.Contracts.Services.ClientServices;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogManagement.Web.Controllers
 {
@@ -35,7 +37,8 @@ namespace BlogManagement.Web.Controllers
             var userVMs = new List<AuthorAdminIndexVM>();
             try
             {
-                userVMs = await _userService.GetAuthorAdminIndexVM(pageNumber, pageSize);
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                userVMs = await _userService.GetAuthorAdminIndexVMAsync(token, new PagingRequest(pageNumber, pageSize));
             }
             catch (Exception e)
             {
@@ -53,7 +56,7 @@ namespace BlogManagement.Web.Controllers
 
             try
             {
-                userVM = await _userService.FindAuthorDetailVMAsync(id);
+                userVM = await _userService.GetAuthorDetailVMAsync(id);
             }
             catch (Exception e)
             {
@@ -68,7 +71,8 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                var result = await _userService.EditUserStatusesAsync(id, request);
+                var token = HttpContext.Session.GetString(nameof(Token.JwtToken));
+                var result = await _userService.EditUserStatusesAsync(token, id, request);
 
                 if (result)
                 {

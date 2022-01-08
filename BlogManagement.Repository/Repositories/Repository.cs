@@ -1,11 +1,10 @@
-﻿using System.Linq.Expressions;
-using BlogManagement.Common.Common;
+﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Contracts.Repositories;
 using BlogManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using X.PagedList;
+using System.Linq.Expressions;
 
 namespace BlogManagement.Repository.Repositories
 {
@@ -22,7 +21,7 @@ namespace BlogManagement.Repository.Repositories
             Logger = logger;
         }
 
-        public async Task<IPagedList<TEntity>> GetAllAsync(PagingRequest request, Expression<Func<TEntity, bool>> expression = null, List<string> includes = null)
+        public async Task<PaginatedList<TEntity>> GetAllAsync(PagingRequest request, Expression<Func<TEntity, bool>> expression = null, List<string> includes = null)
         {
             IQueryable<TEntity> query = Context.Set<TEntity>();
 
@@ -41,7 +40,7 @@ namespace BlogManagement.Repository.Repositories
                     }
                 }
 
-                return await query.AsNoTracking().ToPagedListAsync(request.PageNumber, request.PageSize);
+                return await PaginatedList<TEntity>.ToPaginatedListAsync(query.AsNoTracking(), request.PageNumber, request.PageSize);
             }
             catch (Exception e)
             {

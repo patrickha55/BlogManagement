@@ -1,7 +1,7 @@
 ﻿using BlogManagement.Common.Common;
 using BlogManagement.Common.DTOs.UserDTOs;
 using BlogManagement.Contracts.AuthWithJwt;
-using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -33,7 +33,6 @@ namespace BlogManagement.WebAPI.Controllers
         [Route("register")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
         public async Task<ActionResult<(IdentityResult, User)>> RegisterAsync([FromBody] UserRegisterDTO userRegisterDTO)
         {
             try
@@ -51,6 +50,7 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(RegisterAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
 
             return BadRequest(Constants.ErrorForUser);
@@ -58,6 +58,8 @@ namespace BlogManagement.WebAPI.Controllers
 
         [HttpPost]
         [Route("login")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> LoginAsync([FromBody] UserLoginDTO userLoginDTO)
         {
             if (userLoginDTO is null)
@@ -73,9 +75,8 @@ namespace BlogManagement.WebAPI.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(LoginAsync));
+                return StatusCode(500, Constants.ErrorMessage);
             }
-
-            return BadRequest(Constants.ErrorForUser);
         }
     }
 }

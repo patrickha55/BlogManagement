@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
+using BlogManagement.Common.Models;
 using BlogManagement.Data.Entities;
+using X.PagedList;
 
 namespace BlogManagement.Contracts.Repositories
 {
@@ -14,11 +16,13 @@ namespace BlogManagement.Contracts.Repositories
         /// <param name="expression"></param>
         /// <returns></returns>
         Task<User> FindUserDetailAsync(Expression<Func<User,bool>> expression);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="expression"></param>
+        /// <param name="pagingRequest"></param>
         /// <returns></returns>
-        Task<List<User>> FindUsersAsync(Expression<Func<User,bool>> expression);
+        Task<IPagedList<User>> FindUsersAsync(Expression<Func<User,bool>> expression, PagingRequest pagingRequest);
     }
 }

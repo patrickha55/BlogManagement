@@ -1,31 +1,23 @@
-﻿using AutoMapper;
-using BlogManagement.Common.Common;
-using BlogManagement.Contracts;
-using BlogManagement.Contracts.Services;
+﻿using BlogManagement.Common.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using BlogManagement.Contracts.Services.ClientServices;
 
 namespace BlogManagement.Web.Controllers
 {
     public class UsersController : Controller
     {
         private readonly ILogger<AdminsController> _logger;
-        private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
 
         public UsersController(
             ILogger<AdminsController> logger,
-            IMapper mapper,
-            IUnitOfWork unitOfWork,
             IUserService userService)
         {
             _logger = logger;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
             _userService = userService;
         }
 
@@ -34,7 +26,7 @@ namespace BlogManagement.Web.Controllers
         {
             try
             {
-                var userVM = await _userService.FindAuthorDetailVMAsync(id);
+                var userVM = await _userService.GetAuthorDetailVMAsync(id);
 
                 return View(userVM);
             }

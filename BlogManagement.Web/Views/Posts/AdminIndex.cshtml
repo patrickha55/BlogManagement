@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BlogManagement.Common.Models.PostVMs.PostForAdminIndexVM>
+﻿@model Paginated<BlogManagement.Common.Models.PostVMs.PostForAdminIndexVM>
 
 @{
     ViewData["Title"] = "Post overview";
@@ -7,7 +7,13 @@
 
 <h1>Posts overview</h1>
 
-<div class="row">
+@if (Model is null)
+{
+    @Html.PartialAsync("User/Partials/_InfoPartial")
+}
+else
+{
+    <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
@@ -31,37 +37,37 @@
                     <thead>
                         <tr>
                             <th>
-                                @Html.DisplayNameFor(model => model.Id)
+                                @Html.DisplayNameFor(model => model.Objects[0].Id)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.AuthorId)
+                                @Html.DisplayNameFor(model => model.Objects[0].AuthorId)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.ParentId)
+                                @Html.DisplayNameFor(model => model.Objects[0].ParentId)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Title)
+                                @Html.DisplayNameFor(model => model.Objects[0].Title)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.ChildPosts)
+                                @Html.DisplayNameFor(model => model.Objects[0].ChildPosts)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.PostRatings)
+                                @Html.DisplayNameFor(model => model.Objects[0].PostRatings)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Published)
+                                @Html.DisplayNameFor(model => model.Objects[0].Published)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.PublishedAt)
+                                @Html.DisplayNameFor(model => model.Objects[0].PublishedAt)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.CreatedAt)
+                                @Html.DisplayNameFor(model => model.Objects[0].CreatedAt)
                             </th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Objects)
                         {
                             <tr>
                                 <td>
@@ -80,10 +86,21 @@
                                     @item.ChildPosts.Count()
                                 </td>
                                 <td>
-                                    @(item.PostRatings.Any() ? item.PostRatings.Average(p => p.Rating) : "N/A")
+                                    @(item.PostRatings.Any() ? Math.Round(item.PostRatings.Average(p => p.Rating), 1) : "N/A")
                                 </td>
-                                <td>
-                                    @(item.Published == 0 ? "Unpublished" : "Published")
+                                <td style="display: flex; align-items: center; justify-content: space-between;">
+                                    @switch (item.Published)
+                                    {
+                                        case (byte) PostStatus.Unpublished:
+                                            <span class="text-light">@PostStatus.Unpublished.ToString() </span><i class="fas fa-eye-slash text-light"></i>
+                                            break;
+                                        case (byte) PostStatus.Published:
+                                            <span class="text-success">@PostStatus.Published.ToString() </span> <i class="fas fa-check-circle text-success"></i>
+                                            break;
+                                        default:
+                                            <span class="text-danger">@PostStatus.Block.ToString()</span> <i class="fas fa-ban text-danger"></i>
+                                            break;
+                                    }
                                 </td>
                                 <td>
                                     @(item.PublishedAt is null ? "N/A" : item.PublishedAt.Value.ToShortDateString())
@@ -93,7 +110,7 @@
                                 </td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="AdminPostDetails" asp-route-id="@item.Id">Details</a> |
                                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                                 </td>
                             </tr>
@@ -106,3 +123,4 @@
         <!-- /.card -->
     </div>
 </div>
+}

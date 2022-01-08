@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using BlogManagement.Common.Common;
 using BlogManagement.Common.Models;
 using BlogManagement.Data.Entities;
 using JetBrains.Annotations;
@@ -24,7 +25,7 @@ namespace BlogManagement.Contracts.Repositories
         /// <param name="expression"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<IPagedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null);
+        Task<PaginatedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null);
         /// <summary>
         /// 
         /// </summary>

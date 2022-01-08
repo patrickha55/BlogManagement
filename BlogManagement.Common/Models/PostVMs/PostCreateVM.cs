@@ -12,7 +12,9 @@ namespace BlogManagement.Common.Models.PostVMs
         /// <summary>
         /// Id of a author (User) that this post belongs to.
         /// </summary>
-        public long AuthorId { get; set; }
+        public long? AuthorId { get; set; }
+
+        public string UserName { get; set; }
 
         [Required]
         public string Title { get; set; }

@@ -41,7 +41,7 @@ namespace BlogManagement.Data.Entities
 
         public string Summary { get; set; }
         
-        [Range(1, maximum: 1)]
+        [Range(1, maximum: 2)]
         public byte Published { get; set; }
 
 #nullable enable

@@ -1555,4 +1555,12 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Posts\AdminPostDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Posts\AdminPostDetails.cshtml" />
+  </ItemGroup>
+
 </Project>

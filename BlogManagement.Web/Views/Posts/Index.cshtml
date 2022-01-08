@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BlogManagement.Common.Models.PostVMs.PostForIndexVM>
+﻿@model Paginated<BlogManagement.Common.Models.PostVMs.PostForIndexVM>
 
 @{
     ViewData["Title"] = "My Posts";
@@ -25,13 +25,13 @@
         <div class="row d-flex">
             <div class="col-xl-9 px-md-5 py-5">
                 <div class="row pt-md-4">
-                    @foreach (var post in Model)
+                    @foreach (var post in Model.Objects)
                     {
                         <div class="col-md-12">
                             <div class="blog-entry-2 ftco-animate">
                                 <a asp-controller="Posts" asp-action="Details"
                                     asp-route-id="@post.Id" class="img"
-                                    style="background-image: url(@post.ImageUrl);"></a>
+                                    style="background-image: url(https://localhost:44392/@post.ImageUrl);"></a>
                                 <div class="text pt-4">
                                     <h3 class="mb-4"><a href="#">@post.Title</a></h3>
                                     <p class="mb-4">@post.Summary</p>
@@ -45,7 +45,7 @@
                                     <div class="meta-wrap d-md-flex align-items-center">
                                         <div class="half order-md-last text-md-right">
                                             <p class="meta">
-                                                <span><i class="icon-star"></i>@post.Rating</span>
+                                                <span><i class="icon-star"></i>@Math.Round((decimal) post.Rating, 1)</span>
                                                 <span><i class="icon-eye"></i>@post.TotalViewed</span>
                                                 <span><i class="icon-comment"></i>@post.PostComments.Count()</span>
                                             </p>

@@ -1,11 +1,8 @@
-﻿using BlogManagement.Common.DTOs.PostDTOs;
+﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
-using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Data.Entities;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogManagement.Contracts.Services.ClientServices
 {
@@ -17,16 +14,28 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="pagingRequest">PagingRequest object for paging</param>
         /// <param name="authorId">User's ID</param>
         /// <returns>List of PostForIndexVMs</returns>
-        Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest);
-
-        Task<List<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName);
+        Task<Paginated<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pagingRequest"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        Task<Paginated<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="pagingRequest"></param>
+        /// <returns></returns>
+        Task<Paginated<PostForIndexVM>> FindPostsAsync(string keyword, PagingRequest pagingRequest = null);
         /// <summary>
         /// 
         /// </summary>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest);
+        Task<Paginated<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest);
         /// <summary>
         /// 
         /// </summary>
@@ -58,15 +67,25 @@ namespace BlogManagement.Contracts.Services.ClientServices
         /// <param name="request"></param>
         /// <param name="userName"></param>
         /// <returns></returns>
-        Task<bool> CreatePostAsync(string token, PostCreateVM request, string userName);
+        Task<bool> CreatePostAsync(string token, PostCreateVM request);
 
         /// <summary>
         /// This method updates an existing post.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="token">Jwt token for authentication in API</param>
+        /// <param name="id">Id of a post</param>
         /// <param name="request">Post to update against</param>
         /// <returns>Return true if success, else return false</returns>
         Task<bool> UpdatePostAsync(string token, long id, PostEditVM request);
+
+        /// <summary>
+        /// This method updates publishing status of a post
+        /// </summary>
+        /// <param name="token">Jwt token for authentication in API</param>
+        /// <param name="id">Id of a post</param>
+        /// <param name="status">Status enum of a post</param>
+        /// <returns>Return true if success, else return false</returns>
+        Task<bool> PublishPostAsync(string token, long id, PostDetailVM request);
         /// <summary>
         /// 
         /// </summary>

@@ -1,19 +1,18 @@
 ﻿using BlogManagement.Common.Common;
+using BlogManagement.Common.DTOs.PostDTOs;
 using BlogManagement.Common.Models;
-using BlogManagement.Common.Models.CategoryVMs;
 using BlogManagement.Common.Models.PostVMs;
-using BlogManagement.Common.Models.TagVMs;
 using BlogManagement.Contracts.Services.ClientServices;
 using BlogManagement.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using BlogManagement.Common.DTOs.PostDTOs;
 
 namespace BlogManagement.Application.Services.ClientServices
 {
@@ -32,7 +31,7 @@ namespace BlogManagement.Application.Services.ClientServices
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        public async Task<List<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest)
+        public async Task<Paginated<PostForIndexVM>> GetPostsForIndexVMsAsync(PagingRequest pagingRequest)
         {
             try
             {
@@ -43,7 +42,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForIndexVM>>(reponseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForIndexVM>>(reponseStream, _options);
                 }
             }
             catch (Exception e)
@@ -55,7 +54,7 @@ namespace BlogManagement.Application.Services.ClientServices
             return null;
         }
 
-        public async Task<List<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName)
+        public async Task<Paginated<PostForIndexVM>> GetPostsOfAnAuthorAsync(PagingRequest pagingRequest, string userName)
         {
             try
             {
@@ -68,7 +67,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForIndexVM>>(reponseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForIndexVM>>(reponseStream, _options);
                 }
             }
             catch (Exception e)
@@ -80,19 +79,42 @@ namespace BlogManagement.Application.Services.ClientServices
             return null;
         }
 
-        public async Task<List<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest)
+        public async Task<Paginated<PostForIndexVM>> FindPostsAsync(string keyword, PagingRequest pagingRequest = null)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"posts/specific-posts?KeyWord={keyword}&PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await using var responseStream = await response.Content.ReadAsStreamAsync();
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForIndexVM>>(responseStream, _options);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(FindPostsAsync));
+                throw;
+            }
+
+            return null;
+        }
+
+        public async Task<Paginated<PostForAdminIndexVM>> GetPostForAdminIndexVMsAsync(PagingRequest pagingRequest)
         {
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get,
-                    $"posts-admins?PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
+                    $"posts/posts-admins?PageNumber={pagingRequest.PageNumber}&PageSize={pagingRequest.PageSize}");
                 var client = _clientFactory.CreateClient(Constants.HttpClientName);
                 var response = await client.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
                     await using var reponseStream = await response.Content.ReadAsStreamAsync();
-                    return await JsonSerializer.DeserializeAsync<List<PostForAdminIndexVM>>(reponseStream, _options);
+                    return await JsonSerializer.DeserializeAsync<Paginated<PostForAdminIndexVM>>(reponseStream, _options);
                 }
             }
             catch (Exception e)
@@ -142,7 +164,7 @@ namespace BlogManagement.Application.Services.ClientServices
             throw new NotImplementedException();
         }
 
-        public async Task<bool> CreatePostAsync(string token, PostCreateVM request, string userName)
+        public async Task<bool> CreatePostAsync(string token, PostCreateVM request)
         {
             try
             {
@@ -150,13 +172,10 @@ namespace BlogManagement.Application.Services.ClientServices
 
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue(token);
-                var postJson = new StringContent(
-                    JsonSerializer.Serialize(request, _options),
-                    encoding: Encoding.UTF8,
-                    "application/json"
-                );
 
-                using var httpResponse = await client.PostAsync($"posts?userName={userName}", postJson);
+                var content = CreateMultipartFormDataContent(request);
+
+                var httpResponse = await client.PostAsync("Posts", content);
 
                 httpResponse.EnsureSuccessStatusCode();
 
@@ -168,6 +187,7 @@ namespace BlogManagement.Application.Services.ClientServices
                 throw;
             }
         }
+
 
         public async Task<bool> UpdatePostAsync(string token, long id, PostEditVM request)
         {
@@ -192,6 +212,34 @@ namespace BlogManagement.Application.Services.ClientServices
             catch (Exception e)
             {
                 _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(UpdatePostAsync));
+                throw;
+            }
+        }
+
+        public async Task<bool> PublishPostAsync(string token, long id, PostDetailVM request)
+        {
+            try
+            {
+                var client = _clientFactory.CreateClient(Constants.HttpClientName);
+
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue(token);
+
+                var requestJson = new StringContent(
+                    JsonSerializer.Serialize(request, _options),
+                    encoding: Encoding.UTF8,
+                    "application/json"
+                );
+
+                using var httpResponse = await client.PutAsync($"posts/post-status/{id}", requestJson);
+
+                httpResponse.EnsureSuccessStatusCode();
+
+                return httpResponse.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "{0} {1}", Constants.ErrorMessageLogging, nameof(PublishPostAsync));
                 throw;
             }
         }
@@ -246,6 +294,40 @@ namespace BlogManagement.Application.Services.ClientServices
             }
 
             return null;
+        }
+        /// <summary>
+        /// This method turns a model into a multipart form data content.
+        /// </summary>
+        /// <param name="request">Model to convert</param>
+        /// <returns>MultipartFormDataContent</returns>
+        private MultipartFormDataContent CreateMultipartFormDataContent(PostCreateVM request)
+        {
+            byte[] data;
+
+            using (var binaryReader = new BinaryReader(request.Image.OpenReadStream()))
+            {
+                data = binaryReader.ReadBytes((int)request.Image.OpenReadStream().Length);
+            }
+
+            ByteArrayContent bytes = new ByteArrayContent(data);
+
+            using var content = new MultipartFormDataContent();
+
+            content.Add(bytes, nameof(request.Image), request.Image.FileName);
+            content.Add(new StringContent(request.UserName), nameof(request.UserName));
+            content.Add(new StringContent(request.Title), nameof(request.Title));
+            content.Add(new StringContent(request.MetaTitle), nameof(request.MetaTitle));
+            content.Add(new StringContent(request.Content), nameof(request.Content));
+            content.Add(new StringContent(request.Slug), nameof(request.Slug));
+            content.Add(new StringContent(request.Summary), nameof(request.Summary));
+            content.Add(new StringContent(request.CategoryId.ToString()), nameof(request.CategoryId));
+            content.Add(new StringContent(request.ParentId.ToString()), nameof(request.ParentId));
+            foreach (var tagId in request.TagIds)
+            {
+                content.Add(new StringContent(tagId.ToString()), nameof(request.TagIds));
+            }
+
+            return content;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
 using BlogManagement.Application.Services;
+using BlogManagement.Application.Services.APIServices;
 using BlogManagement.Contracts;
 using BlogManagement.Contracts.AuthWithJwt;
 using BlogManagement.Contracts.Repositories;
 using BlogManagement.Contracts.Services;
+using BlogManagement.Contracts.Services.APIServices;
 using BlogManagement.Data;
 using BlogManagement.Data.Configuration.MapperConfigs;
 using BlogManagement.Data.Entities;
@@ -47,6 +49,7 @@ namespace BlogManagement.WebAPI.Extensions
             services.AddScoped<IPostRatingService, PostRatingService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPostCommentService, PostCommentService>();
+            services.AddScoped<IPostMetaService, PostMetaService>();
 
             services.AddScoped<IAuthManager, AuthManager>();
 
@@ -112,7 +115,7 @@ namespace BlogManagement.WebAPI.Extensions
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "BlogManagement.WebAPI", Version = "v1" });
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
-                    Name = "tokenheader",
+                    Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",

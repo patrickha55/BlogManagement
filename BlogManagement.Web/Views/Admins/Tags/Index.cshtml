@@ -1,5 +1,4 @@
-﻿@using BlogManagement.Common.Common
-@model List<BlogManagement.Common.Models.TagVMs.TagVM>
+﻿@model Paginated<BlogManagement.Common.Models.TagVMs.TagVM>
 
 @{
     ViewData["Title"] = "Tags";
@@ -29,49 +28,80 @@ else
                 <div class="card-header">
                     <h3 class="card-title"><a asp-controller="Tags" asp-action="Create" class="btn" style="background-color: #00bfff;">Create New</a></h3>
                 </div>
-                <!-- /.card-header -->
-            <div class="card-body table-responsive p-0">
+                <div class="card-body table-responsive p-0">
                     <table class="table table-hover text-nowrap">
                         <thead>
-                            <tr>
-                                <th>
-                                    @Html.DisplayNameFor(model => model[0].Id)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model[0].Title)
-                                </th>
-                                <th></th>
-                            </tr>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Objects[0].Id)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Objects[0].Title)
+                            </th>
+                            <th></th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Id)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Title)
-                                    </td>
-                                    <td>
-                                        <a asp-controller="Tags" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                        <a asp-controller="Tags" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                        <button type="button" class="btn-sm btn-danger deleteBtn" data-id="@item.Id">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
+                        @foreach (var item in Model.Objects)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </td>
+                                <td>
+                                    <a asp-controller="Tags" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-controller="Tags" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <button type="button" class="btn-sm btn-danger deleteBtn" data-id="@item.Id">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
+                    <p>@Model.CurrentPage</p>
+                    <p>@Model.HasNext</p>
                 </div>
-                <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-right">
+                        <li class="page-item">
+                            <a class="text-light @(Model.HasPrevious ? "" : "d-none")"
+                               asp-action="Index" asp-route-pageNumber="@(--Model.CurrentPage)" asp-route-pageSize="@(Model.PageSize)">
+                                &laquo;
+                            </a>
+                        </li>
+                        @for (var i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item">
+                                @if(i == Model.CurrentPage)
+                                {
+                                    <a class="page-link text-light">@i</a>
+                                }
+                                else if (i != Model.CurrentPage)
+                                {
+                                    <a class="page-link text-light"
+                                       asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@(Model.PageSize)">
+                                        @i
+                                    </a>
+                                }
+                            </li>
+                        }
+                        <li class="page-item @(Model.HasNext ? "" : "d-none")">
+                            <a class="page-link text-light"
+                               asp-action="Index" asp-route-pageNumber="@(Model.CurrentPage + 2)" asp-route-pageSize="@(Model.PageSize)">
+                                &raquo;
+                            </a>
+                        </li>
+                    </ul>
+                </div>
         </div>
-            <!-- /.card -->
     </div>
     </div>
 
-    <form id="deleteForm" asp-action="Delete">
+    <form id="deleteForm" asp-controller="Tags" asp-action="Delete">
         <input type="hidden" id="tagId" name="id" />
     </form>
 

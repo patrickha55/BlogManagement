@@ -45,7 +45,7 @@ namespace BlogManagement.Repository.Repositories
             }
         }
 
-        public async Task<IPagedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null)
+        public async Task<PaginatedList<Post>> GetPostsForIndexAsync(PagingRequest request, Expression<Func<Post, bool>> expression = null)
         {
             IQueryable<Post> query = Context.Posts;
 
@@ -62,7 +62,7 @@ namespace BlogManagement.Repository.Repositories
                     .Include(p => p.CategoryPosts)
                     .ThenInclude(cp => cp.Category);
 
-                return await query.AsNoTracking().ToPagedListAsync(request.PageNumber, request.PageSize);
+                return await PaginatedList<Post>.ToPaginatedListAsync(query.AsNoTracking() ,request.PageNumber, request.PageSize);
             }
             catch (Exception e)
             {
@@ -77,7 +77,9 @@ namespace BlogManagement.Repository.Repositories
 
             try
             {
-                query = query.Include(p => p.User)
+                query = query
+                    .Where(p => p.Id == postId && p.Published == (byte) PostStatus.Published)
+                    .Include(p => p.User)
                     .Include(p => p.PostComments)
                     .ThenInclude(pc => pc.User)
                     .Include(p => p.PostComments)
@@ -91,7 +93,7 @@ namespace BlogManagement.Repository.Repositories
                     .Include(p => p.PostTags)
                     .ThenInclude(pt => pt.Tag);
 
-                return await query.SingleOrDefaultAsync(p => p.Id == postId);
+                return await query.SingleOrDefaultAsync();
             }
             catch (ArgumentException e)
             {
